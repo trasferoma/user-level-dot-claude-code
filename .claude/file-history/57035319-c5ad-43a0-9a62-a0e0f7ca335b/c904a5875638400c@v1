@@ -1,2 +1,0 @@
-- [PDF integrazioni: prima pagina bianca](pdf-integrazioni-prima-pagina-bianca.md) — causa = contenuto wizard > 1 pagina + page-break-inside:avoid nel CSS di stampa del tema
-- [PDF integrazioni: definizione form da snapshot](pdf-integrazioni-definizione-form-da-snapshot.md) — il PDF legge IstanzaDomandaBando.json, non la definizione madre; come testare via DB + cache

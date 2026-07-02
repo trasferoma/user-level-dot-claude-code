@@ -1,1 +1,0 @@
-- [Docker 29 + Testcontainers fix](docker29-testcontainers-fix.md) — perché serve `api.version=1.44` in surefire nel pom, e cosa NON fare

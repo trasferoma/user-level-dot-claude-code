@@ -1,1 +1,0 @@
-- [book-to-skill caveats (Windows + Claude Code)](book-to-skill-windows-caveats.md) — shell bash → PowerShell, output path default Amp, prerequisiti Python opzionali
