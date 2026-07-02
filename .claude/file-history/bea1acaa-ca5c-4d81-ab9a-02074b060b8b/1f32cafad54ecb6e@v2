@@ -1,0 +1,23 @@
+dependencies {
+    compileOnly group: "com.liferay.portal", name: "release.portal.api"
+
+    compileOnly project(":modules:servizi-digitali-common:servizi-digitali-api-puglia-integration")
+    compileOnly project(":modules:servizi-digitali-common:servizi-digitali-fdr-integration")
+    compileOnly project(":modules:servizi-digitali-common:servizi-digitali-common-utility")
+
+    // https://mvnrepository.com/artifact/jakarta.xml.soap/jakarta.xml.soap-api
+    compileOnly("jakarta.xml.soap:jakarta.xml.soap-api:1.4.2")
+    // https://mvnrepository.com/artifact/javax.xml/jaxp-api
+    compileOnly("javax.xml.parsers:jaxp-api:1.4.2")
+    // https://mvnrepository.com/artifact/com.sun.xml.messaging.saaj/saaj-impl
+    compileInclude("com.sun.xml.messaging.saaj:saaj-impl:1.5.3")
+
+    testImplementation group: "com.liferay.portal", name: "release.portal.api"
+    testImplementation project(":modules:servizi-digitali-common:servizi-digitali-fdr-integration")
+    testImplementation project(":modules:servizi-digitali-common:servizi-digitali-common-utility")
+    testImplementation project(":modules:servizi-digitali-common:servizi-digitali-api-puglia-integration")
+    testImplementation("jakarta.xml.soap:jakarta.xml.soap-api:1.4.2")
+    testImplementation("com.sun.xml.messaging.saaj:saaj-impl:1.5.3")
+    testImplementation group: "junit", name: "junit", version: "4.12"
+    testImplementation group: "org.assertj", name: "assertj-core", version: "3.24.2"
+}

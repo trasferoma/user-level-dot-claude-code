@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "plugins": {
+    "context7@context7-marketplace": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\fabio.dearcangelis\\.claude\\plugins\\cache\\context7-marketplace\\context7\\1.0.2",
+        "version": "1.0.2",
+        "installedAt": "2026-06-26T14:31:02.544Z",
+        "lastUpdated": "2026-06-26T14:31:02.544Z",
+        "gitCommitSha": "0647bb345173bee4eb48055b92f8439f48a06ebc"
+      }
+    ]
+  }
+}

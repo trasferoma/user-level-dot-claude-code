@@ -1,0 +1,1590 @@
+package it.servizidigitali.gestionebandi.operatore.frontend.portlet.render;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.liferay.expando.kernel.model.ExpandoBridge;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.dao.search.SearchPaginationUtil;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.module.configuration.ConfigurationException;
+import com.liferay.portal.kernel.module.configuration.ConfigurationProvider;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.Validator;
+import it.servizidigitali.audit.common.service.AuditService;
+import it.servizidigitali.common.utility.enumeration.CodiceTemplatePdf;
+import it.servizidigitali.common.utility.enumeration.Contesto;
+import it.servizidigitali.common.utility.enumeration.UserCustomAttributes;
+import it.servizidigitali.file.utility.FileUtility;
+import it.servizidigitali.file.utility.factory.FileServiceFactory;
+import it.servizidigitali.gestione.referente.istanze.common.enumeration.StatoRichiesta;
+import it.servizidigitali.gestione.referente.istanze.model.Filters;
+import it.servizidigitali.gestione.referente.istanze.model.RichiestaReferenteIstanza;
+import it.servizidigitali.gestione.referente.istanze.service.RichiestaReferenteIstanzaLocalService;
+import it.servizidigitali.gestionebandi.common.configuration.BandiInserimentoElencoConfiguration;
+import it.servizidigitali.gestionebandi.common.enumeration.AmmissibilitaEnum;
+import it.servizidigitali.gestionebandi.common.enumeration.CodiceDatoBandoEnum;
+import it.servizidigitali.gestionebandi.common.enumeration.FaseWorkflowBandoEnum;
+import it.servizidigitali.gestionebandi.common.enumeration.FormEsecuzione;
+import it.servizidigitali.gestionebandi.common.enumeration.StatoDomandaBandoEnum;
+import it.servizidigitali.gestionebandi.common.enumeration.StatoIntegrazioneDomandaBandoEnum;
+import it.servizidigitali.gestionebandi.common.enumeration.TipoErogazioneEnum;
+import it.servizidigitali.gestionebandi.common.enumeration.TipoFormEnum;
+import it.servizidigitali.gestionebandi.common.enumeration.TipologiaBandoEnum;
+import it.servizidigitali.gestionebandi.common.model.AlpacaJsonStructure;
+import it.servizidigitali.gestionebandi.common.model.AttivitaDomandaBandoDto;
+import it.servizidigitali.gestionebandi.common.model.ErroreValidazioneDTO;
+import it.servizidigitali.gestionebandi.common.model.FormData;
+import it.servizidigitali.gestionebandi.common.service.ValidaDomandaBandoService;
+import it.servizidigitali.gestionebandi.common.util.PaginationUtil;
+import it.servizidigitali.gestionebandi.model.AllegatoDomandaBando;
+import it.servizidigitali.gestionebandi.model.AttivitaDomandaBando;
+import it.servizidigitali.gestionebandi.model.AzioneOperatore;
+import it.servizidigitali.gestionebandi.model.Bando;
+import it.servizidigitali.gestionebandi.model.BandoForm;
+import it.servizidigitali.gestionebandi.model.CommentoDomandaBando;
+import it.servizidigitali.gestionebandi.model.DatoAggiuntivoChiave;
+import it.servizidigitali.gestionebandi.model.DatoBando;
+import it.servizidigitali.gestionebandi.model.DomandaBando;
+import it.servizidigitali.gestionebandi.model.DomandaBandoDatoAggiuntivo;
+import it.servizidigitali.gestionebandi.model.DomandaBandoIntegrazione;
+import it.servizidigitali.gestionebandi.model.ErogazioneDomandaBando;
+import it.servizidigitali.gestionebandi.model.GraduatoriaBando;
+import it.servizidigitali.gestionebandi.model.IstanzaDomandaBando;
+import it.servizidigitali.gestionebandi.model.RangeImportiValutazione;
+import it.servizidigitali.gestionebandi.model.RequisitoDomandaBando;
+import it.servizidigitali.gestionebandi.model.TemplatePdf;
+import it.servizidigitali.gestionebandi.model.TermineBando;
+import it.servizidigitali.gestionebandi.model.TermineDomanda;
+import it.servizidigitali.gestionebandi.model.TipologiaBando;
+import it.servizidigitali.gestionebandi.model.ValoreDatoBando;
+import it.servizidigitali.gestionebandi.model.Valutazione;
+import it.servizidigitali.gestionebandi.model.ValutazioneAmmissibilita;
+import it.servizidigitali.gestionebandi.operatore.frontend.constants.AzioniOperatoreCodes;
+import it.servizidigitali.gestionebandi.operatore.frontend.constants.ScrivaniaOperatoreBandiPortletKeys;
+import it.servizidigitali.gestionebandi.operatore.frontend.dto.AllegatoDTO;
+import it.servizidigitali.gestionebandi.operatore.frontend.dto.AzioneUtenteDTO;
+import it.servizidigitali.gestionebandi.operatore.frontend.dto.CriterioValutazioneDTO;
+import it.servizidigitali.gestionebandi.operatore.frontend.dto.EsecuzioneDTO;
+import it.servizidigitali.gestionebandi.operatore.frontend.dto.IntegrazioneDTO;
+import it.servizidigitali.gestionebandi.operatore.frontend.dto.IntegrazioneRichiestaDTO;
+import it.servizidigitali.gestionebandi.operatore.frontend.dto.PunteggioDTO;
+import it.servizidigitali.gestionebandi.operatore.frontend.dto.UserExDTO;
+import it.servizidigitali.gestionebandi.operatore.frontend.dto.ValutazioneDTO;
+import it.servizidigitali.gestionebandi.operatore.frontend.enums.DettaglioDomandaBandoTabEnum;
+import it.servizidigitali.gestionebandi.operatore.frontend.enums.DettaglioPecTabEnum;
+import it.servizidigitali.gestionebandi.operatore.frontend.enums.DomandaBandoTabEnum;
+import it.servizidigitali.gestionebandi.operatore.frontend.enums.RiconoscimentoEnum;
+import it.servizidigitali.gestionebandi.operatore.frontend.enums.RuoliGestoreEnum;
+import it.servizidigitali.gestionebandi.operatore.frontend.service.ScrivaniaOperatoreBandiFrontendService;
+import it.servizidigitali.gestionebandi.service.AllegatoDomandaBandoLocalService;
+import it.servizidigitali.gestionebandi.service.AttivitaDomandaBandoLocalService;
+import it.servizidigitali.gestionebandi.service.AzioneOperatoreLocalService;
+import it.servizidigitali.gestionebandi.service.BandoFormLocalService;
+import it.servizidigitali.gestionebandi.service.BandoLocalService;
+import it.servizidigitali.gestionebandi.service.CommentoDomandaBandoLocalService;
+import it.servizidigitali.gestionebandi.service.CriterioValutazioneLocalService;
+import it.servizidigitali.gestionebandi.service.DatoBandoLocalService;
+import it.servizidigitali.gestionebandi.service.DomandaBandoDatoAggiuntivoLocalService;
+import it.servizidigitali.gestionebandi.service.DomandaBandoIntegrazioneLocalService;
+import it.servizidigitali.gestionebandi.service.DomandaBandoLocalService;
+import it.servizidigitali.gestionebandi.service.ErogazioneDomandaBandoLocalService;
+import it.servizidigitali.gestionebandi.service.GraduatoriaBandoLocalService;
+import it.servizidigitali.gestionebandi.service.IstanzaDomandaBandoLocalService;
+import it.servizidigitali.gestionebandi.service.PunteggioLocalService;
+import it.servizidigitali.gestionebandi.service.RangeImportiValutazioneLocalService;
+import it.servizidigitali.gestionebandi.service.RequisitoDomandaBandoLocalService;
+import it.servizidigitali.gestionebandi.service.TemplatePdfLocalService;
+import it.servizidigitali.gestionebandi.service.TermineBandoLocalService;
+import it.servizidigitali.gestionebandi.service.TermineDomandaLocalService;
+import it.servizidigitali.gestionebandi.service.TipologiaBandoLocalService;
+import it.servizidigitali.gestionebandi.service.ValoreDatoBandoLocalService;
+import it.servizidigitali.gestionebandi.service.ValutazioneAmmissibilitaLocalService;
+import it.servizidigitali.gestionebandi.service.ValutazioneLocalService;
+import it.servizidigitali.gestioneforms.model.Form;
+import it.servizidigitali.gestioneforms.service.FormLocalService;
+import it.servizidigitali.presentatoreforms.bandi.common.util.AlpacaUtil;
+import it.servizidigitali.protocollo.integration.model.VerificaMailRequest;
+import it.servizidigitali.protocollo.integration.model.VerificaMailResponse;
+import it.servizidigitali.protocollo.integration.service.ProtocolloService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@Component(
+        immediate = true,
+        property = {
+                "javax.portlet.name=" + ScrivaniaOperatoreBandiPortletKeys.SCRIVANIA_OPERATORE_BANDI,
+                "mvc.command.name=" + ScrivaniaOperatoreBandiPortletKeys.DETTAGLIO_DOMANDA_BANDO_RENDER
+        },
+        service = MVCRenderCommand.class)
+public class DettaglioDomandaBandoRenderCommand implements MVCRenderCommand {
+    public static final Log _log = LogFactoryUtil.getLog(DettaglioDomandaBandoRenderCommand.class);
+
+    @Reference
+    private DomandaBandoLocalService domandaBandoLocalService;
+    @Reference
+    private BandoLocalService bandoLocalService;
+    @Reference
+    private UserLocalService userLocalService;
+    @Reference
+    private ScrivaniaOperatoreBandiFrontendService scrivaniaOperatoreBandiFrontendService;
+    @Reference
+    private CommentoDomandaBandoLocalService commentoDomandaBandoLocalService;
+    @Reference
+    private AllegatoDomandaBandoLocalService allegatoDomandaBandoLocalService;
+    @Reference
+    private FileServiceFactory fileServiceFactory;
+    @Reference
+    private FileUtility fileUtility;
+    @Reference
+    private AttivitaDomandaBandoLocalService attivitaDomandaBandoLocalService;
+
+    @Reference
+    private IstanzaDomandaBandoLocalService istanzaDomandaBandoLocalService;
+
+    @Reference
+    private DomandaBandoIntegrazioneLocalService domandaBandoIntegrazioneLocalService;
+
+    @Reference
+    private TermineDomandaLocalService termineDomandaLocalService;
+
+    @Reference
+    private ValidaDomandaBandoService validaDomandaBandoService;
+
+    @Reference
+    private ValutazioneLocalService valutazioneLocalService;
+
+    @Reference
+    private ErogazioneDomandaBandoLocalService erogazioneDomandaBandoLocalService;
+
+    @Reference
+    private TipologiaBandoLocalService tipologiaBandoLocalService;
+
+    @Reference
+    private BandoFormLocalService bandoFormLocalService;
+
+    @Reference
+    private FormLocalService formLocalService;
+
+    @Reference
+    private ValutazioneAmmissibilitaLocalService valutazioneAmmissibilitaLocalService;
+
+    @Reference
+    private GraduatoriaBandoLocalService graduatoriaBandoLocalService;
+
+    @Reference
+    private TermineBandoLocalService termineBandoLocalService;
+
+    @Reference
+    private AzioneOperatoreLocalService azioneOperatoreLocalService;
+
+    @Reference
+    private PunteggioLocalService punteggioLocalService;
+
+    @Reference
+    private CriterioValutazioneLocalService criterioValutazioneLocalService;
+
+    @Reference
+    private TemplatePdfLocalService templatePdfLocalService;
+
+    @Reference
+    private RangeImportiValutazioneLocalService rangeImportiValutazioneLocalService;
+
+    @Reference
+    private RequisitoDomandaBandoLocalService requisitoDomandaBandoLocalService;
+
+    @Reference
+    private AuditService auditService;
+
+    @Reference
+    private DomandaBandoDatoAggiuntivoLocalService domandaBandoDatoAggiuntivoLocalService;
+
+    @Reference
+    private ProtocolloService protocolloService;
+
+    @Reference
+    private RichiestaReferenteIstanzaLocalService richiestaReferenteIstanzaLocalService;
+    @Reference
+    private ValoreDatoBandoLocalService valoreDatoBandoLocalService;
+    @Reference
+    private DatoBandoLocalService datoBandoLocalService;
+
+    private ConfigurationProvider configurationProvider;
+
+    private volatile BandiInserimentoElencoConfiguration exportInserimentoElencoConfiguration;
+
+    @Reference
+    protected void setConfigurationProvider(ConfigurationProvider configurationProvider) {
+        this.configurationProvider = configurationProvider;
+    }
+
+    @Override
+    public String render(RenderRequest renderRequest, RenderResponse renderResponse) throws PortletException {
+        long domandaBandoId = ParamUtil.getLong(renderRequest, "domandaBandoId");
+        String queryTabParent = ParamUtil.getString(renderRequest, "queryTabParent", DomandaBandoTabEnum.IN_LAVORAZIONE.getKey());
+        String queryTab = ParamUtil.getString(renderRequest, "queryTab", DettaglioDomandaBandoTabEnum.DATI_IDENTIFICATIVI.getKey());
+        boolean focusAllegatiOperatore = ParamUtil.getBoolean(renderRequest, "focusAllegatiOperatore", false);
+        boolean prendiInCaricoAbilitato = scrivaniaOperatoreBandiFrontendService.prendiInCaricaAbilitato(domandaBandoId);
+        renderRequest.setAttribute("focusAllegatiOperatore", focusAllegatiOperatore);
+        renderRequest.setAttribute("prendiInCaricoAbilitato", prendiInCaricoAbilitato);
+        boolean erroreRichiestaIntegrazione = ParamUtil.getBoolean(renderRequest, "erroreRichiestaIntegrazione");
+        renderRequest.setAttribute("erroreRichiestaIntegrazione", erroreRichiestaIntegrazione);
+
+        try {
+            ServiceContext serviceContext = ServiceContextFactory.getInstance(renderRequest);
+            ThemeDisplay themeDisplay = serviceContext.getThemeDisplay();
+            List<ErroreValidazioneDTO> erroreValidazioneDTOS = new ArrayList<ErroreValidazioneDTO>();
+            DomandaBando domandaBando = domandaBandoLocalService.getDomandaBando(domandaBandoId);
+
+            GraduatoriaBando graduatoriaProvvisoria = graduatoriaBandoLocalService.getGraduatoriaBandoByBandoIdAndDefinitiva(domandaBando.getBandoId(), false);
+            GraduatoriaBando graduatoriaDefinitiva = graduatoriaBandoLocalService.getGraduatoriaBandoByBandoIdAndDefinitiva(domandaBando.getBandoId(), true);
+            long graduatoriaBandoId = 0;
+
+            if (Validator.isNotNull(graduatoriaProvvisoria)) {
+                graduatoriaBandoId = graduatoriaProvvisoria.getGraduatoriaBandoId();
+            }
+
+            if (Validator.isNotNull(graduatoriaDefinitiva)) {
+                graduatoriaBandoId = graduatoriaDefinitiva.getGraduatoriaBandoId();
+            }
+
+            Bando bando = bandoLocalService.getBando(domandaBando.getBandoId());
+            IstanzaDomandaBando istanzaDomandaBando =
+                    scrivaniaOperatoreBandiFrontendService.getIstanzaDomandaBandoPrincipaleByDomandaBandoId(domandaBando.getDomandaBandoId());
+
+            List<CriterioValutazioneDTO> listaCriteriValutazione = getListaCriteriValutazione(domandaBandoId, graduatoriaBandoId, renderRequest);
+            List<AzioneUtenteDTO> azioni = scrivaniaOperatoreBandiFrontendService.getAzioni(serviceContext,
+                    domandaBandoId,
+                    scrivaniaOperatoreBandiFrontendService.verificaFaseCamunda(serviceContext, domandaBando.getDomandaBandoId(), "ATTIVITA_BENEFICIARIO"),
+                    bando.getAbilitaEsecuzioneIntegrazione());
+            String fase = scrivaniaOperatoreBandiFrontendService.getFaseDomandaBando(serviceContext, domandaBandoId);
+
+            if (Validator.isNotNull(istanzaDomandaBando)) {
+                List<RequisitoDomandaBando> requisitoDomandaBandoLst = requisitoDomandaBandoLocalService.getRequisitoDomandaBandoByBandoId(bando.getBandoId());
+                erroreValidazioneDTOS = validaDomandaBandoService
+                        .validaForm(istanzaDomandaBando.getJson(), bando.getBandoId(), themeDisplay.getLocale(), requisitoDomandaBandoLst);
+                renderRequest.setAttribute("listaErroriValidazione", erroreValidazioneDTOS);
+                renderRequest.setAttribute("checkCriteriNonSoddisfattiObbligatori", checkCriteriNonSoddisfattiObbligatori(erroreValidazioneDTOS));
+            }
+
+
+            ValutazioneAmmissibilita valutazioneAmmissibilita = valutazioneAmmissibilitaLocalService
+                    .getValutazioneAmmissibilitaByDomandaBandoAndGraduatoriaBando(domandaBando.getDomandaBandoId(), graduatoriaBandoId);
+
+            if (Validator.isNotNull(valutazioneAmmissibilita) && Validator.isNotNull(valutazioneAmmissibilita.getEsito())) {
+                AmmissibilitaEnum ammissibiltiaEnum = AmmissibilitaEnum.valueOf(valutazioneAmmissibilita.getEsito());
+                renderRequest.setAttribute("ammissibilitaDomandaOperatore", ammissibiltiaEnum.name());
+            }
+
+            TipologiaBando tipologia = tipologiaBandoLocalService.getTipologiaBando(bando.getTipologiaBandoId());
+
+            if (Validator.isNotNull(tipologia)) {
+                renderRequest.setAttribute("tipologiaBando", tipologia.getCodice());
+            }
+
+            renderRequest.setAttribute("alpacaStructureSchema", null);
+            renderRequest.setAttribute("alpacaStructureOptions", null);
+            renderRequest.setAttribute("alpacaStructureData", null);
+            renderRequest.setAttribute("alpacaStructureView", null);
+
+            renderRequest.setAttribute(ScrivaniaOperatoreBandiPortletKeys.BANDO_ABILITAZIONE_DELEGA, bando.getAbilitazioneDelega());
+            boolean hasCommentiNonLetti = scrivaniaOperatoreBandiFrontendService.hasCommentiNonLetti(domandaBandoId, serviceContext.getUserId());
+            renderRequest.setAttribute("commentiNonLetti", hasCommentiNonLetti);
+            handleTab(renderRequest, serviceContext, queryTab, domandaBando, bando);
+
+            handleAzioni(renderRequest, serviceContext, domandaBando, queryTabParent, azioni);
+
+            if (Validator.isNotNull(domandaBando.getImportoRichiesto())) {
+                BigDecimal importoRichiesto = domandaBando.getImportoRichiesto().setScale(2, RoundingMode.HALF_UP);
+                renderRequest.setAttribute("importoRichiesto", importoRichiesto);
+            }
+
+            renderRequest.setAttribute("abilitaVisualizzazioneImportoRichiesto", bando.getAbilitaImportoRichiesto());
+
+            Boolean visualizzaImportoAmmissibile = scrivaniaOperatoreBandiFrontendService.visualizzaImportoAmmissibile(serviceContext, domandaBandoId, bando);
+            renderRequest.setAttribute("visualizzaImportoAmmissibile", visualizzaImportoAmmissibile);
+
+            boolean disabilitaControlloImportoAmmissibile = false;
+            try {
+                DatoBando datoBandoDisabilita = datoBandoLocalService.findByCodice(CodiceDatoBandoEnum.DISABILITA_CONTROLLO_IMPORTO_AMMISSIBILE.name());
+                if (datoBandoDisabilita != null) {
+                    List<ValoreDatoBando> valoriDisabilita =
+                            valoreDatoBandoLocalService.findByBandoIdAndDatoBandoId(bando.getBandoId(), datoBandoDisabilita.getDatoBandoId());
+                    if (valoriDisabilita != null && !valoriDisabilita.isEmpty()) {
+                        disabilitaControlloImportoAmmissibile = "true".equals(valoriDisabilita.get(0).getValore());
+                    }
+                }
+            } catch (Exception e) {
+                _log.error("Errore nel recupero del flag disabilitaControlloImportoAmmissibile: " + e.getMessage(), e);
+            }
+            renderRequest.setAttribute("disabilitaControlloImportoAmmissibile", disabilitaControlloImportoAmmissibile);
+
+            boolean disabilitaCampoOggetto = false;
+            try {
+                DatoBando datoBandoDisabilitaOggetto = datoBandoLocalService.findByCodice(CodiceDatoBandoEnum.DISABILITA_CAMPO_OGGETTO.name());
+                if (datoBandoDisabilitaOggetto != null) {
+                    List<ValoreDatoBando> valoriDisabilitaOggetto =
+                            valoreDatoBandoLocalService.findByBandoIdAndDatoBandoId(bando.getBandoId(), datoBandoDisabilitaOggetto.getDatoBandoId());
+                    if (valoriDisabilitaOggetto != null && !valoriDisabilitaOggetto.isEmpty()) {
+                        disabilitaCampoOggetto = "true".equals(valoriDisabilitaOggetto.get(0).getValore());
+                    }
+                }
+            } catch (Exception e) {
+                _log.error("Errore nel recupero del flag disabilitaCampoOggetto: " + e.getMessage(), e);
+            }
+            renderRequest.setAttribute("disabilitaCampoOggetto", disabilitaCampoOggetto);
+
+            Boolean calcoloAutomaticoImportoAmmissibile = scrivaniaOperatoreBandiFrontendService.checkCalcoloAutomaticoImportoAmmissibile(bando);
+
+            List<RangeImportiValutazione> listaRangeImportiValutazione = null;
+            if (calcoloAutomaticoImportoAmmissibile) {
+                listaRangeImportiValutazione = rangeImportiValutazioneLocalService.getRangeImportiValutazioneByBandoId(bando.getBandoId());
+            }
+
+            String[] titleArgs = new String[0];
+
+            if (Validator.isNotNull(fase)) {
+                try {
+                    FaseWorkflowBandoEnum faseEnum = FaseWorkflowBandoEnum.valueOf(fase);
+                    if (Validator.isNotNull(faseEnum)) {
+                        fase = faseEnum.getLabel();
+                    }
+                    titleArgs = new String[] {String.valueOf(domandaBando.getDomandaBandoId()), domandaBando.getRagioneSociale(), bando.getNome(), fase};
+                    renderRequest.setAttribute(ScrivaniaOperatoreBandiPortletKeys.FASE, fase);
+                } catch (RuntimeException e) {
+                    titleArgs = new String[] {String.valueOf(domandaBando.getDomandaBandoId()), domandaBando.getRagioneSociale(), bando.getNome(), fase};
+                    renderRequest.setAttribute(ScrivaniaOperatoreBandiPortletKeys.FASE, fase);
+                }
+
+            } else {
+                titleArgs = new String[] {String.valueOf(domandaBando.getDomandaBandoId()), domandaBando.getRagioneSociale(), bando.getNome()};
+            }
+
+            renderRequest.setAttribute("listaRangeImportiValutazione", listaRangeImportiValutazione);
+            renderRequest.setAttribute("importoAmmissibile", domandaBando.getImportoAmmissibile());
+            renderRequest.setAttribute("calcoloAutomaticoImportoAmmissibile", calcoloAutomaticoImportoAmmissibile);
+            renderRequest.setAttribute("listaCriteriValutazione", listaCriteriValutazione);
+            boolean mostraPunteggioAutovalutazione = domandaBandoDatoAggiuntivoLocalService
+                    .countDomandaBandoDatoAggiuntivoByDomandaBandoIdAndChiave(
+                            domandaBandoId,
+                            List.of(DatoAggiuntivoChiave.PUNTEGGIO_AUTOVALUTAZIONE.name())) > 0;
+            renderRequest.setAttribute("mostraPunteggioAutovalutazione", mostraPunteggioAutovalutazione);
+
+            BigDecimal punteggioTotaleAutovalutazione = BigDecimal.ZERO;
+            if (listaCriteriValutazione != null) {
+                for (CriterioValutazioneDTO criterio : listaCriteriValutazione) {
+                    if (criterio.getPunteggioAutovalutazione() != null) {
+                        punteggioTotaleAutovalutazione = punteggioTotaleAutovalutazione.add(criterio.getPunteggioAutovalutazione());
+                    }
+                }
+            }
+            renderRequest.setAttribute("punteggioTotaleAutovalutazione", punteggioTotaleAutovalutazione);
+            renderRequest.setAttribute("checkPresenzaValutazione", checkPresenzaValutazione(domandaBando.getDomandaBandoId(), graduatoriaBandoId));
+            renderRequest.setAttribute("checkPresenzaValutazioneAmmissibilita",
+                    checkPresenzaValutazioneAmmissibilita(domandaBando.getDomandaBandoId(), graduatoriaBandoId, tipologia.getCodice()));
+            renderRequest.setAttribute("esitoValutazioneAmmissibilita", getEsitoValutazioneAmmissibilita(domandaBando.getDomandaBandoId(), graduatoriaBandoId));
+            renderRequest.setAttribute("convalidaValutazioneAmmissibilita",
+                    checkConvalidaValutazioneAmmissibilita(domandaBando.getDomandaBandoId(), graduatoriaBandoId));
+            renderRequest.setAttribute("convalidaValutazione", checkConvalidaValutazione(domandaBando.getDomandaBandoId(), graduatoriaBandoId));
+            renderRequest.setAttribute("checkPresenzaRevoca", checkPresenzaRevoca(domandaBando.getDomandaBandoId()));
+            renderRequest.setAttribute("isEsecuzione",
+                    scrivaniaOperatoreBandiFrontendService.verificaFaseCamunda(serviceContext, domandaBando.getDomandaBandoId(), "ATTIVITA_BENEFICIARIO"));
+
+            renderRequest.setAttribute("titleArgs", titleArgs);
+            renderRequest.setAttribute("bandoId", domandaBando.getBandoId());
+            renderRequest.setAttribute("bando", bando);
+            renderRequest.setAttribute("domandaBandoId", domandaBandoId);
+            renderRequest.setAttribute("queryTab", queryTab);
+            renderRequest.setAttribute("queryTabParent", queryTabParent);
+            renderRequest.setAttribute("azioni", azioni);
+
+            renderRequest.setAttribute("esitoValutazioneAmmissibilitaArgs", handleEsitoAmmissibilitaDomanda(domandaBando.getDomandaBandoId()));
+
+            List<String> listRuoli = getRuoliFromRequest(renderRequest);
+            List<String> dropdownAzioniDettaglioDomandaBando = scrivaniaOperatoreBandiFrontendService
+                    .handleDropdownAzioniDettaglioDomandaBando(listRuoli, domandaBando.getDomandaBandoId(), serviceContext);
+            renderRequest.setAttribute("dropdownAzioniDettaglioDomandaBando", dropdownAzioniDettaglioDomandaBando);
+
+            String renderUrl = PortalUtil.getCurrentURL(renderRequest);
+            Layout layout = themeDisplay.getLayout();
+            String friendlyURL = layout.getFriendlyURL();
+            String paginaServizio =
+                    scrivaniaOperatoreBandiFrontendService.getFormIntegrativoPathDomandaBando(domandaBando, renderUrl, friendlyURL, "DISCIPLINARE");
+            renderRequest.setAttribute("informazioniIntegrativeURL", paginaServizio);
+            String paginaServizioDisciplinareEsecuzione =
+                    scrivaniaOperatoreBandiFrontendService.getFormIntegrativoPathDomandaBando(domandaBando, renderUrl, friendlyURL, "DISCIPLINARE_ESECUZIONE");
+            renderRequest.setAttribute("informazioniIntegrativeEsecuzioneURL", paginaServizioDisciplinareEsecuzione);
+            String paginaServizioRevoca =
+                    scrivaniaOperatoreBandiFrontendService.getFormIntegrativoPathDomandaBando(domandaBando, renderUrl, friendlyURL, "REVOCA");
+            renderRequest.setAttribute("informazioniIntegrativeRevocaURL", paginaServizioRevoca);
+
+            String datiMonitoraggioUrl = scrivaniaOperatoreBandiFrontendService.getDatiMonitoraggioUrl(domandaBando, renderUrl, friendlyURL);
+            boolean visualizzaDatiMonitoraggio =
+                    scrivaniaOperatoreBandiFrontendService.visualizzaButtonDatiMonitoraggio(serviceContext, domandaBandoId, datiMonitoraggioUrl);
+
+            renderRequest.setAttribute("datiMonitoraggioUrl", datiMonitoraggioUrl);
+            renderRequest.setAttribute("visualizzaDatiMonitoraggio", visualizzaDatiMonitoraggio);
+
+            List<TermineDomanda> listaScadenzarioDomanda = termineDomandaLocalService.findByDomandaBandoId(domandaBandoId);
+            renderRequest.setAttribute(ScrivaniaOperatoreBandiPortletKeys.LISTA_SCADENZARIO_DOMANDA, listaScadenzarioDomanda);
+
+            List<ErogazioneDomandaBando> listaErogazioniDomanda = erogazioneDomandaBandoLocalService.getListaErogazioniByDomandaBandoId(domandaBandoId);
+
+            renderRequest.setAttribute(ScrivaniaOperatoreBandiPortletKeys.LISTA_EROGAZIONE_DOMANDA, listaErogazioniDomanda);
+            renderRequest.setAttribute(ScrivaniaOperatoreBandiPortletKeys.LISTA_TIPO_EROGAZIONI, TipoErogazioneEnum.values());
+            renderRequest.setAttribute(ScrivaniaOperatoreBandiPortletKeys.IMPORTO_ASSEGNATO_DOMANDA, domandaBando.getImportoAssegnato());
+
+            List<TermineBando> listaTerminiBando = termineBandoLocalService.getTermineBandoByBandoId(bando.getBandoId());
+            renderRequest.setAttribute(ScrivaniaOperatoreBandiPortletKeys.LISTA_TERMINI_BANDO, listaTerminiBando);
+            renderRequest.setAttribute("compilaDisciplinareArgs", handleCompilaDisciplinare(domandaBando.getDomandaBandoId()));
+            renderRequest.setAttribute("compilaRevocaArgs", handleCompilaRevoca(domandaBando.getDomandaBandoId()));
+            renderRequest.setAttribute("abilitaAzioneDomandaAnticipo", checkCompilazioneDomandaAnticipo(domandaBando.getDomandaBandoId()));
+            renderRequest.setAttribute("abilitaAzionePrimaDomandaAnticipo", checkCompilazionePrimaDomandaAnticipo(domandaBando.getDomandaBandoId()));
+            renderRequest.setAttribute("abilitaAzioneSecondaDomandaAnticipo", checkCompilazioneSecondaDomandaAnticipo(domandaBando.getDomandaBandoId()));
+
+            long bandoId = domandaBando.getBandoId();
+            List<String> formAnticipo = Arrays.asList(TipoFormEnum.ESECUZIONE_PRIMO_ANTICIPO.name(),
+                    TipoFormEnum.ESECUZIONE_SECONDO_ANTICIPO.name(),
+                    TipoFormEnum.ESECUZIONE_ANTICIPO_INTEGRAZIONE.name(),
+                    TipoFormEnum.ESECUZIONE_ANTICIPO.name());
+            List<String> formSaldo = Arrays.asList(TipoFormEnum.ESECUZIONE_SALDO.name(), TipoFormEnum.ESECUZIONE_SALDO_INTEGRAZIONE.name());
+            List<String> formRinuncia = Arrays.asList(TipoFormEnum.ESECUZIONE_RINUNCIA.name());
+
+            long countAnticipo = scrivaniaOperatoreBandiFrontendService.countIstanzeEsecuzione(bandoId, domandaBandoId, formAnticipo);
+            long countSaldo = scrivaniaOperatoreBandiFrontendService.countIstanzeEsecuzione(bandoId, domandaBandoId, formSaldo);
+            long countRinuncia = scrivaniaOperatoreBandiFrontendService.countIstanzeEsecuzione(bandoId, domandaBandoId, formRinuncia);
+            renderRequest.setAttribute("countAnticipo", countAnticipo);
+            renderRequest.setAttribute("countSaldo", countSaldo);
+            renderRequest.setAttribute("countRinuncia", countRinuncia);
+            renderRequest.setAttribute("checkRichiestaOtpFirmaRemota", checkRichiestaOtpFirmaRemota(themeDisplay.getUser(), bando));
+            renderRequest.setAttribute("checkRichiestaOtpFirmaRemotaIntegrazioni", checkRichiestaOtpFirmaRemotaIntegrazioni(themeDisplay.getUser(), bando));
+            renderRequest.setAttribute("checkRichiestaOtpFirmaRemotaEsito", checkRichiestaOtpFirmaRemotaEsito(themeDisplay.getUser(), bando));
+
+            List<TemplatePdf> templatePdfs = templatePdfLocalService.getTemplatePdfByBandoIdAndCodice(bandoId, CodiceTemplatePdf.DISCIPLINARE.name());
+            boolean templateDisciplinarePresente = false;
+
+            if (ListUtil.isNotNull(templatePdfs) && ListUtil.isNotEmpty(templatePdfs) && templatePdfs.size() == 1) {
+                templateDisciplinarePresente = true;
+            }
+
+            renderRequest.setAttribute("templateDisciplinarePresente", templateDisciplinarePresente);
+
+            List<TemplatePdf> templatePdfsEsecuzione = templatePdfLocalService.getTemplatePdfByBandoIdAndCodice(bandoId, CodiceTemplatePdf.DISCIPLINARE_ESECUZIONE.name());
+            boolean templateDisciplinareEsecuzionePresente = false;
+
+            if (ListUtil.isNotNull(templatePdfsEsecuzione) && ListUtil.isNotEmpty(templatePdfsEsecuzione) && templatePdfsEsecuzione.size() == 1) {
+                templateDisciplinareEsecuzionePresente = true;
+            }
+
+            renderRequest.setAttribute("templateDisciplinareEsecuzionePresente", templateDisciplinareEsecuzionePresente);
+
+            try {
+                exportInserimentoElencoConfiguration =
+                        configurationProvider.getGroupConfiguration(BandiInserimentoElencoConfiguration.class, themeDisplay.getScopeGroupId());
+                if (Validator.isNotNull(bando)) {
+                    String codiBandiInsegneStoriche = exportInserimentoElencoConfiguration.codiciBandiInsegneStoriche();
+                    List<String> listaCodiBandiInsegneStoriche = Arrays.asList(codiBandiInsegneStoriche.split(","));
+                    if (listaCodiBandiInsegneStoriche.contains(bando.getCodice())) {
+                        renderRequest.setAttribute(ScrivaniaOperatoreBandiPortletKeys.MOSTRA_SEZIONE_RICONOSCIMENTO, true);
+                        String riconoscimentoRichiesto = scrivaniaOperatoreBandiFrontendService.getLabelRiconoscimentoRichiesto(domandaBando);
+                        renderRequest.setAttribute(ScrivaniaOperatoreBandiPortletKeys.RICONOSCIMENTO_RICHIESTO, riconoscimentoRichiesto);
+                        renderRequest.setAttribute(ScrivaniaOperatoreBandiPortletKeys.LISTA_RICONOSCIMENTI, RiconoscimentoEnum.values());
+                    }
+                }
+            } catch (ConfigurationException e) {
+                _log.error("Errore nel recupero dell'attributo :mostraSezioneRiconosicmento: " + e);
+                auditService.saveErrorLog(renderRequest, e.getMessage());
+            }
+
+            List<String> tabsValues = new ArrayList<>(
+                    Arrays.asList(ScrivaniaOperatoreBandiPortletKeys.DATI_IDENTIFICATIVI,
+                            ScrivaniaOperatoreBandiPortletKeys.DOMANDA_INSERITA,
+                            ScrivaniaOperatoreBandiPortletKeys.ALLEGATI,
+                            ScrivaniaOperatoreBandiPortletKeys.COMMENTI,
+                            ScrivaniaOperatoreBandiPortletKeys.VALUTAZIONI,
+                            ScrivaniaOperatoreBandiPortletKeys.ATTIVITA,
+                            ScrivaniaOperatoreBandiPortletKeys.INTEGRAZIONI,
+                            ScrivaniaOperatoreBandiPortletKeys.ANTICIPO,
+                            ScrivaniaOperatoreBandiPortletKeys.SALDO,
+                            ScrivaniaOperatoreBandiPortletKeys.RINUNCIA));
+
+            if (Validator.isNull(valutazioneAmmissibilita)) {
+                tabsValues.remove(ScrivaniaOperatoreBandiPortletKeys.VALUTAZIONI);
+            }
+
+            if (countAnticipo < 1) {
+                tabsValues.remove(ScrivaniaOperatoreBandiPortletKeys.ANTICIPO);
+            }
+
+            if (countSaldo < 1) {
+                tabsValues.remove(ScrivaniaOperatoreBandiPortletKeys.SALDO);
+            }
+
+            if (countRinuncia < 1) {
+                tabsValues.remove(ScrivaniaOperatoreBandiPortletKeys.RINUNCIA);
+            }
+
+            if (bando.isAbilitaNotifichePec() && bando.isAbilitaProtocollazioneEsito()) {
+                tabsValues.add(ScrivaniaOperatoreBandiPortletKeys.DETTAGLI_PEC);
+            }
+
+            if (bando.getAbilitaEsecuzioneIntegrazione()) {
+                tabsValues.add(ScrivaniaOperatoreBandiPortletKeys.SERVIZI_ESECUZIONE);
+            }
+
+            String tabsValuesCommaSeparated = String.join(",", tabsValues);
+            renderRequest.setAttribute("tabsValuesCommaSeparated", tabsValuesCommaSeparated);
+
+            boolean istanzeSenzaProtocollazione = scrivaniaOperatoreBandiFrontendService.checkIstanzeSenzaProtocollazione(domandaBando);
+            renderRequest.setAttribute("istanzeSenzaProtocollazione", istanzeSenzaProtocollazione);
+
+            try {
+                Filters filtersReferente = new Filters();
+                filtersReferente.setRichiestaId(domandaBandoId);
+                filtersReferente.setDominio("BANDI");
+                filtersReferente.setStato(StatoRichiesta.ACCETTATA.name());
+
+                List<RichiestaReferenteIstanza> richiesteReferenteAccettate = richiestaReferenteIstanzaLocalService.searchRichiestaReferente(filtersReferente);
+
+                if (ListUtil.isNotEmpty(richiesteReferenteAccettate)) {
+                    RichiestaReferenteIstanza richiestaReferenteAccettata = richiesteReferenteAccettate.get(0);
+                    renderRequest.setAttribute("richiestaReferenteAccettata", true);
+                    renderRequest.setAttribute("dataRichiestaReferenteAccettata", richiestaReferenteAccettata.getDataEsito());
+                    renderRequest.setAttribute("richiestaReferenteAccettataId", richiestaReferenteAccettata.getRichiestaReferenteIstanzaId());
+                }
+            } catch (Exception e) {
+                _log.error("Errore durante il recupero della richiesta cambio referente: " + e.getMessage(), e);
+            }
+
+            return "/dettaglio_domanda_bando.jsp";
+        } catch (Exception e) {
+            auditService.saveErrorLog(renderRequest, e.getMessage());
+            throw new PortletException(e);
+        }
+    }
+
+    private void handleAzioni(RenderRequest renderRequest,
+            ServiceContext serviceContext,
+            DomandaBando domandaBando,
+            String queryTabParent,
+            List<AzioneUtenteDTO> azioni) {
+        DomandaBandoTabEnum tab = DomandaBandoTabEnum.parse(queryTabParent);
+
+        if (DomandaBandoTabEnum.IN_LAVORAZIONE.equals(tab)) {
+            List<AllegatoDTO> allegatiModal =
+                    scrivaniaOperatoreBandiFrontendService.getListaAllegati(domandaBando.getDomandaBandoId(), true, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+
+            List<User> responsabili = scrivaniaOperatoreBandiFrontendService
+                    .getResponsabili(serviceContext, domandaBando.getBandoId());
+            List<User> altriResponsabili = scrivaniaOperatoreBandiFrontendService
+                    .getAltriResponsabili(serviceContext, domandaBando.getBandoId());
+
+            boolean isEsecuzione =
+                    scrivaniaOperatoreBandiFrontendService.verificaFaseCamunda(serviceContext, domandaBando.getDomandaBandoId(), "ATTIVITA_BENEFICIARIO");
+
+            List<IntegrazioneDTO> integrazioni =
+                    scrivaniaOperatoreBandiFrontendService.getIntegrazioni(domandaBando.getBandoId(), isEsecuzione, domandaBando.getDomandaBandoId());
+            List<IntegrazioneDTO> integrazioniDisciplinare = scrivaniaOperatoreBandiFrontendService.getIntegrazioniOperatore(domandaBando.getBandoId());
+            List<IntegrazioneDTO> integrazioniDisciplinareEsecuzione = scrivaniaOperatoreBandiFrontendService.getIntegrazioniOperatoreEsecuzione(domandaBando.getBandoId());
+            List<IntegrazioneDTO> serviziEsecuzione = new ArrayList<>(); // scrivaniaOperatoreBandiFrontendService.getServiziIntegrazioni(domandaBando.getBandoId());
+
+
+            renderRequest.setAttribute("hasValutazioneMerito", scrivaniaOperatoreBandiFrontendService.hasValutazioniMerito(domandaBando.getDomandaBandoId()));
+            renderRequest.setAttribute("integrazioni", integrazioni);
+            renderRequest.setAttribute("serviziEsecuzione", serviziEsecuzione);
+
+            renderRequest.setAttribute("integrazioniDisciplinare", integrazioniDisciplinare);
+            renderRequest.setAttribute("integrazioniDisciplinareEsecuzione", integrazioniDisciplinareEsecuzione);
+            renderRequest.setAttribute("allegatiModal", allegatiModal);
+            renderRequest.setAttribute("allegatiModalVisibili", allegatiModal);
+            renderRequest.setAttribute("responsabili", responsabili);
+            renderRequest.setAttribute("altriResponsabili", altriResponsabili);
+        }
+    }
+
+    private boolean checkPresenzaRevoca(long domandaBandoId) {
+        boolean checkPresenzaRevoca = false;
+
+        if (domandaBandoId > 0) {
+            List<AllegatoDomandaBando> listaAllegatiDomandaBando =
+                    allegatoDomandaBandoLocalService.getListaAllegatoDomandaBandoByDomandaBandoIdAndVisibile(domandaBandoId, true);
+
+            Optional<AllegatoDomandaBando> allegatoRevoca = listaAllegatiDomandaBando.stream()
+                    .filter(o -> o.getTitolo().equalsIgnoreCase("revoca"))
+                    .findFirst();
+            if (allegatoRevoca.isPresent()) {
+                checkPresenzaRevoca = true;
+            }
+
+        }
+        return checkPresenzaRevoca;
+    }
+
+    private void handleTab(RenderRequest renderRequest, ServiceContext serviceContext, String queryTab, DomandaBando domandaBando, Bando bando)
+            throws Exception {
+        DettaglioDomandaBandoTabEnum tabEnum = DettaglioDomandaBandoTabEnum.parse(queryTab);
+
+        // per il controllo delle scadenze allegati, sposto il caricamento indipendentemente dal tab cliccato
+        handleTabAllegati(renderRequest, domandaBando);
+        //il caricamento del form viene gestito in maniera indipendente dal tab cliccato
+        //handleDomandaInserita(renderRequest, serviceContext, domandaBando, bando);
+        switch (tabEnum) {
+            case DATI_IDENTIFICATIVI:
+                handleDatiIdentificativi(renderRequest, serviceContext, domandaBando, bando);
+                break;
+            case DOMANDA_INSERITA:
+                handleDomandaInserita(renderRequest, serviceContext, domandaBando, bando);
+                break;
+            case ALLEGATI:
+                //                handleTabAllegati(renderRequest, domandaBando);
+                break;
+            case COMMENTI:
+                User user = userLocalService.getUserById(serviceContext.getUserId());
+                scrivaniaOperatoreBandiFrontendService.setCommentiLetti(
+                        domandaBando.getDomandaBandoId(),
+                        user.getUserId(),
+                        user.getFullName(),
+                        serviceContext.getCompanyId(),
+                        serviceContext.getScopeGroupId());
+                handleTabCommenti(renderRequest, domandaBando);
+                break;
+            case ATTIVITA:
+                handleTabAttivita(renderRequest, domandaBando);
+                break;
+            case INTEGRAZIONI:
+                handleTabIntegrazioni(renderRequest, domandaBando);
+                break;
+            case VALUTAZIONI:
+                handleTabValutazioni(renderRequest, domandaBando);
+                break;
+            case ANTICIPO:
+                handleTabBando(renderRequest, domandaBando);
+                break;
+            case SALDO:
+                handleTabBando(renderRequest, domandaBando);
+                break;
+            case RINUNCIA:
+                handleTabBando(renderRequest, domandaBando);
+                break;
+            case DETTAGLIO_PEC:
+                handleTabDettagliPec(renderRequest, domandaBando, bando);
+                break;
+            case SERVIZI_ESECUZIONE:
+                handleTabServiziEsecuzione(renderRequest, domandaBando);
+                break;
+            default:
+                throw new RuntimeException("No tab val");
+        }
+    }
+
+    private void handleTabValutazioni(RenderRequest renderRequest, DomandaBando domandaBando) {
+        try {
+            ValutazioneDTO valutazioneDTO = scrivaniaOperatoreBandiFrontendService.createValutazioneDomandaBando(domandaBando);
+            renderRequest.setAttribute("valutazioneDTO", valutazioneDTO);
+            List<PunteggioDTO> punteggi = valutazioneDTO.getPunteggi();
+            if (Validator.isNotNull(punteggi)) {
+                renderRequest.setAttribute("punteggiMeritoSize", punteggi.size());
+            }
+
+        } catch (Exception e) {
+            _log.error("handleTabValutazioni :: " + e.getMessage(), e);
+            auditService.saveErrorLog(renderRequest, e.getMessage());
+        }
+
+    }
+
+    private void handleTabIntegrazioni(RenderRequest renderRequest, DomandaBando domandaBando) {
+        int cur = ParamUtil.getInteger(renderRequest, "curIntegrazione", 1);
+        int delta = ParamUtil.getInteger(renderRequest, "deltaIntegrazione", 10);
+
+        int integrazioniCount = scrivaniaOperatoreBandiFrontendService.countRichiesteIntegrazioni(domandaBando.getDomandaBandoId());
+        int[] limits = PaginationUtil.calculateStartAndEnd(cur, delta, integrazioniCount);
+        int start = limits[0];
+        int end = limits[1];
+        cur = limits[2];
+
+        List<IntegrazioneRichiestaDTO> integrazioniList = scrivaniaOperatoreBandiFrontendService.getRichiesteIntegrazioni(
+                domandaBando.getDomandaBandoId(),
+                domandaBando.getBandoId(),
+                start,
+                end);
+
+        renderRequest.setAttribute("integrazioniList", integrazioniList);
+        renderRequest.setAttribute("integrazioniCount", integrazioniCount);
+        renderRequest.setAttribute("curIntegrazione", cur);
+        renderRequest.setAttribute("deltaIntegrazione", delta);
+    }
+
+    private void handleTabServiziEsecuzione(RenderRequest renderRequest, DomandaBando domandaBando) {
+        int cur = ParamUtil.getInteger(renderRequest, "curServizioEsecuzione", 1);
+        int delta = ParamUtil.getInteger(renderRequest, "deltaServizioEsecuzione", 10);
+
+        int servizioEsecuzioneCount =
+                scrivaniaOperatoreBandiFrontendService.countRichiesteServizioEsecuzione(domandaBando.getDomandaBandoId(), domandaBando.getBandoId());
+        int[] limits = PaginationUtil.calculateStartAndEnd(cur, delta, servizioEsecuzioneCount);
+        int start = limits[0];
+        int end = limits[1];
+        cur = limits[2];
+
+        List<IntegrazioneRichiestaDTO> servizioEsecuzioneList = scrivaniaOperatoreBandiFrontendService.getRichiesteServiziEsecuzione(
+                domandaBando.getDomandaBandoId(),
+                domandaBando.getBandoId(),
+                start,
+                end);
+
+        renderRequest.setAttribute("servizioEsecuzioneList", servizioEsecuzioneList);
+        renderRequest.setAttribute("servizioEsecuzioneCount", servizioEsecuzioneCount);
+        renderRequest.setAttribute("curServizioEsecuzione", cur);
+        renderRequest.setAttribute("deltaServizioEsecuzione", delta);
+    }
+
+    private void handleTabBando(RenderRequest renderRequest, DomandaBando domandaBando) throws PortalException {
+
+        final String ANTICIPO = "anticipo";
+        final String SALDO = "saldo";
+        final String RINUNCIA = "rinuncia";
+
+        int cur = ParamUtil.getInteger(renderRequest, "curIntegrazione", 1);
+        int delta = ParamUtil.getInteger(renderRequest, "deltaIntegrazione", 10);
+        long domandaBandoId = ParamUtil.getLong(renderRequest, "domandaBandoId");
+        long bandoId = domandaBando.getBandoId();
+        String tab = ParamUtil.getString(renderRequest, "queryTab");
+
+        List<String> tipiForm = new ArrayList<>();
+        List<IstanzaDomandaBando> listIstanzaDomandaBando = new ArrayList<>();
+
+        if (tab.equalsIgnoreCase(ANTICIPO)) {
+            tipiForm = Arrays.asList(TipoFormEnum.ESECUZIONE_PRIMO_ANTICIPO.name(),
+                    TipoFormEnum.ESECUZIONE_SECONDO_ANTICIPO.name(),
+                    TipoFormEnum.ESECUZIONE_ANTICIPO_INTEGRAZIONE.name(),
+                    TipoFormEnum.ESECUZIONE_ANTICIPO.name());
+            listIstanzaDomandaBando = scrivaniaOperatoreBandiFrontendService.getIstanzeEsecuzione(bandoId, domandaBandoId, tipiForm);
+        } else if (tab.equalsIgnoreCase(SALDO)) {
+            tipiForm = Arrays.asList(TipoFormEnum.ESECUZIONE_SALDO.name(), TipoFormEnum.ESECUZIONE_SALDO_INTEGRAZIONE.name());
+            listIstanzaDomandaBando = scrivaniaOperatoreBandiFrontendService.getIstanzeEsecuzione(bandoId, domandaBandoId, tipiForm);
+        } else if (tab.equalsIgnoreCase(RINUNCIA)) {
+            tipiForm = Arrays.asList(TipoFormEnum.ESECUZIONE_RINUNCIA.name());
+            listIstanzaDomandaBando = scrivaniaOperatoreBandiFrontendService.getIstanzeEsecuzione(bandoId, domandaBandoId, tipiForm);
+        }
+
+        List<EsecuzioneDTO> esecuzioneDTOList = listIstanzaDomandaBando.stream()
+                .map(this::mapEsecuzione)
+                .collect(Collectors.toList());
+
+        int total = esecuzioneDTOList.size();
+        int[] limits = PaginationUtil.calculateStartAndEnd(cur, delta, total);
+        int start = limits[0];
+        int end = limits[1];
+        cur = limits[2];
+
+        List<EsecuzioneDTO> paginated = esecuzioneDTOList.subList(
+                Math.min(start, total),
+                Math.min(end, total));
+
+        renderRequest.setAttribute("istanzeEsecuzioneList", paginated);
+        renderRequest.setAttribute("istanzeEsecuzioneCount", total);
+        renderRequest.setAttribute("curIntegrazione", cur);
+        renderRequest.setAttribute("deltaIntegrazione", delta);
+    }
+
+    private EsecuzioneDTO mapEsecuzione(IstanzaDomandaBando istanza) {
+        Form form = formLocalService.fetchForm(istanza.getFormId());
+        EsecuzioneDTO dto = new EsecuzioneDTO();
+        DomandaBandoIntegrazione domandaIntegrazione = domandaBandoIntegrazioneLocalService.fetchDomandaBandoIntegrazione(istanza.getIstanzaDomandaBandoId());
+
+        if (Validator.isNotNull(domandaIntegrazione)) {
+            dto.setDataProtocollo(domandaIntegrazione.getDataProtocollo());
+            dto.setNumeroProtocollo(domandaIntegrazione.getNumeroProtocollo());
+
+            if (Validator.isNotNull(domandaIntegrazione.getDataProtocolloUscita())) {
+                dto.setDataProtocolloUscita(domandaIntegrazione.getDataProtocolloUscita());
+            }
+
+            if (Validator.isNotNull(domandaIntegrazione.getNumeroProtocolloUscita())) {
+                dto.setNumeroProtocolloUscita(domandaIntegrazione.getNumeroProtocolloUscita());
+            }
+        }
+
+        dto.setIstanzaDomandaBandoId(istanza.getIstanzaDomandaBandoId());
+        dto.setFormId(istanza.getFormId());
+        dto.setCreateDate(istanza.getCreateDate());
+        dto.setModifiedDate(istanza.getModifiedDate());
+        dto.setUserName(istanza.getUserName());
+        StatoIntegrazioneDomandaBandoEnum stato = StatoIntegrazioneDomandaBandoEnum.valueOf(istanza.getStato());
+        dto.setStato(Validator.isNotNull(stato) ? stato.name() : " ");
+        boolean validata = stato.equals(StatoIntegrazioneDomandaBandoEnum.CONFERMATA) || stato.equals(StatoIntegrazioneDomandaBandoEnum.VALIDATA);
+        dto.setStatoCheck(validata);
+        dto.setDescrizione(form.getNome());
+        DomandaBando domandaBando = domandaBandoLocalService.fetchDomandaBando(istanza.getDomandaBandoId());
+        Bando bando = bandoLocalService.fetchBando(domandaBando.getBandoId());
+        List<BandoForm> bandoFormList = bandoFormLocalService.getBandoFormBandoAndForm(bando.getBandoId(), form.getFormId());
+        if (ListUtil.isNotNull(bandoFormList) && ListUtil.isNotEmpty(bandoFormList) && bandoFormList.size() == 1) {
+            BandoForm bandoForm = bandoFormList.get(0);
+            TipoFormEnum tipoFormEnum = TipoFormEnum.valueOf(bandoForm.getTipoForm());
+            dto.setIntegrazione(false);
+            if (Validator.isNotNull(tipoFormEnum)) {
+                dto.setIntegrazione(tipoFormEnum.isIntegrazione());
+            }
+        }
+
+        if (Validator.isNotNull(istanza.getDataInvio())) {
+            dto.setDataInvio(istanza.getDataInvio());
+        }
+        return dto;
+    }
+
+    private void handleTabAttivita(RenderRequest renderRequest, DomandaBando domandaBando) {
+
+        List<AttivitaDomandaBando> attivitaList = attivitaDomandaBandoLocalService
+                .getAttivitaDomandaBandoByDomandaBandoId(domandaBando.getDomandaBandoId());
+
+        List<AttivitaDomandaBandoDto> listaAttivitaFinale = attivitaDomandaBandoToBandoDtoList(attivitaList);
+
+        if (ListUtil.isNotNull(listaAttivitaFinale) && ListUtil.isNotEmpty(listaAttivitaFinale)) {
+            for (AttivitaDomandaBandoDto attivita : listaAttivitaFinale) {
+                if (Validator.isNotNull(attivita)) {
+                    try {
+                        StatoDomandaBandoEnum statoDomandaBandoEnum = StatoDomandaBandoEnum.valueOf(attivita.getStato());
+                        attivita.setDescrizione(statoDomandaBandoEnum.getName());
+                    } catch (IllegalArgumentException e) {
+                        attivita.setDescrizione(attivita.getStato());
+                    }
+                }
+            }
+        }
+
+        renderRequest.setAttribute("attivitaList", listaAttivitaFinale);
+        renderRequest.setAttribute("attivitaCount", listaAttivitaFinale.size());
+    }
+
+    private List<AttivitaDomandaBandoDto> attivitaDomandaBandoToBandoDtoList(List<AttivitaDomandaBando> attivitaDomandaBandoList) {
+        List<AttivitaDomandaBandoDto> dtoList = new ArrayList<>();
+
+        for (AttivitaDomandaBando attivitaDomandaBando : attivitaDomandaBandoList) {
+            AttivitaDomandaBandoDto dto = new AttivitaDomandaBandoDto();
+            List<String> attivitaDomandaBandoDtoNote = new ArrayList<>();
+            String[] noteSeparate = attivitaDomandaBando.getNote().split("\\|");
+
+            dto.setModifiedDate(attivitaDomandaBando.getModifiedDate());
+            dto.setDescrizione(attivitaDomandaBando.getDescrizione());
+            dto.setStato(attivitaDomandaBando.getStato());
+
+            if (Validator.isNotNull(attivitaDomandaBando.getNote())) {
+                for (String nota : noteSeparate) {
+                    attivitaDomandaBandoDtoNote.add(nota);
+                }
+                dto.setNote(attivitaDomandaBandoDtoNote);
+            }
+
+            dtoList.add(dto);
+        }
+
+        return dtoList;
+    }
+
+    private void handleTabCommenti(RenderRequest renderRequest, DomandaBando domandaBando) {
+        int cur = ParamUtil.getInteger(renderRequest, "cur", 1);
+        int delta = ParamUtil.getInteger(renderRequest, "delta", 10);
+
+        int[] limits = SearchPaginationUtil.calculateStartAndEnd(cur, delta);
+
+        List<CommentoDomandaBando> commentiList = commentoDomandaBandoLocalService.listCommenti(
+                domandaBando.getDomandaBandoId(),
+                limits[0],
+                limits[1]);
+        int commentiCount = commentoDomandaBandoLocalService.countCommenti(domandaBando.getDomandaBandoId());
+
+        renderRequest.setAttribute("commentiList", commentiList);
+        renderRequest.setAttribute("commentiCount", commentiCount);
+    }
+
+    private void handleTabAllegati(RenderRequest renderRequest, DomandaBando domandaBando) {
+        IstanzaDomandaBando istanzaDomandaBando =
+                scrivaniaOperatoreBandiFrontendService.getIstanzaDomandaBandoPrincipaleByDomandaBandoId(domandaBando.getDomandaBandoId());
+        long istanzaDomandaBandoId = Validator.isNotNull(istanzaDomandaBando) ? istanzaDomandaBando.getIstanzaDomandaBandoId() : 0L;
+
+        renderRequest.setAttribute("istanzaDomandaBandoId", istanzaDomandaBandoId);
+
+        Boolean allegatiRichiedenteVisualizzabili = scrivaniaOperatoreBandiFrontendService.allegatiRichiedenteVisualizzabili(domandaBando.getDomandaBandoId());
+        renderRequest.setAttribute("allegatiRichiedenteVisualizzabili", allegatiRichiedenteVisualizzabili);
+
+        int allegatiRichiedenteCount = 0;
+        List<AllegatoDTO> allegatiRichiedenteList = new ArrayList<>();
+
+        if (allegatiRichiedenteVisualizzabili && istanzaDomandaBandoId > 0) {
+            allegatiRichiedenteCount = scrivaniaOperatoreBandiFrontendService.countAllegatiByIstanza(istanzaDomandaBandoId, false);
+        }
+
+        int allegatiOperatoreCount = istanzaDomandaBandoId > 0
+                ? scrivaniaOperatoreBandiFrontendService.countAllegatiByIstanza(istanzaDomandaBandoId, true)
+                : 0;
+
+        int richiedenteCur = ParamUtil.getInteger(renderRequest, "curAllegatiRichiedente", 1);
+        int richiedenteDelta = ParamUtil.getInteger(renderRequest, "deltaAllegatiRichiedente", 10);
+        int operatoreCur = ParamUtil.getInteger(renderRequest, "curAllegatiOperatore", 1);
+        int operatoreDelta = ParamUtil.getInteger(renderRequest, "deltaAllegatiOperatore", 10);
+
+        int[] richiedenteLimits = PaginationUtil.calculateStartAndEnd(richiedenteCur, richiedenteDelta, allegatiRichiedenteCount);
+        int richiedenteStart = richiedenteLimits[0];
+        int richiedenteEnd = richiedenteLimits[1];
+        richiedenteCur = richiedenteLimits[2];
+
+        int[] operatoreLimits = PaginationUtil.calculateStartAndEnd(operatoreCur, operatoreDelta, allegatiOperatoreCount);
+        int operatoreStart = operatoreLimits[0];
+        int operatoreEnd = operatoreLimits[1];
+        operatoreCur = operatoreLimits[2];
+
+        if (allegatiRichiedenteVisualizzabili && istanzaDomandaBandoId > 0) {
+            allegatiRichiedenteList =
+                    scrivaniaOperatoreBandiFrontendService.getListaAllegatiByIstanza(istanzaDomandaBandoId, false, richiedenteStart, richiedenteEnd);
+        }
+
+        List<AllegatoDTO> allegatiOperatoreList = istanzaDomandaBandoId > 0
+                ? scrivaniaOperatoreBandiFrontendService.getListaAllegati(domandaBando.getDomandaBandoId(), true, operatoreStart, operatoreEnd)
+                : new ArrayList<>();
+
+        renderRequest.setAttribute("curAllegatiOperatore", operatoreCur);
+        renderRequest.setAttribute("deltaAllegatiOperatore", operatoreDelta);
+        renderRequest.setAttribute("allegatiOperatoreList", allegatiOperatoreList);
+        renderRequest.setAttribute("allegatiOperatoreCount", allegatiOperatoreCount);
+
+        renderRequest.setAttribute("curAllegatiRichiedente", richiedenteCur);
+        renderRequest.setAttribute("deltaAllegatiRichiedente", richiedenteDelta);
+        renderRequest.setAttribute("allegatiRichiedenteList", allegatiRichiedenteList);
+        renderRequest.setAttribute("allegatiRichiedenteCount", allegatiRichiedenteCount);
+    }
+
+    private void handleDatiIdentificativi(RenderRequest renderRequest, ServiceContext serviceContext, DomandaBando domandaBando, Bando bando) throws Exception {
+        User user = userLocalService.getUser(domandaBando.getUserId());
+
+        String nomeRichiedente = null;
+        String cognomeRichiedente = null;
+        String emailRichiedente = null;
+
+        if (Validator.isNotNull(user.getFirstName())) {
+            nomeRichiedente = user.getFirstName();
+            renderRequest.setAttribute("nomeRichiedente", nomeRichiedente);
+        }
+
+        if (Validator.isNotNull(user.getLastName())) {
+            cognomeRichiedente = user.getLastName();
+            renderRequest.setAttribute("cognomeRichiedente", cognomeRichiedente);
+        }
+
+        if (Validator.isNotNull(user.getEmailAddress())) {
+            emailRichiedente = user.getEmailAddress();
+            renderRequest.setAttribute("emailRichiedente", emailRichiedente);
+        }
+
+        String stato = scrivaniaOperatoreBandiFrontendService.getStatoLabel(domandaBando);
+
+        UserExDTO userEx = getUserEx(user);
+
+        renderRequest.setAttribute("bando", bando);
+        renderRequest.setAttribute("stato", stato);
+        renderRequest.setAttribute("user", user);
+        renderRequest.setAttribute("userEx", userEx);
+        renderRequest.setAttribute("domandaBando", domandaBando);
+    }
+
+    private static UserExDTO getUserEx(User user) {
+        String pec = (String) user.getExpandoBridge().getAttribute(UserCustomAttributes.PEC.getNomeAttributo());
+        String telefono = (String) user.getExpandoBridge().getAttribute(UserCustomAttributes.TELEFONO.getNomeAttributo());
+        String residenza = (String) user.getExpandoBridge().getAttribute(UserCustomAttributes.SPID_ADDRESS.getNomeAttributo());
+
+        UserExDTO userEx = new UserExDTO();
+        userEx.setPec(pec);
+        userEx.setTelefono(telefono);
+        userEx.setIndirizzoResidenza(residenza);
+        return userEx;
+    }
+
+    private boolean checkPresenzaValutazione(long domandaBandoId, long graduatoriaBandoId) {
+        boolean checkPresenzaValutazione = false;
+
+        if (domandaBandoId > 0) {
+            Valutazione valutazione = valutazioneLocalService.getValutazioneByGraduatoriaBandoAndDomandaBando(graduatoriaBandoId, domandaBandoId);
+
+            if (Validator.isNotNull(valutazione)) {
+                checkPresenzaValutazione = true;
+            }
+
+        }
+        return checkPresenzaValutazione;
+    }
+
+    private boolean checkPresenzaValutazioneAmmissibilita(long domandaBandoId, long graduatoriaBandoId, String tipologiaBando) {
+        boolean checkPresenzaValutazioneAmmissibilita = false;
+
+        if (domandaBandoId > 0) {
+            ValutazioneAmmissibilita valutazioneAmmissibilita =
+                    valutazioneAmmissibilitaLocalService.getValutazioneAmmissibilitaByDomandaBandoAndGraduatoriaBando(domandaBandoId, graduatoriaBandoId);
+
+            if (Validator.isNotNull(valutazioneAmmissibilita)) {
+
+                if (tipologiaBando.equalsIgnoreCase(TipologiaBandoEnum.EVENTO.name())) {
+                    checkPresenzaValutazioneAmmissibilita = true;
+                } else {
+                    if (valutazioneAmmissibilita.getEsito().equalsIgnoreCase(AmmissibilitaEnum.AMMISSIBILE.name())) {
+                        checkPresenzaValutazioneAmmissibilita = true;
+                    }
+                }
+
+
+            }
+        }
+
+        return checkPresenzaValutazioneAmmissibilita;
+    }
+
+    private String getEsitoValutazioneAmmissibilita(long domandaBandoId, long graduatoriaBandoId) {
+        String esitoValutazioneAmmissibilita = "";
+
+        if (domandaBandoId > 0) {
+            ValutazioneAmmissibilita valutazioneAmmissibilita =
+                    valutazioneAmmissibilitaLocalService.getValutazioneAmmissibilitaByDomandaBandoAndGraduatoriaBando(domandaBandoId, graduatoriaBandoId);
+
+            if (Validator.isNotNull(valutazioneAmmissibilita) && Validator.isNotNull(valutazioneAmmissibilita.getEsito())) {
+                esitoValutazioneAmmissibilita = valutazioneAmmissibilita.getEsito();
+            }
+        }
+
+        return esitoValutazioneAmmissibilita;
+    }
+
+    private boolean checkConvalidaValutazioneAmmissibilita(long domandaBandoId, long graduatoriaBandoId) {
+        boolean checkConvalidaValutazioneAmmissibilita = false;
+
+        if (domandaBandoId > 0) {
+            ValutazioneAmmissibilita valutazioneAmmissibilita =
+                    valutazioneAmmissibilitaLocalService.getValutazioneAmmissibilitaByDomandaBandoAndGraduatoriaBando(domandaBandoId, graduatoriaBandoId);
+
+            if (Validator.isNotNull(valutazioneAmmissibilita) && valutazioneAmmissibilita.getConvalidata()) {
+                checkConvalidaValutazioneAmmissibilita = true;
+            }
+        }
+
+        return checkConvalidaValutazioneAmmissibilita;
+    }
+
+    private boolean checkConvalidaValutazione(long domandaBandoId, long graduatoriaBandoId) {
+        boolean checkConvalidaValutazione = false;
+
+        if (domandaBandoId > 0) {
+            Valutazione valutazione = valutazioneLocalService.getValutazioneByGraduatoriaBandoAndDomandaBando(graduatoriaBandoId, domandaBandoId);
+
+            if (Validator.isNotNull(valutazione) && valutazione.getConvalidata()) {
+                checkConvalidaValutazione = true;
+            }
+
+        }
+        return checkConvalidaValutazione;
+    }
+
+    private boolean checkCriteriNonSoddisfattiObbligatori(List<ErroreValidazioneDTO> erroreValidazioneDTOS) {
+        boolean checkCriteriNonSoddisfattiObbligatori = false;
+
+        if (erroreValidazioneDTOS != null && !erroreValidazioneDTOS.isEmpty()) {
+            Optional<ErroreValidazioneDTO> erroreObbligatorio = erroreValidazioneDTOS.stream().filter(x -> x.isObbligatorio()).findFirst();
+
+            if (erroreObbligatorio.isPresent()) {
+                checkCriteriNonSoddisfattiObbligatori = true;
+            }
+        }
+
+
+        return checkCriteriNonSoddisfattiObbligatori;
+    }
+
+    private List<CriterioValutazioneDTO> getListaCriteriValutazione(long domandaBandoId, long graduatoriaBandoId, RenderRequest renderRequest) {
+        List<CriterioValutazioneDTO> listaCriteriValutazione = new ArrayList<CriterioValutazioneDTO>();
+
+        try {
+            if (domandaBandoId > 0) {
+                listaCriteriValutazione = scrivaniaOperatoreBandiFrontendService.getListaCriteriValutazioneDomandaBando(domandaBandoId, graduatoriaBandoId);
+
+                if (ListUtil.isNull(listaCriteriValutazione) || ListUtil.isEmpty(listaCriteriValutazione)) {
+                    listaCriteriValutazione = scrivaniaOperatoreBandiFrontendService.getListaCriteriValutazioneBando(domandaBandoId);
+                }
+
+            }
+        } catch (Exception e) {
+            _log.error("getListaCriteriValutazione :: " + e.getMessage(), e);
+            auditService.saveErrorLog(renderRequest, e.getMessage());
+        }
+
+        return listaCriteriValutazione;
+    }
+
+    private void handleDomandaInserita(RenderRequest renderRequest, ServiceContext serviceContext, DomandaBando domandaBando, Bando bando) throws Exception {
+        ThemeDisplay themeDisplay = serviceContext.getThemeDisplay();
+        Gson gson = new Gson();
+        Form form = scrivaniaOperatoreBandiFrontendService.getFormBando(bando.getBandoId());
+        IstanzaDomandaBando istanzaDomandaBando =
+                istanzaDomandaBandoLocalService.getIstanzaDomandaBandoByDomandaBandoIdAndFormId(domandaBando.getDomandaBandoId(), form.getFormId());
+
+        AlpacaJsonStructure alpacaStructure = null;
+        FormData formData = null;
+
+        String jsonForm = gson.toJson(gson.fromJson(istanzaDomandaBando.getJson(), FormData.class));
+        formData = AlpacaUtil.loadFormData(form, jsonForm, true, themeDisplay.getPortalURL());
+        alpacaStructure = formData.getAlpaca();
+
+        // Sostituzione valore di data
+        String data = gson.toJson(alpacaStructure.getData());
+        JsonObject jsonData = gson.fromJson(data, JsonObject.class);
+        alpacaStructure.setData(gson.toJsonTree(jsonData).getAsJsonObject());
+
+        AlpacaUtil.convertiComponentiAlpacaStructure(alpacaStructure);
+        // Carica la view se presente
+        AlpacaUtil.loadView(alpacaStructure);
+
+        //        renderRequest.setAttribute("alpacaStructure", alpacaStructure);
+
+        renderRequest.setAttribute("alpacaStructureSchema", alpacaStructure.getSchema());
+        renderRequest.setAttribute("alpacaStructureOptions", alpacaStructure.getOptions());
+        renderRequest.setAttribute("alpacaStructureData", alpacaStructure.getData());
+        renderRequest.setAttribute("alpacaStructureView", alpacaStructure.getView());
+        renderRequest.setAttribute("apiAlpacaPath", themeDisplay.getPortalURL() + "/o/api/alpaca");
+        renderRequest.setAttribute("obbligoAccreditamentoEnte", bando.isObbligoAccreditamentoEnte());
+
+    }
+
+    private String[] handleEsitoAmmissibilitaDomanda(long id) {
+        Boolean esitoPresente = false;
+        String operatore = "";
+        String data = "";
+        String ore = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        List<AzioneOperatore> azioniOperatori = azioneOperatoreLocalService.getByDomandaBandoIdAndCodiceAzioneSorted(id,
+                AzioniOperatoreCodes.TIPO_OPERAZIONE_VALUTA_AMMISSIBILITA.name(),
+                "timestamp");
+        if (!azioniOperatori.isEmpty()) {
+            AzioneOperatore ultimaAzione = azioniOperatori.get(0);
+            if (Validator.isNotNull(ultimaAzione.getTimestamp())) {
+                data = sdf.format(ultimaAzione.getTimestamp());
+                sdf = new SimpleDateFormat("HH:mm");
+                ore = sdf.format(ultimaAzione.getTimestamp());
+                User operatoreUser = userLocalService.fetchUser(ultimaAzione.getAzioneUserId());
+                if (operatoreUser != null) {
+                    operatore = operatoreUser.getFullName();
+                    esitoPresente = true;
+                }
+            }
+        }
+        if (esitoPresente)
+            return new String[] {operatore, data, ore};
+        else
+            return null;
+    }
+
+    private String[] handleCompilaDisciplinare(long id) {
+        String operatore = "";
+        String data = "";
+        String ore = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        List<AzioneOperatore> azioniOperatori = azioneOperatoreLocalService.getByDomandaBandoIdAndCodiceAzioneSorted(id,
+                AzioniOperatoreCodes.COMPILA_DISCIPLINARE.name(),
+                "timestamp");
+        if (!azioniOperatori.isEmpty()) {
+            AzioneOperatore ultimaAzione = azioniOperatori.get(0);
+            if (Validator.isNotNull(ultimaAzione.getTimestamp())) {
+                data = sdf.format(ultimaAzione.getTimestamp());
+                sdf = new SimpleDateFormat("HH:mm");
+                ore = sdf.format(ultimaAzione.getTimestamp());
+                User operatoreUser = userLocalService.fetchUser(ultimaAzione.getAzioneUserId());
+                if (operatoreUser != null) {
+                    operatore = operatoreUser.getFullName();
+                }
+            }
+            return new String[] {operatore, data, ore};
+        }
+
+        return null;
+    }
+
+    private String[] handleCompilaRevoca(long id) {
+        String operatore = "";
+        String data = "";
+        String ore = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        List<AzioneOperatore> azioniOperatori = azioneOperatoreLocalService.getByDomandaBandoIdAndCodiceAzioneSorted(id,
+                AzioniOperatoreCodes.COMPILA_REVOCA.name(),
+                "timestamp");
+        if (!azioniOperatori.isEmpty()) {
+            AzioneOperatore ultimaAzione = azioniOperatori.get(0);
+            if (Validator.isNotNull(ultimaAzione.getTimestamp())) {
+                data = sdf.format(ultimaAzione.getTimestamp());
+                sdf = new SimpleDateFormat("HH:mm");
+                ore = sdf.format(ultimaAzione.getTimestamp());
+                User operatoreUser = userLocalService.fetchUser(ultimaAzione.getAzioneUserId());
+                if (operatoreUser != null) {
+                    operatore = operatoreUser.getFullName();
+                }
+            }
+            return new String[] {operatore, data, ore};
+        }
+
+        return null;
+    }
+
+    private boolean checkCompilazioneDomandaAnticipo(long domandaBandoId) {
+        List<DomandaBandoDatoAggiuntivo> datiAggiuntivi =
+                domandaBandoDatoAggiuntivoLocalService.getDomandaBandoDatoAggiuntivoByDomandaBandoIdAndChiave(
+                        List.of(domandaBandoId),
+                        List.of(DatoAggiuntivoChiave.FORM_ESECUZIONE_NON_ABILITATO.name()));
+
+        if (ListUtil.isNotEmpty(datiAggiuntivi)) {
+
+            //Inserisco in un set tutti i form di anticipo
+            Set<String> nomiFormAnticipo = FormEsecuzione.getFormAnticipo()
+                    .stream()
+                    .filter(form -> !form.isAzioneIntermedia())
+                    .map(Enum::name)
+                    .collect(Collectors.toSet());
+
+            //Filtro la lista dei valoriPresenti in domandaBandoAggiuntiva, se tutti i form sono presenti nella lista dei datiAggiuntivi vul dire che i form della fase di anticipo
+            //sono stati tutti compilati
+            Set<String> valoriPresenti = datiAggiuntivi.stream()
+                    .filter(Validator::isNotNull)
+                    .map(dato -> dato.getValore().toUpperCase())
+                    .collect(Collectors.toSet());
+            return valoriPresenti.containsAll(nomiFormAnticipo)
+                    && !valoriPresenti.contains(ScrivaniaOperatoreBandiPortletKeys.DOCUMENTAZIONE_INTEGRATIVA_DOMANDA_DI_ANTICIPO.toUpperCase());
+        }
+
+        return false;
+    }
+
+    private boolean checkCompilazionePrimaDomandaAnticipo(long domandaBandoId) {
+        DomandaBando domandaBando = domandaBandoLocalService.fetchDomandaBando(domandaBandoId);
+        List<DomandaBandoDatoAggiuntivo> datiAggiuntivi =
+                domandaBandoDatoAggiuntivoLocalService.getDomandaBandoDatoAggiuntivoByDomandaBandoIdAndChiave(
+                        List.of(domandaBandoId),
+                        List.of(DatoAggiuntivoChiave.FORM_ESECUZIONE_NON_ABILITATO.name()));
+
+        if (ListUtil.isNotEmpty(datiAggiuntivi)) {
+            Set<String> valoriPresenti = datiAggiuntivi.stream()
+                    .filter(Validator::isNotNull)
+                    .map(dato -> dato.getValore().toUpperCase())
+                    .collect(Collectors.toSet());
+
+            boolean isAnticipoParziale = Stream.of(FormEsecuzione.DOMANDA_PRIMA_ANTICIPAZIONE_PATRIMONIO_CULTURALE_AC.name(),
+                    FormEsecuzione.DOMANDA_PRIMA_ANTICIPAZIONE_PATRIMONIO_CULTURALE.name()).anyMatch(valoriPresenti::contains);
+            //Inserisco in un set tutti i form di anticipo
+            Set<String> nomiFormAnticipo = FormEsecuzione.getFormAnticipo()
+                    .stream()
+                    .filter(form -> isAnticipoParziale == form.isAzioneIntermedia())
+                    .map(Enum::name)
+                    .collect(Collectors.toSet());
+
+            List<BandoForm> bandoFormList = bandoFormLocalService.getListaBandoFormBando(domandaBando.getBandoId());
+            boolean azioneAbilitata = false;
+
+            if (ListUtil.isNotNull(bandoFormList) && ListUtil.isNotEmpty(bandoFormList)) {
+                List<BandoForm> bandoFormFiltered = bandoFormList.stream()
+                        .filter(x -> x.getTipoForm().equalsIgnoreCase(TipoFormEnum.ESECUZIONE_PRIMO_ANTICIPO.name()))
+                        .collect(Collectors.toList());
+
+                if (ListUtil.isNotNull(bandoFormFiltered) && ListUtil.isNotEmpty(bandoFormFiltered)) {
+                    List<Long> bandoFormIds = bandoFormFiltered.stream().map(x -> x.getFormId()).collect(Collectors.toList());
+
+                    if (ListUtil.isNotNull(bandoFormIds) && ListUtil.isNotEmpty(bandoFormIds)) {
+                        List<IstanzaDomandaBando> istanzaDomandaBandoList =
+                                istanzaDomandaBandoLocalService.getListIstanzaDomandaBandoByDomandaBandoIdAndListaFormId(domandaBandoId, bandoFormIds);
+
+                        if (ListUtil.isNotEmpty(istanzaDomandaBandoList) && ListUtil.isNotNull(istanzaDomandaBandoList)) {
+                            if (Validator.isNotNull(istanzaDomandaBandoList.get(0))) {
+                                long istanzaDomandaBandoId = istanzaDomandaBandoList.get(0).getIstanzaDomandaBandoId();
+                                DomandaBandoIntegrazione domandaBandoIntegrazione =
+                                        domandaBandoIntegrazioneLocalService.fetchDomandaBandoIntegrazione(istanzaDomandaBandoId);
+                                if (Validator.isNotNull(domandaBandoIntegrazione) && Validator.isNotNull(domandaBandoIntegrazione.getNumeroProtocollo())
+                                        && Validator.isNotNull(domandaBandoIntegrazione.getDataProtocollo())) {
+                                    azioneAbilitata = valoriPresenti.containsAll(nomiFormAnticipo) && !valoriPresenti
+                                            .contains(ScrivaniaOperatoreBandiPortletKeys.DOCUMENTAZIONE_INTEGRATIVA_PRIMA_DOMANDA_DI_ANTICIPO.toUpperCase());
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            return azioneAbilitata;
+        }
+
+        return false;
+    }
+
+    private boolean checkCompilazioneSecondaDomandaAnticipo(long domandaBandoId) {
+        DomandaBando domandaBando = domandaBandoLocalService.fetchDomandaBando(domandaBandoId);
+        List<DomandaBandoDatoAggiuntivo> datiAggiuntivi =
+                domandaBandoDatoAggiuntivoLocalService.getDomandaBandoDatoAggiuntivoByDomandaBandoIdAndChiave(
+                        List.of(domandaBandoId),
+                        List.of(DatoAggiuntivoChiave.FORM_ESECUZIONE_NON_ABILITATO.name()));
+
+        if (ListUtil.isNotEmpty(datiAggiuntivi)) {
+            Set<String> valoriPresenti = datiAggiuntivi.stream()
+                    .filter(Validator::isNotNull)
+                    .map(dato -> dato.getValore().toUpperCase())
+                    .collect(Collectors.toSet());
+
+            boolean isAnticipoParziale = Stream.of(FormEsecuzione.DOMANDA_SECONDA_ANTICIPAZIONE_PATRIMONIO_CULTURALE_AC.name(),
+                    FormEsecuzione.DOMANDA_SECONDA_ANTICIPAZIONE_PATRIMONIO_CULTURALE.name()).anyMatch(valoriPresenti::contains);
+            //Inserisco in un set tutti i form di anticipo
+            Set<String> nomiFormAnticipo = FormEsecuzione.getFormAnticipo()
+                    .stream()
+                    .filter(form -> isAnticipoParziale == form.isAzioneIntermedia())
+                    .map(Enum::name)
+                    .collect(Collectors.toSet());
+
+            List<BandoForm> bandoFormList = bandoFormLocalService.getListaBandoFormBando(domandaBando.getBandoId());
+            boolean azioneAbilitata = false;
+
+            if (ListUtil.isNotNull(bandoFormList) && ListUtil.isNotEmpty(bandoFormList)) {
+                List<BandoForm> bandoFormFiltered = bandoFormList.stream()
+                        .filter(x -> x.getTipoForm().equalsIgnoreCase(TipoFormEnum.ESECUZIONE_SECONDO_ANTICIPO.name()))
+                        .collect(Collectors.toList());
+
+                if (ListUtil.isNotNull(bandoFormFiltered) && ListUtil.isNotEmpty(bandoFormFiltered)) {
+                    List<Long> bandoFormIds = bandoFormFiltered.stream().map(x -> x.getFormId()).collect(Collectors.toList());
+
+                    if (ListUtil.isNotNull(bandoFormIds) && ListUtil.isNotEmpty(bandoFormIds)) {
+                        List<IstanzaDomandaBando> istanzaDomandaBandoList =
+                                istanzaDomandaBandoLocalService.getListIstanzaDomandaBandoByDomandaBandoIdAndListaFormId(domandaBandoId, bandoFormIds);
+
+                        if (ListUtil.isNotEmpty(istanzaDomandaBandoList) && ListUtil.isNotNull(istanzaDomandaBandoList)) {
+                            if (Validator.isNotNull(istanzaDomandaBandoList.get(0))) {
+                                long istanzaDomandaBandoId = istanzaDomandaBandoList.get(0).getIstanzaDomandaBandoId();
+                                DomandaBandoIntegrazione domandaBandoIntegrazione =
+                                        domandaBandoIntegrazioneLocalService.fetchDomandaBandoIntegrazione(istanzaDomandaBandoId);
+                                if (Validator.isNotNull(domandaBandoIntegrazione) && Validator.isNotNull(domandaBandoIntegrazione.getNumeroProtocollo())
+                                        && Validator.isNotNull(domandaBandoIntegrazione.getDataProtocollo())) {
+                                    azioneAbilitata = valoriPresenti.containsAll(nomiFormAnticipo) && !valoriPresenti
+                                            .contains(ScrivaniaOperatoreBandiPortletKeys.DOCUMENTAZIONE_INTEGRATIVA_SECONDA_DOMANDA_DI_ANTICIPO.toUpperCase());
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            return azioneAbilitata;
+        }
+
+        return false;
+    }
+
+    private List<String> getRuoliFromRequest(RenderRequest renderRequest) {
+        List<String> ruoli = new ArrayList<String>();
+        if (renderRequest.isUserInRole(RuoliGestoreEnum.SUPERVISORE.getChiave())) {
+            ruoli.add(RuoliGestoreEnum.SUPERVISORE.getRuolo());
+        }
+        return ruoli;
+    }
+
+    private boolean checkRichiestaOtpFirmaRemota(User user, Bando bando) {
+        boolean checkRichiestaOtpFirmaRemota = false;
+
+        if (Validator.isNotNull(user)) {
+            String codiceCertificatoAttr = "codiceCertificato";
+            String codiceFiscaleAttr = "codiceFiscale";
+
+            ExpandoBridge expandoBridge = user.getExpandoBridge();
+            String codiceCertificatoEncrypted = (String) expandoBridge.getAttribute(codiceCertificatoAttr);
+            String codiceFiscaleEncrypted = (String) expandoBridge.getAttribute(codiceFiscaleAttr);
+
+            if (Validator.isNotNull(codiceCertificatoEncrypted) && Validator.isNotNull(codiceFiscaleEncrypted) && bando.isAbilitaSceltaFirmaDocumento()) {
+                checkRichiestaOtpFirmaRemota = true;
+            }
+        }
+
+        return checkRichiestaOtpFirmaRemota;
+    }
+
+    private boolean checkRichiestaOtpFirmaRemotaIntegrazioni(User user, Bando bando) {
+        boolean checkRichiestaOtpFirmaRemota = false;
+
+        if (Validator.isNotNull(user)) {
+            String codiceCertificatoAttr = "codiceCertificato";
+            String codiceFiscaleAttr = "codiceFiscale";
+
+            ExpandoBridge expandoBridge = user.getExpandoBridge();
+            String codiceCertificatoEncrypted = (String) expandoBridge.getAttribute(codiceCertificatoAttr);
+            String codiceFiscaleEncrypted = (String) expandoBridge.getAttribute(codiceFiscaleAttr);
+
+            if (Validator.isNotNull(codiceCertificatoEncrypted) && Validator.isNotNull(codiceFiscaleEncrypted) && bando.isProtocollaIntegrazioni()) {
+                checkRichiestaOtpFirmaRemota = true;
+            }
+        }
+
+        return checkRichiestaOtpFirmaRemota;
+    }
+
+    private boolean checkRichiestaOtpFirmaRemotaEsito(User user, Bando bando) {
+        boolean checkRichiestaOtpFirmaRemota = false;
+
+        if (Validator.isNotNull(user)) {
+            String codiceCertificatoAttr = "codiceCertificato";
+            String codiceFiscaleAttr = "codiceFiscale";
+
+            ExpandoBridge expandoBridge = user.getExpandoBridge();
+            String codiceCertificatoEncrypted = (String) expandoBridge.getAttribute(codiceCertificatoAttr);
+            String codiceFiscaleEncrypted = (String) expandoBridge.getAttribute(codiceFiscaleAttr);
+
+            if (Validator.isNotNull(codiceCertificatoEncrypted) && Validator.isNotNull(codiceFiscaleEncrypted) && bando.isAbilitaProtocollazioneEsito()) {
+                checkRichiestaOtpFirmaRemota = true;
+            }
+        }
+
+        return checkRichiestaOtpFirmaRemota;
+    }
+
+    private void handleTabDettagliPecIngresso(RenderRequest renderRequest, DomandaBando domandaBando, Bando bando) {
+        try {
+            if (Validator.isNotNull(domandaBando)) {
+                Contesto contesto = Contesto.valueOf(bando.getContesto());
+                VerificaMailRequest request = new VerificaMailRequest();
+                request.setContesto(contesto);
+                request.setTipoProtocolloClient(bando.getTipoProtocolloClient());
+
+                if (Validator.isNotNull(domandaBando.getDataProtocollo()) && Validator.isNotNull(domandaBando.getNumeroProtocollo())) {
+                    LocalDate localDate = domandaBando.getDataProtocollo()
+                            .toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+                    int anno = localDate.getYear();
+                    request.setNumeroProtocollo(domandaBando.getNumeroProtocollo());
+                    request.setAnnoProtocollo(anno);
+                } else {
+                    renderRequest.setAttribute("datiPecDisponibiliIngresso", false);
+                    return;
+                }
+                VerificaMailResponse response = protocolloService.verificaInvioMail(request, bando.getGroupId());
+
+                if (Validator.isNotNull(response)) {
+
+                    if (ListUtil.isNotNull(response.getAccettazioneOutList()) && ListUtil.isNotEmpty(response.getAccettazioneOutList())) {
+                        renderRequest.setAttribute("listaAccettazioni", response.getAccettazioneOutList());
+                        renderRequest.setAttribute("accettazioniCount", response.getAccettazioneOutList().size());
+                    }
+
+                    if (ListUtil.isNotNull(response.getConsegnaOutList()) && ListUtil.isNotEmpty(response.getConsegnaOutList())) {
+                        renderRequest.setAttribute("listaConsegne", response.getConsegnaOutList());
+                        renderRequest.setAttribute("consegneCount", response.getConsegnaOutList().size());
+                    }
+
+                    renderRequest.setAttribute("numMancateConsegne", response.getNumMancateConsegne());
+
+                    if (ListUtil.isNotNull(response.getMancataConsegnaOutList()) && ListUtil.isNotEmpty(response.getMancataConsegnaOutList())) {
+                        renderRequest.setAttribute("listaMancateConsegne", response.getMancataConsegnaOutList());
+                        renderRequest.setAttribute("mancateConsegneCount", response.getMancataConsegnaOutList().size());
+                    }
+                    renderRequest.setAttribute("datiPecDisponibiliIngresso", true);
+                }
+
+            } else {
+                renderRequest.setAttribute("datiPecDisponibiliIngresso", false);
+            }
+        } catch (Exception e) {
+            _log.error("Errore durante il recupero dei dettagli PEC " + e.getMessage());
+        }
+    }
+
+    private void handleTabDettagliPecUscita(RenderRequest renderRequest, DomandaBando domandaBando, Bando bando) {
+        try {
+
+            if (Validator.isNotNull(domandaBando)) {
+                Contesto contesto = Contesto.valueOf(bando.getContesto());
+                VerificaMailRequest request = new VerificaMailRequest();
+                request.setContesto(contesto);
+                request.setTipoProtocolloClient(bando.getTipoProtocolloClient());
+
+                if (Validator.isNotNull(domandaBando.getDataProtocolloUscita()) && Validator.isNotNull(domandaBando.getNumeroProtocolloUscita())) {
+                    LocalDate localDate = domandaBando.getDataProtocolloUscita()
+                            .toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+                    int anno = localDate.getYear();
+                    request.setNumeroProtocollo(domandaBando.getNumeroProtocolloUscita());
+                    request.setAnnoProtocollo(anno);
+                } else {
+                    renderRequest.setAttribute("datiPecDisponibiliUscita", false);
+                    return;
+                }
+                VerificaMailResponse response = protocolloService.verificaInvioMail(request, bando.getGroupId());
+
+                if (Validator.isNotNull(response)) {
+
+                    if (ListUtil.isNotNull(response.getAccettazioneOutList()) && ListUtil.isNotEmpty(response.getAccettazioneOutList())) {
+                        renderRequest.setAttribute("listaAccettazioni", response.getAccettazioneOutList());
+                        renderRequest.setAttribute("accettazioniCount", response.getAccettazioneOutList().size());
+                    }
+
+                    if (ListUtil.isNotNull(response.getConsegnaOutList()) && ListUtil.isNotEmpty(response.getConsegnaOutList())) {
+                        renderRequest.setAttribute("listaConsegne", response.getConsegnaOutList());
+                        renderRequest.setAttribute("consegneCount", response.getConsegnaOutList().size());
+                    }
+
+                    renderRequest.setAttribute("numMancateConsegne", response.getNumMancateConsegne());
+
+                    if (ListUtil.isNotNull(response.getMancataConsegnaOutList()) && ListUtil.isNotEmpty(response.getMancataConsegnaOutList())) {
+                        renderRequest.setAttribute("listaMancateConsegne", response.getMancataConsegnaOutList());
+                        renderRequest.setAttribute("mancateConsegneCount", response.getMancataConsegnaOutList().size());
+                    }
+                    renderRequest.setAttribute("datiPecDisponibiliUscita", true);
+                }
+
+            } else {
+                renderRequest.setAttribute("datiPecDisponibiliUscita", false);
+            }
+        } catch (Exception e) {
+            _log.error("Errore durante il recupero dei dettagli PEC " + e.getMessage());
+        }
+    }
+
+    private void handleTabDettagliPec(RenderRequest renderRequest, DomandaBando domandaBando, Bando bando) {
+        String queryTabParent = ParamUtil.getString(renderRequest, "queryTabDettaglioPec", DettaglioPecTabEnum.DETTAGLIO_PEC_INGRESSO.getKey());
+        DettaglioPecTabEnum dettaglioPecTabEnum = DettaglioPecTabEnum.parse(queryTabParent);
+        renderRequest.setAttribute("queryTabDettaglioPec", queryTabParent);
+
+        switch (dettaglioPecTabEnum) {
+            case DETTAGLIO_PEC_INGRESSO:
+                handleTabDettagliPecIngresso(renderRequest, domandaBando, bando);
+                break;
+            case DETTAGLIO_PEC_USCITA:
+                handleTabDettagliPecUscita(renderRequest, domandaBando, bando);
+                break;
+            default:
+                throw new RuntimeException("No tab val");
+        }
+    }
+
+}

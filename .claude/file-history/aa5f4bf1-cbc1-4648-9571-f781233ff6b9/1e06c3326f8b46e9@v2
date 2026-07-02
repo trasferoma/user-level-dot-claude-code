@@ -1,0 +1,1733 @@
+{
+    "alpaca": {
+        "schema": {
+            "type": "object",
+            "properties": {
+                "bloccoStep": {
+                    "type": "object",
+                    "properties": {}
+                },
+                "titoloForm": {
+                    "type": "string",
+                    "required": false,
+                    "properties": {}
+                },
+                "sottoscrittoLabel": {
+                    "type": "string",
+                    "required": false,
+                    "properties": {}
+                },
+                "datiAnagrafici": {
+                    "type": "object",
+                    "properties": {
+                        "nome": {
+                            "title": "Nome",
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "cognome": {
+                            "title": "Cognome",
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "codiceFiscale": {
+                            "title": "Cod.Fiscale",
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "dataNascita": {
+                            "title": "Data di nascita",
+                            "type": "string",
+                            "required": true,
+                            "properties": {}
+                        },
+                        "luogoNascita": {
+                            "title": "Luogo di nascita",
+                            "type": "string",
+                            "required": true,
+                            "properties": {}
+                        },
+                        "indirizzoResidenza": {
+                            "title": "Indirizzo Residenza",
+                            "required": true,
+                            "type": "string",
+                            "maxLength": 250.0,
+                            "properties": {}
+                        },
+                        "viaHidden": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "civicoHidden": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "esponenteHidden": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "scalaHidden": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "pianoHidden": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "internoHidden": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "capHidden": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "provinciaResHidden": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "comuneResHidden": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "identificativo": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "identificativoFamiglia": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "isDelegato": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        }
+                    }
+                },
+                "inQualitaDi": {
+                    "type": "string",
+                    "required": true,
+                    "properties": {}
+                },
+                "nomeEnte": {
+                    "type": "string",
+                    "required": true,
+                    "properties": {}
+                },
+                "sedeLegaleLabel": {
+                    "type": "string",
+                    "required": false,
+                    "properties": {}
+                },
+                "sedeLegale": {
+                    "type": "object",
+                    "required": false,
+                    "properties": {
+                        "provincia": {
+                            "type": "string",
+                            "required": true,
+                            "properties": {}
+                        },
+                        "comune": {
+                            "type": "string",
+                            "required": true,
+                            "properties": {}
+                        }
+                    }
+                },
+                "datiEnte": {
+                    "type": "object",
+                    "required": false,
+                    "properties": {
+                        "viaSedeLegale": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "numeroCivico": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "cf": {
+                            "type": "string",
+                            "pattern": "^[A-Za-z0-9]+$",
+                            "required": true,
+                            "maxLength": 16.0,
+                            "minLength": 11.0,
+                            "properties": {}
+                        },
+                        "partitaIva": {
+                            "type": "string",
+                            "required": true,
+                            "pattern": "^\\d+$",
+                            "maxLength": 11.0,
+                            "minLength": 11.0,
+                            "properties": {}
+                        }
+                    }
+                },
+                "nomeIniziativa": {
+                    "type": "string",
+                    "required": true,
+                    "properties": {}
+                },
+                "nomeIniziativaLabel": {
+                    "type": "string",
+                    "required": false,
+                    "properties": {}
+                },
+                "comunicaLabel": {
+                    "type": "string",
+                    "required": false,
+                    "properties": {}
+                },
+                "tipoIstanza": {
+                    "required": true,
+                    "enum": [
+                        "CRONOPROGRAMMA",
+                        "RIMODULAZIONE",
+                        "RINUNCIA"
+                    ],
+                    "properties": {}
+                },
+                "stimaDeiCosti": {
+                    "type": "object",
+                    "required": false,
+                    "properties": {
+                        "titoloStimaCosti": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "vociDiCostoLabel": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "speseLabel": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "importiLabel": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "percentualiLabel": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "assistenzaTecnicaLabel": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "assistenzaTecnicaImporto": {
+                            "type": "object",
+                            "properties": {
+                                "importo": {
+                                    "type": "string",
+                                    "required": true,
+                                    "properties": {}
+                                }
+                            }
+                        },
+                        "assistenzaTecnicaPercentuale": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "consulenzeSpecificheLabel": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "consulenzeSpecificheImporto": {
+                            "type": "object",
+                            "properties": {
+                                "importo": {
+                                    "type": "string",
+                                    "required": true,
+                                    "properties": {}
+                                }
+                            }
+                        },
+                        "consulenzeSpecifichePercentuale": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "softwareLabel": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "softwareImporto": {
+                            "type": "object",
+                            "properties": {
+                                "importo": {
+                                    "type": "string",
+                                    "required": true,
+                                    "properties": {}
+                                }
+                            }
+                        },
+                        "softwarePercentuale": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "progettazioneLabel": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "progettazioneImporto": {
+                            "type": "object",
+                            "properties": {
+                                "importo": {
+                                    "type": "string",
+                                    "required": true,
+                                    "properties": {}
+                                }
+                            }
+                        },
+                        "progettazionePercentuale": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "viaggiLabel": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "viaggiImporto": {
+                            "type": "object",
+                            "properties": {
+                                "importo": {
+                                    "type": "string",
+                                    "required": true,
+                                    "properties": {}
+                                }
+                            }
+                        },
+                        "viaggiPercentuale": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "speseGeneraliLabel": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "speseGeneraliImporto": {
+                            "type": "object",
+                            "properties": {
+                                "importo": {
+                                    "type": "string",
+                                    "required": true,
+                                    "properties": {}
+                                }
+                            }
+                        },
+                        "speseGeneraliPercentuale": {
+                            "type": "string",
+                            "required": false,
+                            "properties": {}
+                        },
+                        "totaleImportiPianoFinanziario": {
+                            "type": "object",
+                            "properties": {
+                                "importo": {
+                                    "type": "string",
+                                    "required": true,
+                                    "properties": {}
+                                }
+                            }
+                        }
+                    }
+                },
+                "dettaglioCronoprogramma": {
+                    "type": "string",
+                    "required": false,
+                    "properties": {}
+                }
+            },
+            "dependencies": {
+                "stimaDeiCosti": [
+                    "tipoIstanza"
+                ],
+                "dettaglioCronoprogramma": [
+                    "tipoIstanza"
+                ]
+            }
+        },
+        "options": {
+            "type": "object",
+            "fields": {
+                "esecuzione": {
+                    "type": "customFormEsecuzione",
+                    "label": "",
+                    "helpers": [],
+                    "validate": true,
+                    "disabled": false,
+                    "showMessages": true,
+                    "collapsible": false,
+                    "legendStyle": "button",
+                    "view": "customFormEsecuzione-view",
+                    "fields": {
+                        "configurazione": {
+                            "type": "text",
+                            "hidden": true,
+                            "focus": false,
+                            "optionLabels": [],
+                            "typeahead": {},
+                            "allowOptionalEmpty": true,
+                            "data": {},
+                            "formAttuale": "form-mt-istanza-variazione-2027",
+                            "formDaMostrare": "form-mt-istanza-variazione-2027-integrazione",
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "manualEntry": false,
+                            "disabled": false,
+                            "helpers": [],
+                            "validate": true,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "attributes": {},
+                            "fields": {}
+                        }
+                    },
+                    "order": 1.0
+                },
+                "bloccoStep": {
+                    "type": "customBloccaStep",
+                    "label": "",
+                    "helpers": [],
+                    "fieldClass": "hideInExcelExport",
+                    "validate": true,
+                    "disabled": false,
+                    "showMessages": true,
+                    "collapsible": false,
+                    "legendStyle": "button",
+                    "events": {},
+                    "view": "customBloccaStep-view",
+                    "order": 1.0,
+                    "fields": {}
+                },
+                "titoloForm": {
+                    "type": "label",
+                    "validate": false,
+                    "showMessages": true,
+                    "disabled": false,
+                    "hidden": false,
+                    "label": "V1.2 ISTANZA di VARIAZIONE, RIMODULAZIONE O RINUNCIA\u003cbr\u003e (Erogazione di Contributi per Marketing Territoriale- Criteri anno 2027)",
+                    "helpers": [],
+                    "fieldClass": "text-center",
+                    "hideInitValidationError": false,
+                    "focus": false,
+                    "optionLabels": [],
+                    "typeahead": {},
+                    "allowOptionalEmpty": true,
+                    "data": {},
+                    "autocomplete": false,
+                    "disallowEmptySpaces": false,
+                    "disallowOnlyEmptySpaces": false,
+                    "sort": false,
+                    "fields": {},
+                    "order": 2.0,
+                    "renderButtons": true,
+                    "attributes": {}
+                },
+                "sottoscrittoLabel": {
+                    "type": "text",
+                    "view": "bootstrap-display",
+                    "helpers": [],
+                    "validate": true,
+                    "disabled": false,
+                    "showMessages": true,
+                    "renderButtons": true,
+                    "data": {},
+                    "attributes": {},
+                    "allowOptionalEmpty": true,
+                    "autocomplete": false,
+                    "disallowEmptySpaces": false,
+                    "disallowOnlyEmptySpaces": false,
+                    "order": 3.0,
+                    "fields": {}
+                },
+                "datiAnagrafici": {
+                    "type": "datiAngraficiCustomTwoColOther",
+                    "label": "",
+                    "helpers": [],
+                    "validate": true,
+                    "disabled": false,
+                    "showMessages": true,
+                    "collapsible": false,
+                    "legendStyle": "button",
+                    "view": "datiAngraficiCustomTwoColOther-view",
+                    "order": 4.0,
+                    "fields": {
+                        "nome": {
+                            "type": "text",
+                            "disabled": true,
+                            "label": "Nome",
+                            "renderButtons": true,
+                            "helpers": [],
+                            "validate": true,
+                            "showMessages": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "cognome": {
+                            "type": "text",
+                            "label": "Cognome",
+                            "disabled": true,
+                            "renderButtons": true,
+                            "helpers": [],
+                            "validate": true,
+                            "showMessages": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "codiceFiscale": {
+                            "type": "text",
+                            "disabled": true,
+                            "label": "Cod.Fiscale",
+                            "renderButtons": true,
+                            "attributes": {},
+                            "helpers": [],
+                            "validate": true,
+                            "showMessages": true,
+                            "data": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "dataNascita": {
+                            "type": "date",
+                            "label": "Data di nascita",
+                            "focus": false,
+                            "optionLabels": [],
+                            "typeahead": {},
+                            "allowOptionalEmpty": true,
+                            "data": {},
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "dateFormat": "DD/MM/YYYY",
+                            "picker": {
+                                "useCurrent": false,
+                                "format": "DD/MM/YYYY",
+                                "locale": "it",
+                                "dayViewHeaderFormat": "MMMM YYYY",
+                                "extraFormats": []
+                            },
+                            "manualEntry": false,
+                            "disabled": false,
+                            "helpers": [],
+                            "validate": true,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "attributes": {},
+                            "events": {},
+                            "fields": {}
+                        },
+                        "luogoNascita": {
+                            "type": "text",
+                            "label": "Luogo di nascita",
+                            "disabled": true,
+                            "renderButtons": true,
+                            "events": {},
+                            "helpers": [],
+                            "validate": true,
+                            "showMessages": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "indirizzoResidenza": {
+                            "type": "text",
+                            "label": "Indirizzo di residenza",
+                            "disabled": true,
+                            "renderButtons": true,
+                            "helpers": [],
+                            "validate": true,
+                            "showMessages": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "viaHidden": {
+                            "type": "hidden",
+                            "label": "New hidden",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "events": {},
+                            "fields": {}
+                        },
+                        "civicoHidden": {
+                            "type": "hidden",
+                            "label": "New hidden",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "fields": {}
+                        },
+                        "esponenteHidden": {
+                            "type": "hidden",
+                            "label": "New hidden",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "fields": {}
+                        },
+                        "scalaHidden": {
+                            "type": "hidden",
+                            "label": "New hidden",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "fields": {}
+                        },
+                        "pianoHidden": {
+                            "type": "hidden",
+                            "label": "New hidden",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "fields": {}
+                        },
+                        "internoHidden": {
+                            "type": "hidden",
+                            "label": "New hidden",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "fields": {}
+                        },
+                        "capHidden": {
+                            "type": "hidden",
+                            "label": "New hidden",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "fields": {}
+                        },
+                        "provinciaResHidden": {
+                            "type": "hidden",
+                            "label": "New hidden",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "fields": {}
+                        },
+                        "comuneResHidden": {
+                            "type": "hidden",
+                            "label": "New hidden",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "fields": {}
+                        },
+                        "identificativo": {
+                            "label": "Identificativo",
+                            "type": "hidden",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "identificativoFamiglia": {
+                            "label": "Identificativo",
+                            "type": "hidden",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "isDelegato": {
+                            "label": "delegato",
+                            "type": "hidden",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        }
+                    }
+                },
+                "inQualitaDi": {
+                    "label": "in qualità di",
+                    "type": "text",
+                    "validate": true,
+                    "helpers": [],
+                    "disabled": false,
+                    "showMessages": true,
+                    "renderButtons": true,
+                    "data": {},
+                    "attributes": {},
+                    "allowOptionalEmpty": true,
+                    "autocomplete": false,
+                    "disallowEmptySpaces": false,
+                    "disallowOnlyEmptySpaces": false,
+                    "order": 5.0,
+                    "fields": {}
+                },
+                "nomeEnte": {
+                    "label": "Denominazione dell’Ente Organizzatore dell’iniziativa: ",
+                    "type": "text",
+                    "validate": true,
+                    "helpers": [],
+                    "disabled": false,
+                    "showMessages": true,
+                    "renderButtons": true,
+                    "data": {},
+                    "attributes": {},
+                    "allowOptionalEmpty": true,
+                    "autocomplete": false,
+                    "disallowEmptySpaces": false,
+                    "disallowOnlyEmptySpaces": false,
+                    "order": 6.0,
+                    "fields": {}
+                },
+                "sedeLegaleLabel": {
+                    "type": "text",
+                    "view": "bootstrap-display",
+                    "helpers": [],
+                    "validate": true,
+                    "disabled": false,
+                    "showMessages": true,
+                    "renderButtons": true,
+                    "data": {},
+                    "attributes": {},
+                    "allowOptionalEmpty": true,
+                    "autocomplete": false,
+                    "disallowEmptySpaces": false,
+                    "disallowOnlyEmptySpaces": false,
+                    "order": 7.0,
+                    "fields": {}
+                },
+                "sedeLegale": {
+                    "type": "object",
+                    "helpers": [],
+                    "validate": true,
+                    "disabled": false,
+                    "showMessages": true,
+                    "collapsible": false,
+                    "legendStyle": "button",
+                    "order": 8.0,
+                    "view": {
+                        "parent": "bootstrap-edit",
+                        "templates": {
+                            "container": "\u003cdiv class\u003d\u0027border-0 p-0\u0027\u003e{{#container}}{{/container}}\u003c/div\u003e",
+                            "container-object": "\u003cdiv\u003e\u003cdiv class\u003d\u0027row\u0027\u003e\u003cdiv class\u003d\u0027col-md-6\u0027\u003e{{#with items.[0]}}{{#item}}{{/item}}{{/with}}\u003c/div\u003e\u003cdiv class\u003d\u0027col-md-6\u0027\u003e{{#with items.[1]}}{{#item}}{{/item}}{{/with}}\u003c/div\u003e\u003c/div\u003e\u003c/div\u003e"
+                        },
+                        "messages": {
+                            "notOptional": "Campo obbligatorio",
+                            "invalidEmail": "Inserire mail valida, p.e. info@cloudcms.com",
+                            "invalidPattern": "Inserire un valore numerico"
+                        },
+                        "id": "view-alpaca173"
+                    },
+                    "fields": {
+                        "provincia": {
+                            "label": "Provincia",
+                            "type": "text",
+                            "validate": true,
+                            "helpers": [],
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "order": 1.0,
+                            "fields": {}
+                        },
+                        "comune": {
+                            "label": "Comune",
+                            "type": "text",
+                            "validate": true,
+                            "helpers": [],
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "order": 2.0,
+                            "fields": {}
+                        }
+                    }
+                },
+                "datiEnte": {
+                    "type": "object",
+                    "helpers": [],
+                    "validate": true,
+                    "disabled": false,
+                    "showMessages": true,
+                    "collapsible": false,
+                    "legendStyle": "button",
+                    "view": {
+                        "id": "view-alpaca395",
+                        "parent": "bootstrap-edit",
+                        "templates": {
+                            "container": "\u003cdiv class\u003d\u0027border-0 p-0\u0027\u003e{{#container}}{{/container}}\u003c/div\u003e",
+                            "container-object": "\u003cdiv\u003e\u003cdiv class\u003d\u0027row\u0027\u003e\u003cdiv class\u003d\u0027col-md-10\u0027\u003e{{#with items.[0]}}{{#item}}{{/item}}{{/with}}\u003c/div\u003e\u003cdiv class\u003d\u0027col-md-2\u0027\u003e{{#with items.[1]}}{{#item}}{{/item}}{{/with}}\u003c/div\u003e\u003c/div\u003e\u003cdiv class\u003d\u0027row\u0027\u003e\u003cdiv class\u003d\u0027col-md-6\u0027\u003e{{#with items.[2]}}{{#item}}{{/item}}{{/with}}\u003c/div\u003e\u003cdiv class\u003d\u0027col-md-6\u0027\u003e{{#with items.[3]}}{{#item}}{{/item}}{{/with}}\u003c/div\u003e\u003c/div\u003e\u003c/div\u003e"
+                        },
+                        "messages": {
+                            "notOptional": "Campo obbligatorio",
+                            "invalidEmail": "Inserire mail valida, p.e. info@cloudcms.com",
+                            "invalidPattern": "Inserire un valore numerico"
+                        }
+                    },
+                    "order": 9.0,
+                    "fields": {
+                        "viaSedeLegale": {
+                            "label": "via",
+                            "type": "text",
+                            "validate": true,
+                            "helpers": [],
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "order": 1.0,
+                            "fields": {}
+                        },
+                        "numeroCivico": {
+                            "label": "n.",
+                            "type": "text",
+                            "validate": true,
+                            "helpers": [],
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "order": 2.0,
+                            "fields": {}
+                        },
+                        "cf": {
+                            "order": 3.0,
+                            "label": "Codice Fiscale ",
+                            "type": "text",
+                            "validate": true,
+                            "showMessages": true,
+                            "disabled": false,
+                            "hidden": false,
+                            "helpers": [],
+                            "hideInitValidationError": true,
+                            "focus": false,
+                            "optionLabels": [],
+                            "typeahead": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": true,
+                            "sort": false,
+                            "readonly": false,
+                            "renderButtons": true,
+                            "attributes": {},
+                            "view": {
+                                "messages": {
+                                    "notOptional": "Campo obbligatorio",
+                                    "invalidPattern": "Inserire caratteri alfanumerici",
+                                    "stringTooShort": "Questo campo deve contenere min {0} caratteri alfanumerici",
+                                    "stringTooLong": "Questo campo deve contenere max {0} caratteri alfanumerici"
+                                },
+                                "templates": {},
+                                "parent": "bootstrap-edit",
+                                "id": "view-alpaca2321"
+                            },
+                            "data": {},
+                            "fields": {}
+                        },
+                        "partitaIva": {
+                            "type": "text",
+                            "order": 4.0,
+                            "label": "Partita IVA",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        }
+                    }
+                },
+                "nomeIniziativa": {
+                    "type": "text",
+                    "validate": true,
+                    "label": "per l’iniziativa denominata",
+                    "showMessages": true,
+                    "disabled": false,
+                    "hidden": false,
+                    "helpers": [],
+                    "fieldClass": "text-left",
+                    "hideInitValidationError": false,
+                    "focus": false,
+                    "optionLabels": [],
+                    "order": 10.0,
+                    "typeahead": {},
+                    "allowOptionalEmpty": true,
+                    "data": {},
+                    "autocomplete": false,
+                    "disallowEmptySpaces": false,
+                    "disallowOnlyEmptySpaces": false,
+                    "sort": false,
+                    "renderButtons": true,
+                    "attributes": {},
+                    "fields": {}
+                },
+                "nomeIniziativaLabel": {
+                    "type": "text",
+                    "view": "bootstrap-display",
+                    "helpers": [],
+                    "validate": true,
+                    "disabled": false,
+                    "showMessages": true,
+                    "renderButtons": true,
+                    "data": {},
+                    "order": 11.0,
+                    "attributes": {},
+                    "allowOptionalEmpty": true,
+                    "autocomplete": false,
+                    "disallowEmptySpaces": false,
+                    "disallowOnlyEmptySpaces": false,
+                    "fields": {}
+                },
+                "comunicaLabel": {
+                    "label": "\u003cp\u003eConsapevole della responsabilità penale cui può andare incontro in caso di dichiarazioni mendaci, ai sensi e per gli effetti dell’art. 76 del D.P.R. 28 dicembre 2000, n. 445,\u003c/p\u003e\u003cbr\u003e\u003cp class\u003d\u0027text-center\u0027\u003eCOMUNICA\u003c/p\u003e",
+                    "type": "text",
+                    "view": "bootstrap-display",
+                    "validate": true,
+                    "helpers": [],
+                    "disabled": false,
+                    "showMessages": true,
+                    "renderButtons": true,
+                    "data": {},
+                    "attributes": {},
+                    "allowOptionalEmpty": true,
+                    "autocomplete": false,
+                    "disallowEmptySpaces": false,
+                    "disallowOnlyEmptySpaces": false,
+                    "order": 12.0,
+                    "fields": {}
+                },
+                "tipoIstanza": {
+                    "type": "radio",
+                    "helpers": [],
+                    "validate": true,
+                    "disabled": false,
+                    "showMessages": true,
+                    "renderButtons": true,
+                    "useDataSourceAsEnum": true,
+                    "emptySelectFirst": false,
+                    "vertical": true,
+                    "noneLabel": "Nessuno",
+                    "hideNone": true,
+                    "sort": false,
+                    "order": 13.0,
+                    "optionLabels": [
+                        "Di aggiornare il crono programma come di seguito riportato:",
+                        "Di rimodulare il piano finanziario come indicato nella nuova Scheda Piano finanziario che si allega",
+                        "Di rinunciare al finanziamento"
+                    ],
+                    "fields": {}
+                },
+                "stimaDeiCosti": {
+                    "type": "object",
+                    "helpers": [],
+                    "validate": true,
+                    "disabled": false,
+                    "showMessages": true,
+                    "dependencies": {
+                        "tipoIstanza": [
+                            "RIMODULAZIONE"
+                        ]
+                    },
+                    "collapsible": false,
+                    "view": {
+                        "templates": {
+                            "container": "\u003cdiv class\u003d\u0027text-weight-normal\u0027 style\u003d\u0027border-style: none !important;\u0027\u003e{{#container}}{{/container}}\u003c/div\u003e",
+                            "container-object": "\u003cdiv\u003e\u003cdiv class\u003d\u0027row\u0027\u003e\u003cdiv class\u003d\u0027col-md-12\u0027\u003e{{#with items.[0]}}{{#item}}{{/item}}{{/with}}\u003c/div\u003e\u003c/div\u003e\u003cdiv class\u003d\u0027row text-weight-normal\u0027\u003e\u003ctable class\u003d\u0027table table-striped table-bordered text-weight-normal\u0027\u003e\u003ctbody\u003e\u003ctr\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e{{#with items.[1]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003ctd style\u003d\u0027width: 40%;vertical-align: top\u0027\u003e{{#with items.[2]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e{{#with items.[3]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e{{#with items.[4]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e\u003cb  style\u003d\u0027display:block; text-align:center; margin:0 auto;\u0027\u003eA\u003c/b\u003e\u003c/td\u003e\u003ctd style\u003d\u0027width: 40%;vertical-align: top\u0027\u003e{{#with items.[5]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e{{#with items.[6]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e{{#with items.[7]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e\u003cb  style\u003d\u0027display:block; text-align:center; margin:0 auto;\u0027\u003eB\u003c/b\u003e\u003c/td\u003e\u003ctd style\u003d\u0027width: 40%;vertical-align: top\u0027\u003e{{#with items.[8]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e{{#with items.[9]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e{{#with items.[10]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e\u003cb  style\u003d\u0027display:block; text-align:center; margin:0 auto;\u0027\u003eC\u003c/b\u003e\u003c/td\u003e\u003ctd style\u003d\u0027width: 40%;vertical-align: top\u0027\u003e{{#with items.[11]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e{{#with items.[12]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e{{#with items.[13]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e\u003cb  style\u003d\u0027display:block; text-align:center; margin:0 auto;\u0027\u003eD\u003c/b\u003e\u003c/td\u003e\u003ctd style\u003d\u0027width: 40%;vertical-align: top\u0027\u003e{{#with items.[14]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e{{#with items.[15]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e{{#with items.[16]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e\u003cb  style\u003d\u0027display:block; text-align:center; margin:0 auto;\u0027\u003eE\u003c/b\u003e\u003c/td\u003e\u003ctd style\u003d\u0027width: 40%;vertical-align: top\u0027\u003e{{#with items.[17]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e{{#with items.[18]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e{{#with items.[19]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e\u003cb  style\u003d\u0027display:block; text-align:center; margin:0 auto;\u0027\u003eF\u003c/b\u003e\u003c/td\u003e\u003ctd style\u003d\u0027width: 40%;vertical-align: top\u0027\u003e{{#with items.[20]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e{{#with items.[21]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e{{#with items.[22]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e\u003cb  style\u003d\u0027display:block; text-align:center; margin:0 auto;\u0027\u003eTOTALE\u003c/b\u003e\u003c/td\u003e\u003ctd style\u003d\u0027width: 40%;vertical-align: top\u0027\u003e\u003c/td\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e{{#with items.[23]}}{{#item}}{{/item}}{{/with}}\u003c/td\u003e\u003ctd style\u003d\u0027width: 20%;vertical-align: top\u0027\u003e\u003c/td\u003e\u003c/tr\u003e\u003c/tbody\u003e\u003c/table\u003e\u003c/div\u003e\u003c/div\u003e"
+                        },
+                        "parent": "bootstrap-edit",
+                        "id": "view-alpaca986"
+                    },
+                    "legendStyle": "button",
+                    "order": 14.0,
+                    "fields": {
+                        "titoloStimaCosti": {
+                            "type": "text",
+                            "view": "bootstrap-display",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "vociDiCostoLabel": {
+                            "type": "text",
+                            "view": "bootstrap-display",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "speseLabel": {
+                            "type": "text",
+                            "view": "bootstrap-display",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "importiLabel": {
+                            "type": "text",
+                            "view": "bootstrap-display",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "percentualiLabel": {
+                            "type": "text",
+                            "view": "bootstrap-display",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "assistenzaTecnicaLabel": {
+                            "label": "Assistenza tecnica per la gestione e la realizzazione delle attivita",
+                            "type": "text",
+                            "view": "bootstrap-display",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "assistenzaTecnicaImporto": {
+                            "type": "importo",
+                            "label": "",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "collapsible": false,
+                            "legendStyle": "button",
+                            "view": "importo-view",
+                            "fields": {
+                                "importo": {
+                                    "type": "currency",
+                                    "centsLimit": 2.0,
+                                    "centsSeparator": ",",
+                                    "prefix": "€",
+                                    "round": "none",
+                                    "thousandsSeparator": ".",
+                                    "unmask": true,
+                                    "disabled": false,
+                                    "hidden": false,
+                                    "helpers": [],
+                                    "hideInitValidationError": true,
+                                    "focus": false,
+                                    "readonly": false,
+                                    "renderButtons": true,
+                                    "events": {},
+                                    "order": 2.0,
+                                    "validate": true,
+                                    "showMessages": true,
+                                    "data": {},
+                                    "attributes": {},
+                                    "allowOptionalEmpty": true,
+                                    "autocomplete": false,
+                                    "disallowEmptySpaces": false,
+                                    "disallowOnlyEmptySpaces": false,
+                                    "fieldClass": "importoFieldRight",
+                                    "fields": {}
+                                }
+                            }
+                        },
+                        "assistenzaTecnicaPercentuale": {
+                            "type": "text",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "consulenzeSpecificheLabel": {
+                            "label": "consulenze specifiche per la predisposizione di progetti, studi di settore e di conoscenza e relazioni dei mercati esteri",
+                            "type": "text",
+                            "view": "bootstrap-display",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "consulenzeSpecificheImporto": {
+                            "type": "importo",
+                            "label": "",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "collapsible": false,
+                            "legendStyle": "button",
+                            "view": "importo-view",
+                            "fields": {
+                                "importo": {
+                                    "type": "currency",
+                                    "centsLimit": 2.0,
+                                    "centsSeparator": ",",
+                                    "prefix": "€",
+                                    "round": "none",
+                                    "thousandsSeparator": ".",
+                                    "unmask": true,
+                                    "disabled": false,
+                                    "hidden": false,
+                                    "helpers": [],
+                                    "hideInitValidationError": true,
+                                    "focus": false,
+                                    "readonly": false,
+                                    "renderButtons": true,
+                                    "events": {},
+                                    "order": 2.0,
+                                    "validate": true,
+                                    "showMessages": true,
+                                    "data": {},
+                                    "attributes": {},
+                                    "allowOptionalEmpty": true,
+                                    "autocomplete": false,
+                                    "disallowEmptySpaces": false,
+                                    "disallowOnlyEmptySpaces": false,
+                                    "fieldClass": "importoFieldRight",
+                                    "fields": {}
+                                }
+                            }
+                        },
+                        "consulenzeSpecifichePercentuale": {
+                            "type": "text",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "softwareLabel": {
+                            "label": "software e connettività alla rete internet",
+                            "type": "text",
+                            "view": "bootstrap-display",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "softwareImporto": {
+                            "type": "importo",
+                            "label": "",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "collapsible": false,
+                            "legendStyle": "button",
+                            "view": "importo-view",
+                            "fields": {
+                                "importo": {
+                                    "type": "currency",
+                                    "centsLimit": 2.0,
+                                    "centsSeparator": ",",
+                                    "prefix": "€",
+                                    "round": "none",
+                                    "thousandsSeparator": ".",
+                                    "unmask": true,
+                                    "disabled": false,
+                                    "hidden": false,
+                                    "helpers": [],
+                                    "hideInitValidationError": true,
+                                    "focus": false,
+                                    "readonly": false,
+                                    "renderButtons": true,
+                                    "events": {},
+                                    "order": 2.0,
+                                    "validate": true,
+                                    "showMessages": true,
+                                    "data": {},
+                                    "attributes": {},
+                                    "allowOptionalEmpty": true,
+                                    "autocomplete": false,
+                                    "disallowEmptySpaces": false,
+                                    "disallowOnlyEmptySpaces": false,
+                                    "fieldClass": "importoFieldRight",
+                                    "fields": {}
+                                }
+                            }
+                        },
+                        "softwarePercentuale": {
+                            "type": "text",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "progettazioneLabel": {
+                            "label": "progettazione e pubblicazione di stampa di cataloghi, opuscoli, libri, depliant, manifesti, multimediali e ogni altro materiale illustrativo delle attività produttive pugliesi",
+                            "type": "text",
+                            "view": "bootstrap-display",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "progettazioneImporto": {
+                            "type": "importo",
+                            "label": "",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "collapsible": false,
+                            "legendStyle": "button",
+                            "view": "importo-view",
+                            "fields": {
+                                "importo": {
+                                    "type": "currency",
+                                    "centsLimit": 2.0,
+                                    "centsSeparator": ",",
+                                    "prefix": "€",
+                                    "round": "none",
+                                    "thousandsSeparator": ".",
+                                    "unmask": true,
+                                    "disabled": false,
+                                    "hidden": false,
+                                    "helpers": [],
+                                    "hideInitValidationError": true,
+                                    "focus": false,
+                                    "readonly": false,
+                                    "renderButtons": true,
+                                    "events": {},
+                                    "order": 2.0,
+                                    "validate": true,
+                                    "showMessages": true,
+                                    "data": {},
+                                    "attributes": {},
+                                    "allowOptionalEmpty": true,
+                                    "autocomplete": false,
+                                    "disallowEmptySpaces": false,
+                                    "disallowOnlyEmptySpaces": false,
+                                    "fieldClass": "importoFieldRight",
+                                    "fields": {}
+                                }
+                            }
+                        },
+                        "progettazionePercentuale": {
+                            "type": "text",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "viaggiLabel": {
+                            "label": "viaggi e missioni, anche delle delegazioni ospitate",
+                            "type": "text",
+                            "view": "bootstrap-display",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "viaggiImporto": {
+                            "type": "importo",
+                            "label": "",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "collapsible": false,
+                            "legendStyle": "button",
+                            "view": "importo-view",
+                            "fields": {
+                                "importo": {
+                                    "type": "currency",
+                                    "centsLimit": 2.0,
+                                    "centsSeparator": ",",
+                                    "prefix": "€",
+                                    "round": "none",
+                                    "thousandsSeparator": ".",
+                                    "unmask": true,
+                                    "disabled": false,
+                                    "hidden": false,
+                                    "helpers": [],
+                                    "hideInitValidationError": true,
+                                    "focus": false,
+                                    "readonly": false,
+                                    "renderButtons": true,
+                                    "events": {},
+                                    "order": 2.0,
+                                    "validate": true,
+                                    "showMessages": true,
+                                    "data": {},
+                                    "attributes": {},
+                                    "allowOptionalEmpty": true,
+                                    "autocomplete": false,
+                                    "disallowEmptySpaces": false,
+                                    "disallowOnlyEmptySpaces": false,
+                                    "fieldClass": "importoFieldRight",
+                                    "fields": {}
+                                }
+                            }
+                        },
+                        "viaggiPercentuale": {
+                            "type": "text",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "speseGeneraliLabel": {
+                            "label": "spese generali da rendicontare nel limite massimo del 10 per cento del costo complessivo dell\u0027intervento",
+                            "type": "text",
+                            "view": "bootstrap-display",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "speseGeneraliImporto": {
+                            "type": "importo",
+                            "label": "",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "collapsible": false,
+                            "legendStyle": "button",
+                            "view": "importo-view",
+                            "fields": {
+                                "importo": {
+                                    "type": "currency",
+                                    "centsLimit": 2.0,
+                                    "centsSeparator": ",",
+                                    "prefix": "€",
+                                    "round": "none",
+                                    "thousandsSeparator": ".",
+                                    "unmask": true,
+                                    "disabled": false,
+                                    "hidden": false,
+                                    "helpers": [],
+                                    "hideInitValidationError": true,
+                                    "focus": false,
+                                    "readonly": false,
+                                    "renderButtons": true,
+                                    "events": {},
+                                    "order": 2.0,
+                                    "validate": true,
+                                    "showMessages": true,
+                                    "data": {},
+                                    "attributes": {},
+                                    "allowOptionalEmpty": true,
+                                    "autocomplete": false,
+                                    "disallowEmptySpaces": false,
+                                    "disallowOnlyEmptySpaces": false,
+                                    "fieldClass": "importoFieldRight",
+                                    "fields": {}
+                                }
+                            }
+                        },
+                        "speseGeneraliPercentuale": {
+                            "type": "text",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "renderButtons": true,
+                            "data": {},
+                            "attributes": {},
+                            "allowOptionalEmpty": true,
+                            "autocomplete": false,
+                            "disallowEmptySpaces": false,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {}
+                        },
+                        "totaleImportiPianoFinanziario": {
+                            "type": "importo",
+                            "label": "",
+                            "helpers": [],
+                            "validate": true,
+                            "disabled": false,
+                            "showMessages": true,
+                            "collapsible": false,
+                            "legendStyle": "button",
+                            "view": "importo-view",
+                            "fields": {
+                                "importo": {
+                                    "type": "currency",
+                                    "centsLimit": 2.0,
+                                    "centsSeparator": ",",
+                                    "prefix": "€",
+                                    "round": "none",
+                                    "thousandsSeparator": ".",
+                                    "unmask": true,
+                                    "disabled": false,
+                                    "hidden": false,
+                                    "helpers": [],
+                                    "hideInitValidationError": true,
+                                    "focus": false,
+                                    "readonly": false,
+                                    "renderButtons": true,
+                                    "events": {},
+                                    "order": 2.0,
+                                    "validate": true,
+                                    "showMessages": true,
+                                    "data": {},
+                                    "attributes": {},
+                                    "allowOptionalEmpty": true,
+                                    "autocomplete": false,
+                                    "disallowEmptySpaces": false,
+                                    "disallowOnlyEmptySpaces": false,
+                                    "fieldClass": "importoFieldRight",
+                                    "fields": {}
+                                }
+                            }
+                        }
+                    }
+                },
+                "dettaglioCronoprogramma": {
+                    "type": "textarea",
+                    "rows": 5.0,
+                    "cols": 300.0,
+                    "label": "Cronoprogramma",
+                    "order": 15.0,
+                    "helpers": [],
+                    "dependencies": {
+                        "tipoIstanza": [
+                            "CRONOPROGRAMMA"
+                        ]
+                    },
+                    "validate": true,
+                    "disabled": false,
+                    "required": true,
+                    "showMessages": true,
+                    "renderButtons": true,
+                    "data": {},
+                    "attributes": {},
+                    "allowOptionalEmpty": true,
+                    "autocomplete": false,
+                    "disallowEmptySpaces": false,
+                    "disallowOnlyEmptySpaces": false,
+                    "fields": {}
+                }
+            }
+        },
+        "data": {
+            "bloccoStep": {},
+            "sottoscrittoLabel": "Il/la sottoscritto/a",
+            "datiAnagrafici": {
+                "nome": "Alfredo",
+                "cognome": "Serafini",
+                "codiceFiscale": "SRFLRD80E19L049V",
+                "dataNascita": "01/01/1980",
+                "luogoNascita": "Bari (BA)",
+                "indirizzoResidenza": "via Listz 21 00144 Roma",
+                "isDelegato": "false"
+            },
+            "inQualitaDi": "111",
+            "nomeEnte": "11",
+            "sedeLegaleLabel": "Sede legale:",
+            "sedeLegale": {
+                "provincia": "RM",
+                "comune": "111"
+            },
+            "datiEnte": {
+                "cf": "drcfba76m27h501k",
+                "partitaIva": "11111111111"
+            },
+            "nomeIniziativa": "111",
+            "nomeIniziativaLabel": "relativamente al contributo previsto per \u003cb\u003eAvviso 2027 per Erogazione di Contributi per Marketing Territoriale\u003c/b\u003e ",
+            "tipoIstanza": "CRONOPROGRAMMA"
+        },
+        "view": {
+            "id": "wizard-alpaca",
+            "title": "Wizard",
+            "parent": "bootstrap-edit",
+            "messages": {
+                "notOptional": "Campo obbligatorio",
+                "invalidPattern": "Inserire mail valida, p.e. info@mail.com"
+            },
+            "wizard": {
+                "title": "Welcome to the Wizard",
+                "description": "Descrizione",
+                "bindings": {
+                    "esecuzione": 1.0,
+                    "titoloForm": 1.0,
+                    "datiAnagrafici": 1.0,
+                    "datiEnte": 1.0,
+                    "inQualitaDi": 1.0,
+                    "nomeEnte": 1.0,
+                    "sedeLegaleLabel": 1.0,
+                    "sedeLegale": 1.0,
+                    "bloccoStep": 1.0,
+                    "sottoscrittoLabel": 1.0,
+                    "nomeIniziativa": 1.0,
+                    "nomeIniziativaLabel": 1.0,
+                    "comunicaLabel": 2.0,
+                    "tipoIstanza": 2.0,
+                    "stimaDeiCosti": 2.0,
+                    "dettaglioCronoprogramma": 2.0
+                },
+                "labels": {
+                    "nextButton": "Avanti",
+                    "previousButton": "Indietro",
+                    "submitButton": "Invia"
+                },
+                "hideSubmitButton": true,
+                "steps": [
+                    {
+                        "title": "Step 1",
+                        "description": "Richiedente"
+                    },
+                    {
+                        "title": "Step 2",
+                        "description": "Comunicazione"
+                    }
+                ]
+            },
+            "locale": "it_IT",
+            "templates": {}
+        }
+    },
+    "placeholders": []
+}

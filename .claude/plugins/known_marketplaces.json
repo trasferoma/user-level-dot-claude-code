@@ -1,0 +1,18 @@
+{
+  "claude-plugins-official": {
+    "source": {
+      "source": "github",
+      "repo": "anthropics/claude-plugins-official"
+    },
+    "installLocation": "C:\\Users\\fabio.dearcangelis\\.claude\\plugins\\marketplaces\\claude-plugins-official",
+    "lastUpdated": "2026-07-02T09:26:02.954Z"
+  },
+  "context7-marketplace": {
+    "source": {
+      "source": "github",
+      "repo": "upstash/context7"
+    },
+    "installLocation": "C:\\Users\\fabio.dearcangelis\\.claude\\plugins\\marketplaces\\context7-marketplace",
+    "lastUpdated": "2026-06-26T14:30:44.851Z"
+  }
+}

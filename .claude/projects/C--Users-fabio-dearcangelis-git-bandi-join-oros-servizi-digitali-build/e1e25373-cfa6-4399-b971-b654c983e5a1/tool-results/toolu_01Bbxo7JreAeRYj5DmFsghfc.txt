@@ -1,0 +1,161 @@
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:27245:[Omitted long matching line]
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:32386:[Omitted long matching line]
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:32392:[Omitted long matching line]
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:35294:  "contourintegral",
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:35490:  "dblintegral",
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36922:  "integral",
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36924:  "integralbottom",
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36926:  "integralbt",
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36928:  "integralex",
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36930:  "integraltop",
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36932:  "integraltp",
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:40964:  "contintegraldisplay",
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:40966:  "contintegraltext",
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:40996:  "integraldisplay",
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:40998:  "integraltext",
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:51667:    t.integral = 274;
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:51668:    t.integraltp = 686;
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:51669:    t.integralex = 686;
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:51670:    t.integralbt = 686;
+modules\gestione-bandi\presentatore-forms-bandi-frontend\src\main\resources\META-INF\resources\scripts\alpaca\alpaca.min.js:518:[Omitted long matching line]
+alpaca\commonlibs\alpaca-custom\alpaca.min.js:1:[Omitted long matching line]
+alpaca\commonlibs\alpaca-custom\alpaca-bo.min.js:1:[Omitted long matching line]
+alpaca\customfields\CommentiOperatoreFormIntegrativi.js:1:var commentiOperatoreFormIntegrativiContainer = ' \
+alpaca\customfields\CommentiOperatoreFormIntegrativi.js:9:var commentiOperatoreFormIntegrativiContainerObject = ' \
+alpaca\customfields\CommentiOperatoreFormIntegrativi.js:22:    Alpaca.Fields.CommentiOperatoreFormIntegrativi = Alpaca.Fields.ObjectField.extend(
+alpaca\customfields\CommentiOperatoreFormIntegrativi.js:24:	 * @lends Alpaca.Fields.CommentiOperatoreFormIntegrativi.prototype
+alpaca\customfields\CommentiOperatoreFormIntegrativi.js:31:            return "commentiOperatoreFormIntegrativi";
+alpaca\customfields\CommentiOperatoreFormIntegrativi.js:56:                    	"label": "Annotazioni relative alla richiesta integrazione",
+alpaca\customfields\CommentiOperatoreFormIntegrativi.js:63:                "view": "commentiOperatoreFormIntegrativi-view"
+alpaca\customfields\CommentiOperatoreFormIntegrativi.js:73:            return "Commenti operatore form integrativi";
+alpaca\customfields\CommentiOperatoreFormIntegrativi.js:80:            return "Custom per visualizzare i commenti inseriti dall'operatore in fase di richiesta integrazione";
+alpaca\customfields\CommentiOperatoreFormIntegrativi.js:85:	  	"id": "commentiOperatoreFormIntegrativi-view",
+alpaca\customfields\CommentiOperatoreFormIntegrativi.js:91:			"container": commentiOperatoreFormIntegrativiContainer,
+alpaca\customfields\CommentiOperatoreFormIntegrativi.js:92:			"container-object": commentiOperatoreFormIntegrativiContainerObject
+alpaca\customfields\CommentiOperatoreFormIntegrativi.js:95:    Alpaca.registerFieldClass("commentiOperatoreFormIntegrativi", Alpaca.Fields.CommentiOperatoreFormIntegrativi); 
+alpaca\customfields\VisuraInfocamere.js:710:					return "Integrazione con infocamere per recuperare i dati di un'azienda data la P.Iva ";
+alpaca\customfields\CustomFormIntegrazioneOperatoreEsecuzione.js:1:var customFormIntegrazioneOperatoreEsecuzioneContainer = ' \
+alpaca\customfields\CustomFormIntegrazioneOperatoreEsecuzione.js:8:var customFormIntegrazioneOperatoreEsecuzioneContainerObject = ' \
+alpaca\customfields\CustomFormIntegrazioneOperatoreEsecuzione.js:21:	Alpaca.Fields.CustomFormIntegrazioneOperatoreEsecuzione = Alpaca.Fields.ObjectField
+alpaca\customfields\CustomFormIntegrazioneOperatoreEsecuzione.js:24:			 * @lends Alpaca.Fields.CustomFormIntegrazioneOperatoreEsecuzione.prototype
+alpaca\customfields\CustomFormIntegrazioneOperatoreEsecuzione.js:31:					return "customFormIntegrazioneOperatoreEsecuzione";
+alpaca\customfields\CustomFormIntegrazioneOperatoreEsecuzione.js:76:						"view" : "customFormIntegrazioneOperatoreEsecuzione-view"
+alpaca\customfields\CustomFormIntegrazioneOperatoreEsecuzione.js:98:		"id" : "customFormIntegrazioneOperatoreEsecuzione-view",
+alpaca\customfields\CustomFormIntegrazioneOperatoreEsecuzione.js:104:			"container" : customFormIntegrazioneOperatoreEsecuzioneContainer,
+alpaca\customfields\CustomFormIntegrazioneOperatoreEsecuzione.js:105:			"container-object" : customFormIntegrazioneOperatoreEsecuzioneContainerObject
+alpaca\customfields\CustomFormIntegrazioneOperatoreEsecuzione.js:108:	Alpaca.registerFieldClass("customFormIntegrazioneOperatoreEsecuzione", Alpaca.Fields.CustomFormIntegrazioneOperatoreEsecuzione);
+alpaca\customfields\SoggettoProponentePresentaManutenzione.js:26:        var formToExclude = 'documentazione-integrativa-domanda-di-anticipo|documentazione-integrativa-domanda-di-saldo|domanda_di_saldo|';
+alpaca\customfields\CustomFormIntegrazioneOperatore.js:1:var customFormIntegrazioneOperatoreContainer = ' \
+alpaca\customfields\CustomFormIntegrazioneOperatore.js:8:var customFormIntegrazioneOperatoreContainerObject = ' \
+alpaca\customfields\CustomFormIntegrazioneOperatore.js:21:	Alpaca.Fields.CustomFormIntegrazioneOperatore = Alpaca.Fields.ObjectField
+alpaca\customfields\CustomFormIntegrazioneOperatore.js:24:			 * @lends Alpaca.Fields.CustomFormIntegrazioneOperatore.prototype
+alpaca\customfields\CustomFormIntegrazioneOperatore.js:31:					return "customFormIntegrazioneOperatore";
+alpaca\customfields\CustomFormIntegrazioneOperatore.js:76:						"view" : "customFormIntegrazioneOperatore-view"
+alpaca\customfields\CustomFormIntegrazioneOperatore.js:98:		"id" : "customFormIntegrazioneOperatore-view",
+alpaca\customfields\CustomFormIntegrazioneOperatore.js:104:			"container" : customFormIntegrazioneOperatoreContainer,
+alpaca\customfields\CustomFormIntegrazioneOperatore.js:105:			"container-object" : customFormIntegrazioneOperatoreContainerObject
+alpaca\customfields\CustomFormIntegrazioneOperatore.js:108:	Alpaca.registerFieldClass("customFormIntegrazioneOperatore", Alpaca.Fields.CustomFormIntegrazioneOperatore);
+alpaca\customfields\CustomFormIntegrazioneFrontend.js:1:var customFormIntegrazioneFrontendContainer = ' \
+alpaca\customfields\CustomFormIntegrazioneFrontend.js:8:var customFormIntegrazioneFrontendContainerObject = ' \
+alpaca\customfields\CustomFormIntegrazioneFrontend.js:21:	Alpaca.Fields.CustomFormIntegrazioneFrontend = Alpaca.Fields.ObjectField
+alpaca\customfields\CustomFormIntegrazioneFrontend.js:24:			 * @lends Alpaca.Fields.CustomFormIntegrazioneFrontend.prototype
+alpaca\customfields\CustomFormIntegrazioneFrontend.js:31:					return "customFormIntegrazioneFrontend";
+alpaca\customfields\CustomFormIntegrazioneFrontend.js:76:						"view" : "customFormIntegrazioneFrontend-view"
+alpaca\customfields\CustomFormIntegrazioneFrontend.js:86:					return "Custom form integrazione frontend";
+alpaca\customfields\CustomFormIntegrazioneFrontend.js:93:					return "Custom con configurazioni per form integrazione frontend";
+alpaca\customfields\CustomFormIntegrazioneFrontend.js:98:		"id" : "customFormIntegrazioneFrontend-view",
+alpaca\customfields\CustomFormIntegrazioneFrontend.js:104:			"container" : customFormIntegrazioneFrontendContainer,
+alpaca\customfields\CustomFormIntegrazioneFrontend.js:105:			"container-object" : customFormIntegrazioneFrontendContainerObject
+alpaca\customfields\CustomFormIntegrazioneFrontend.js:108:	Alpaca.registerFieldClass("customFormIntegrazioneFrontend", Alpaca.Fields.CustomFormIntegrazioneFrontend);
+modules\gestione-forms\gestione-forms-frontend\src\main\resources\META-INF\resources\scripts\main.js:2226:				// check empty layout bindings integrity with not empty wizard bindings
+modules\gestione-forms\gestione-forms-frontend\src\main\resources\META-INF\resources\scripts\main.js:2273:				// check wizard bindings integrity
+alpaca\customfields\RegistroImpreseBandi.js:3004:					return "Integrazione con il Registro Imprese per Bandi, ";
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:27245:[Omitted long matching line]
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:32386:[Omitted long matching line]
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:32392:[Omitted long matching line]
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:35294:  "contourintegral",
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:35490:  "dblintegral",
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36922:  "integral",
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36924:  "integralbottom",
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36926:  "integralbt",
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36928:  "integralex",
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36930:  "integraltop",
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36932:  "integraltp",
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:40964:  "contintegraldisplay",
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:40966:  "contintegraltext",
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:40996:  "integraldisplay",
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:40998:  "integraltext",
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:51667:    t.integral = 274;
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:51668:    t.integraltp = 686;
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:51669:    t.integralex = 686;
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:51670:    t.integralbt = 686;
+alpaca\customfields\RadioButtonTipologiBandi.js:58:			case "che, ai fini della integrazione dei requisiti di cui all’art. 3, comma 5, lettere a) e b), si avvarrà intermediari finanziari in possesso degli stessi, in analogia con l’istituto disciplinato nell’art. 104 (avvalimento) del d.lgs. n. 36/2023, e precisamente:":
+alpaca\customfields\RadioButtonTipologiBandi.js:102:                				"che, ai fini della integrazione dei requisiti di cui all’art. 3, comma 5, lettere a) e b), si avvarrà intermediari finanziari in possesso degli stessi, in analogia con l’istituto disciplinato nell’art. 104 (avvalimento) del d.lgs. n. 36/2023, e precisamente:"
+alpaca\customfields\RadioButtonTipologiBandi.js:131:            				"che, ai fini della integrazione dei requisiti di cui all’art. 3, comma 5, lettere a) e b), si avvarrà intermediari finanziari in possesso degli stessi, in analogia con l’istituto disciplinato nell’art. 104 (avvalimento) del d.lgs. n. 36/2023, e precisamente:"
+alpaca\customfields\OggettoCommentiOperatoreFormIntegrativi.js:1:var oggettoCommentoOperatoreFormIntegrativiContainer = ' \
+alpaca\customfields\OggettoCommentiOperatoreFormIntegrativi.js:9:var oggettoCommentoOperatoreFormIntegrativiContainerObject = ' \
+alpaca\customfields\OggettoCommentiOperatoreFormIntegrativi.js:25:    Alpaca.Fields.OggettoCommentoOperatoreFormIntegrativi = Alpaca.Fields.ObjectField.extend(
+alpaca\customfields\OggettoCommentiOperatoreFormIntegrativi.js:27:	 * @lends Alpaca.Fields.OggettoCommentoOperatoreFormIntegrativi.prototype
+alpaca\customfields\OggettoCommentiOperatoreFormIntegrativi.js:34:            return "oggettoCommentoOperatoreFormIntegrativi";
+alpaca\customfields\OggettoCommentiOperatoreFormIntegrativi.js:64:                    	"label": "Oggetto delle annotazioni relative alla richiesta integrazione",
+alpaca\customfields\OggettoCommentiOperatoreFormIntegrativi.js:71:                        "label": "Annotazioni relative alla richiesta integrazione",
+alpaca\customfields\OggettoCommentiOperatoreFormIntegrativi.js:78:                "view": "oggettoCommentoOperatoreFormIntegrativi-view"
+alpaca\customfields\OggettoCommentiOperatoreFormIntegrativi.js:87:            return "Oggetto e nota commenti operatore form integrativi";
+alpaca\customfields\OggettoCommentiOperatoreFormIntegrativi.js:94:            return "Custom per visualizzare l'oggetto e la nota del commento inserito dall'operatore in fase di richiesta integrazione";
+alpaca\customfields\OggettoCommentiOperatoreFormIntegrativi.js:99:	  	"id": "oggettoCommentoOperatoreFormIntegrativi-view",
+alpaca\customfields\OggettoCommentiOperatoreFormIntegrativi.js:105:			"container": oggettoCommentoOperatoreFormIntegrativiContainer,
+alpaca\customfields\OggettoCommentiOperatoreFormIntegrativi.js:106:			"container-object": oggettoCommentoOperatoreFormIntegrativiContainerObject
+alpaca\customfields\OggettoCommentiOperatoreFormIntegrativi.js:109:    Alpaca.registerFieldClass("oggettoCommentoOperatoreFormIntegrativi", Alpaca.Fields.OggettoCommentoOperatoreFormIntegrativi);
+alpaca\customfields\IntegrazioneElencoPagamentiDovuti.js:1:var integrazioneElencoPagamentiDovutiContainer = ' \
+alpaca\customfields\IntegrazioneElencoPagamentiDovuti.js:9:var integrazioneElencoPagamentiDovutiContainerObject = ' \
+alpaca\customfields\IntegrazioneElencoPagamentiDovuti.js:113:    Alpaca.Fields.IntegrazioneElencoPagamentiDovuti = Alpaca.Fields.ObjectField.extend(
+alpaca\customfields\IntegrazioneElencoPagamentiDovuti.js:115:	 * @lends Alpaca.Fields.IntegrazioneElencoPagamentiDovuti.prototype
+alpaca\customfields\IntegrazioneElencoPagamentiDovuti.js:122:            return "integrazioneElencoPagamentiDovuti";
+alpaca\customfields\IntegrazioneElencoPagamentiDovuti.js:160:                "view": "integrazioneElencoPagamentiDovuti-view"
+alpaca\customfields\IntegrazioneElencoPagamentiDovuti.js:170:            return "Integrazione elenco pagamenti dovuti multipli";
+alpaca\customfields\IntegrazioneElencoPagamentiDovuti.js:177:            return "Custom che permette di integrare il pagamento multiplo dei dovuti";
+alpaca\customfields\IntegrazioneElencoPagamentiDovuti.js:182:	  	"id": "integrazioneElencoPagamentiDovuti-view",
+alpaca\customfields\IntegrazioneElencoPagamentiDovuti.js:188:			"container": integrazioneElencoPagamentiDovutiContainer,
+alpaca\customfields\IntegrazioneElencoPagamentiDovuti.js:189:			"container-object": integrazioneElencoPagamentiDovutiContainerObject
+alpaca\customfields\IntegrazioneElencoPagamentiDovuti.js:192:    Alpaca.registerFieldClass("integrazioneElencoPagamentiDovuti", Alpaca.Fields.IntegrazioneElencoPagamentiDovuti); 
+modules\presentatore-forms\presentatore-forms-frontend\src\main\resources\META-INF\resources\scripts\alpaca\alpaca.min.js:518:[Omitted long matching line]
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:27245:[Omitted long matching line]
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:32386:[Omitted long matching line]
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:32392:[Omitted long matching line]
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:35294:  "contourintegral",
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:35490:  "dblintegral",
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36922:  "integral",
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36924:  "integralbottom",
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36926:  "integralbt",
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36928:  "integralex",
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36930:  "integraltop",
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:36932:  "integraltp",
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:40964:  "contintegraldisplay",
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:40966:  "contintegraltext",
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:40996:  "integraldisplay",
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:40998:  "integraltext",
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:51667:    t.integral = 274;
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:51668:    t.integraltp = 686;
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:51669:    t.integralex = 686;
+modules\scrivania-cittadino\scrivania-cittadino-frontend\src\main\resources\META-INF\resources\scripts\pdf.worker.js:51670:    t.integralbt = 686;
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:5130:   * integrate extension into the marker life-cycle, too.
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:5151:   * integrate extension into the marker life-cycle, too.
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:5180:   * integrate extension into the marker life-cycle, too.
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:22261:    // scroll/zoom integration
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:22279:    // remove integration
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:22301:    // move integration
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:22318:    // marker integration, simply add them on the overlays as classes, too.
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:23460:   * The following example depicts the integration of a simple
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:23461:   * logging component that integrates with interaction events:
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:27282:    // optional integrations
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:30340:      // default integration
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:32218:    // optional connection docking integration
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:39097:    // (1) retrieve optional components to integrate with
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:39326:    // (1) retrieve optional components to integrate with
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:39836:   * Integrates resizing with grid snapping.
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:40009:   * Integrates space tool with grid snapping.
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:49452:    // scroll/zoom integration
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:58124:    // event integration
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:60678:   * The following example depicts the integration of a simple
+modules\gestione-processi\gestione-processi-frontend\src\main\resources\META-INF\resources\app\bpmn-modeler.development.js:60679:   * logging component that integrates with interaction events:
+modules\chatbot\chatbot-frontend\src\main\resources\META-INF\resources\widget\vendor.bundle.js:1:[Omitted long matching line]

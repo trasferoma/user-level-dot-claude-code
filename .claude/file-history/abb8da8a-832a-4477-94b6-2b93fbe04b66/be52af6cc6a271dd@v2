@@ -1,0 +1,98 @@
+package it.servizidigitali.portal.servlet.taglib;
+
+import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.servlet.taglib.DynamicInclude;
+import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.Validator;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+import it.servizidigitali.portal.constant.ServiziDigitaliPortalConstants;
+
+/**
+ * Mostra la notifica toast di Liferay dopo uno switch di profilo.
+ *
+ * Lo switch avviene in {@code RoleSwitchFilter} con un redirect, quindi la notifica non può essere
+ * emessa nello stesso request. Il filtro lascia un flag one-shot in sessione
+ * ({@link ServiziDigitaliPortalConstants#ROLE_SWITCH_NOTICE}); questo {@code DynamicInclude},
+ * agganciato in fondo a ogni pagina del portale, lo consuma una sola volta e inietta lo script che
+ * invoca {@code Liferay.Util.openToast}. Non dipende dal tema.
+ *
+ * @author pindi
+ */
+@Component(immediate = true, service = DynamicInclude.class)
+public class RoleSwitchNoticeDynamicInclude implements DynamicInclude {
+
+	@Override
+	public void include(HttpServletRequest request, HttpServletResponse response, String key) throws IOException {
+
+		HttpSession session = getPortalSession(request);
+		if (session == null) {
+			return;
+		}
+
+		Object notice = session.getAttribute(ServiziDigitaliPortalConstants.ROLE_SWITCH_NOTICE);
+		if (notice == null) {
+			return;
+		}
+
+		session.removeAttribute(ServiziDigitaliPortalConstants.ROLE_SWITCH_NOTICE);
+
+		String message = resolveMessage(request, String.valueOf(notice));
+		if (Validator.isNull(message)) {
+			return;
+		}
+
+		writeToastScript(response, message);
+	}
+
+	@Override
+	public void register(DynamicIncludeRegistry dynamicIncludeRegistry) {
+		dynamicIncludeRegistry.register("/html/common/themes/bottom.jsp#post");
+	}
+
+	private HttpSession getPortalSession(HttpServletRequest request) {
+		HttpServletRequest originalRequest = portal.getOriginalServletRequest(request);
+		return originalRequest.getSession(false);
+	}
+
+	private String resolveMessage(HttpServletRequest request, String role) {
+		if (ServiziDigitaliPortalConstants.ROLE_CITTADINO.equals(role)) {
+			return LanguageUtil.get(request, "profilo-attivo-cittadino");
+		}
+
+		if (ServiziDigitaliPortalConstants.ROLE_OPERATORE.equals(role)) {
+			return LanguageUtil.get(request, "profilo-attivo-operatore");
+		}
+
+		return null;
+	}
+
+	/**
+	 * Inietta lo script della toast. La chiamata è ritentata finché {@code Liferay.Util.openToast} non è
+	 * disponibile, per essere indipendente dall'ordine di caricamento del JS di portale.
+	 */
+	private void writeToastScript(HttpServletResponse response, String message) throws IOException {
+		String safeMessage = HtmlUtil.escapeJS(message);
+
+		PrintWriter writer = response.getWriter();
+		writer.write("<script>");
+		writer.write("(function(){function showToast(){");
+		writer.write("if(window.Liferay&&Liferay.Util&&Liferay.Util.openToast){");
+		writer.write("Liferay.Util.openToast({message:'" + safeMessage + "',type:'success'});");
+		writer.write("}else{setTimeout(showToast,150);}}showToast();})();");
+		writer.write("</script>");
+	}
+
+	@Reference
+	private Portal portal;
+}

@@ -1,0 +1,43 @@
+package it.servizidigitali.gestione.referente.istanze.common.service.internal;
+
+import it.servizidigitali.common.utility.enumeration.Contesto;
+import it.servizidigitali.gestione.referente.istanze.common.dto.DatiPraticaDTO;
+import it.servizidigitali.gestione.referente.istanze.common.dto.RichiestaDTO;
+import it.servizidigitali.gestione.referente.istanze.common.dto.internal.ServizioDTO;
+import it.servizidigitali.gestione.referente.istanze.model.RichiestaReferenteIstanza;
+import it.servizidigitali.protocollo.integration.model.ProtocolloRequest;
+import it.servizidigitali.scrivaniaoperatore.model.Richiesta;
+
+import java.util.List;
+
+public interface DominioStrategy {
+
+    boolean existsRichiesta(long richiestaId);
+
+    boolean istanzePresenti(long richiestaId, String partitaIva);
+
+    ServizioDTO getServizio(long richiestaId);
+
+    ServizioDTO getServizioByProcedimento(long idProcedimento);
+
+    ProtocolloRequest createProtocolloRequest(RichiestaReferenteIstanza richiestaReferenteIstanza);
+
+    List<String> getGruppiReferenti(RichiestaDTO richiestaDTO);
+
+    void aggiornaPratica(RichiestaReferenteIstanza richiestaReferenteIstanza);
+
+    DatiPraticaDTO buildDatiPraticaDTO(RichiestaReferenteIstanza richiestaReferenteIstanza);
+
+    /**
+     * Indica se per la richiesta indicata la verifica della firma deve avvenire solo rispetto
+     * alla data corrente. I domini non basati su un bando restituiscono il comportamento di
+     * default, cioè verifica alla sola data corrente.
+     */
+    boolean isVerificaFirmaSoloDataOggi(RichiestaReferenteIstanza richiestaReferenteIstanza);
+
+    Contesto getContestoByProcedimento(long idProcedimento, long groupId);
+
+    RichiestaDTO getRichiesta(long richiestaId);
+
+    List<RichiestaDTO> getIstanzePresenti(long richiestaId, String partitaIva);
+}

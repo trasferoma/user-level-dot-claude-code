@@ -1,0 +1,71 @@
+package it.servizidigitali.portal.servlet;
+
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.ParamUtil;
+
+import java.io.IOException;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.osgi.service.component.annotations.Component;
+
+import it.servizidigitali.portal.constant.ServiziDigitaliPortalConstants;
+
+/**
+ * Servlet OSGi esposto su {@code /o/role-switch/toggle} che commuta il profilo attivo in sessione.
+ *
+ * <p>
+ * Riceve il parametro {@code role} ({@code CITTADINO} o {@code OPERATORE}), aggiorna
+ * {@code ACTIVE_ROLE} in sessione e reindirizza alla home. Lo switch è consentito solo agli
+ * utenti con doppio ruolo ({@code HAS_DUAL_ROLE=true}); lo switch cambia esclusivamente la
+ * navigazione, mai i permessi.
+ * </p>
+ */
+@Component(//
+		immediate = true, //
+		property = { //
+				"osgi.http.whiteboard.servlet.pattern=/role-switch/*"//
+		}, //
+		service = Servlet.class//
+)
+public class RoleSwitchServlet extends HttpServlet {
+
+	private static final long serialVersionUID = 1L;
+
+	private static final Log log = LogFactoryUtil.getLog(RoleSwitchServlet.class);
+
+	private static final String HOME_REDIRECT = "/";
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+		String role = ParamUtil.getString(req, "role");
+
+		HttpSession session = req.getSession(false);
+
+		boolean hasDualRole = false;
+		if (session != null) {
+			Object hasDualRoleAttr = session.getAttribute(ServiziDigitaliPortalConstants.HAS_DUAL_ROLE);
+			if (hasDualRoleAttr instanceof Boolean) {
+				hasDualRole = (Boolean) hasDualRoleAttr;
+			}
+		}
+
+		boolean roleValido = ServiziDigitaliPortalConstants.ROLE_CITTADINO.equals(role) || ServiziDigitaliPortalConstants.ROLE_OPERATORE.equals(role);
+
+		if (session != null && hasDualRole && roleValido) {
+			session.setAttribute(ServiziDigitaliPortalConstants.ACTIVE_ROLE, role);
+		}
+		else {
+			log.debug("RoleSwitchServlet :: switch ignorato (role=" + role + ", hasDualRole=" + hasDualRole + ")");
+		}
+
+		resp.sendRedirect(HOME_REDIRECT);
+	}
+}

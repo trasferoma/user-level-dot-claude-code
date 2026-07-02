@@ -1,0 +1,278 @@
+package it.servizidigitali.presentatoreforms.bandi.common.service;
+
+import com.liferay.counter.kernel.service.CounterLocalService;
+import com.liferay.document.library.kernel.service.DLAppService;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.util.MimeTypesUtil;
+import com.liferay.portal.kernel.util.Validator;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import it.servizidigitali.common.fdr.dto.VerificaFirmaOptions;
+import it.servizidigitali.common.fdr.dto.VerificaResponse;
+import it.servizidigitali.common.fdr.exception.ServizioNonDisponibileException;
+import it.servizidigitali.common.fdr.exception.VerificaFirmaException;
+import it.servizidigitali.common.fdr.service.FirmaRemotaService;
+import it.servizidigitali.common.utility.enumeration.Contesto;
+import it.servizidigitali.common.utility.enumeration.EsitoVerificaFirma;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+import it.servizidigitali.common.utility.enumeration.TipoFirmaDigitale;
+import it.servizidigitali.file.utility.factory.FileServiceFactory;
+import it.servizidigitali.file.utility.model.File;
+import it.servizidigitali.file.utility.service.FileService;
+import it.servizidigitali.file.utility.signature.SignatureVerification;
+import it.servizidigitali.gestionebandi.common.enumeration.MimeTypesFirmaDigitale;
+import it.servizidigitali.gestionebandi.common.exception.PDFSignatureException;
+import it.servizidigitali.gestionebandi.common.exception.SalvataggioAllegatoBandoException;
+import it.servizidigitali.gestionebandi.model.AllegatoDomandaBando;
+import it.servizidigitali.gestionebandi.model.Bando;
+import it.servizidigitali.gestionebandi.service.AllegatoDomandaBandoLocalService;
+import it.servizidigitali.gestioneforms.model.DefinizioneAllegato;
+import it.servizidigitali.gestioneforms.service.DefinizioneAllegatoLocalService;
+import it.servizidigitali.presentatoreforms.bandi.common.model.DatiFileAllegato;
+
+@Component(name = "allegatoDomandaBandoService", immediate = true, service = AllegatoDomandaBandoService.class)
+public class AllegatoDomandaBandoService {
+
+	private static final Log log = LogFactoryUtil.getLog(AllegatoDomandaBandoService.class.getName());
+	
+	@Reference
+	private FileServiceFactory fileServiceFactory;
+
+	@Reference
+	private AllegatoDomandaBandoLocalService allegatoDomandaBandoLocalService;
+
+	@Reference
+	private DefinizioneAllegatoLocalService definizioneAllegatoLocalService;
+
+	@Reference
+	private CounterLocalService counterLocalService;
+
+	@Reference
+	private DLAppService dlAppService;
+	
+	@Reference
+	private SignatureVerification signatureVerification;
+
+	@Reference
+	private FirmaRemotaService firmaRemotaService;
+
+	public AllegatoDomandaBando creaAllegatoDomanda(String idDocumentale, String nomeFile, String impronta, String titolo, String descrizione, String nomeServizio, long domandaBandoId, long istanzaDomandaBandoId,
+													String firmatario, boolean firmatoDigitalmente, long definizioneAllegatoId, boolean principale, boolean visibile, long userId, String userName, long groupId, long companyId, EsitoVerificaFirma esitoVerificaFirma, String identificativo) {
+		AllegatoDomandaBando allegatoDomandaBando = allegatoDomandaBandoLocalService.createAllegatoDomandaBando(counterLocalService.increment());
+
+		if (Validator.isNotNull(idDocumentale)) {
+			allegatoDomandaBando.setGroupId(groupId);
+			allegatoDomandaBando.setCompanyId(companyId);
+			allegatoDomandaBando.setUserId(userId);
+			allegatoDomandaBando.setUserName(userName);
+			allegatoDomandaBando.setDomandaBandoId(domandaBandoId);
+			allegatoDomandaBando.setIdDocumentale(idDocumentale);
+			allegatoDomandaBando.setPrincipale(principale);
+			allegatoDomandaBando.setNome(nomeFile);
+			allegatoDomandaBando.setImpronta(impronta);
+			allegatoDomandaBando.setTitolo(titolo);
+			allegatoDomandaBando.setDescrizione(descrizione);
+			allegatoDomandaBando.setVisibile(visibile);
+			allegatoDomandaBando.setDefinizioneAllegatoId(definizioneAllegatoId);
+			allegatoDomandaBando.setIstanzaDomandaBandoId(istanzaDomandaBandoId);
+			allegatoDomandaBando.setFirmatoDigitalmente(firmatoDigitalmente);
+			allegatoDomandaBando.setFirmatario(firmatario);
+			if (Validator.isNotNull(esitoVerificaFirma)) {
+				allegatoDomandaBando.setEsitoVerificaFirma(esitoVerificaFirma.name());
+			}
+            if (Validator.isNotNull(identificativo)) {
+                allegatoDomandaBando.setIdentificativo(identificativo);
+            }
+
+			allegatoDomandaBandoLocalService.updateAllegatoDomandaBando(allegatoDomandaBando);
+		}
+		
+		return allegatoDomandaBando;
+	}
+	
+	public void salvaDocumentoPrincipaleRichiesta(byte[] allegato, String impronta, String mimeType, Bando bando, long domandaBandoId, long istanzaDomandaBandoId, String firmatario, boolean firmatoDigitalmente, String userName, long userId, long groupId, long companyId, EsitoVerificaFirma esitoVerificaFirma)
+			throws Exception {
+		
+		String estensione = "";
+		
+		if(Validator.isNotNull(mimeType) && (mimeType.equalsIgnoreCase(MimeTypesFirmaDigitale.P7S.getMimeType()) || mimeType.equalsIgnoreCase(MimeTypesFirmaDigitale.P7M.getMimeType()))) {
+			estensione = ".p7m";
+		}else {
+			estensione = ".pdf";
+		}
+
+		String nomeFile = "Allegato ID " + domandaBandoId + estensione;
+		String descrizione = "Domanda '" + bando.getNome() + "' - ID: " + domandaBandoId;
+		String idDocumentale = null;
+		try {
+			if (Validator.isNotNull(allegato)) {
+				InputStream stream = new ByteArrayInputStream(allegato);
+				if (Validator.isNotNull(allegato)) {
+					File savedFile = fileServiceFactory.getActiveFileService().saveRequestFile(nomeFile, nomeFile, descrizione, bando.getCodice(), domandaBandoId, stream, mimeType, userId, groupId);
+					
+					if (Validator.isNotNull(savedFile != null && savedFile.getId() != null)) {
+						idDocumentale = savedFile.getId();
+						creaAllegatoDomanda(savedFile.getId(), savedFile.getNome(), impronta, nomeFile, descrizione, bando.getNome(), domandaBandoId, istanzaDomandaBandoId, firmatario, firmatoDigitalmente, 0,true, true, userId, userName,
+								groupId, companyId, esitoVerificaFirma, null);
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			log.error("Errore durante il caricamento del file firmato : " + e.getMessage(), e);
+			//Se qualcosa e andato storto durante la creazione del file, elimino il file dal documentale
+			if (Validator.isNotNull(idDocumentale)) {
+				fileServiceFactory.getActiveFileService().deleteRequestFile(idDocumentale, groupId);
+				throw new SalvataggioAllegatoBandoException("Caricamento del documento principale non eseguito correttamente", e);
+			}
+			throw new SalvataggioAllegatoBandoException("Caricamento del documento principale sul sistema documentale non eseguito correttamente", e);
+		}
+	}
+
+	public VerificaResponse checkFirmaDigitaleDocumento(byte[] byteArray, String descrizione, String cfLoggato, List<TipoFirmaDigitale> tipiAmmessi, boolean sigilloQualificato, boolean verificaFirmaCf, long groupId, Contesto contesto, boolean verificaFirmaSoloDataOggi) throws PDFSignatureException {
+		VerificaFirmaOptions options = new VerificaFirmaOptions();
+		VerificaResponse response = null;
+		options.setDescrizione(descrizione);
+		options.setTipiFirmaAmmessi(tipiAmmessi.stream().map(Enum::name).collect(Collectors.toList()));
+		options.setCfLoggato(cfLoggato);
+		options.setVerificaSigilloQualificato(sigilloQualificato);
+		options.setVerificaFirmaCf(verificaFirmaCf);
+		options.setVerificaFirmaSuDataFineValidita(!verificaFirmaSoloDataOggi);
+
+		try {
+			response = firmaRemotaService.verificaFirma(groupId, contesto, byteArray, options);
+		} catch (VerificaFirmaException e) {
+			throw new PDFSignatureException(e.getMessage(), e);
+		} catch (ServizioNonDisponibileException e) {
+			log.error(e);
+			throw new PDFSignatureException("Il servizio non è disponibile. Riprovare più tardi");
+		}
+
+		return response;
+	}
+
+	public VerificaResponse recuperaDettagliAllegato(long groupId, byte[] file, Contesto contesto){
+        return firmaRemotaService.recuperaImpronta(groupId, contesto, file);
+	}
+	
+	public AllegatoDomandaBando salvaAllegatoRichiesta(byte[] allegato, String impronta, String nomeFile, String titolo, Bando bando, long domandaBandoId, Long definizioneAllegatoId, long istanzaDomandaBandoId, String firmatario,
+													   boolean firmatoDigitalmente, String userName,
+													   long userId, long groupId, long companyId, EsitoVerificaFirma esitoVerificaFirma, String identificativo) throws Exception {
+		
+		AllegatoDomandaBando allegatoCreato = null;
+		String idDocumentale = null;
+		try {
+			if (Validator.isNotNull(allegato)) {
+				InputStream stream = new ByteArrayInputStream(allegato);
+				if (Validator.isNotNull(allegato)) {
+					String descrizione = null;
+					if (definizioneAllegatoId != null && !definizioneAllegatoId.equals(0L)) {
+						try {
+							DefinizioneAllegato definizioneAllegato = definizioneAllegatoLocalService.getDefinizioneAllegato(definizioneAllegatoId);
+							descrizione = "Allegato '" + definizioneAllegato.getDenominazione() + "'";
+						}
+						catch (PortalException e) {
+							log.error("salvaAllegatiRichiesta :: " + e.getMessage(), e);
+						}
+					}
+
+					String mimeType = MimeTypesUtil.getContentType(stream, nomeFile);
+					File savedFile = fileServiceFactory.getActiveFileService().saveRequestFile(nomeFile, titolo, descrizione, bando.getCodice(), domandaBandoId, stream, mimeType, userId, groupId);
+					if(Validator.isNotNull(savedFile) && Validator.isNotNull(savedFile.getId())) {
+						idDocumentale = savedFile.getId();
+						allegatoCreato = creaAllegatoDomanda(savedFile.getId(), nomeFile, impronta, titolo, descrizione, bando.getNome(), domandaBandoId, istanzaDomandaBandoId, firmatario, firmatoDigitalmente, definizioneAllegatoId, false, true, userId,
+								userName, groupId, companyId, esitoVerificaFirma, identificativo);
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			log.error("Errore durante il caricamento del file : " + e.getMessage(), e);
+			//Se qualcosa e andato storto durante la creazione del file, elimino il file dal documentale
+			if (Validator.isNotNull(idDocumentale)) {
+				fileServiceFactory.getActiveFileService().deleteRequestFile(idDocumentale, groupId);
+				throw new SalvataggioAllegatoBandoException("Caricamento dell'allegato " + titolo + " non eseguito correttamente", e);
+			}
+			throw new SalvataggioAllegatoBandoException("Caricamento dell'allegato " + titolo + " non eseguito correttamente sul sistema documentale", e);
+		}
+		
+		return allegatoCreato;
+
+	}
+	
+	public DatiFileAllegato getModelloAllegato(long definizioneAllegatoId) {
+		DatiFileAllegato modello = null;
+		DefinizioneAllegato allegato = null;
+
+		try {
+			if (definizioneAllegatoId > 0) {
+				allegato = definizioneAllegatoLocalService.getDefinizioneAllegato(definizioneAllegatoId);
+
+				if (allegato.getFileEntryId() > 0) {
+					FileEntry templateFileEntry = dlAppService.getFileEntry(allegato.getFileEntryId());
+
+					if (Validator.isNotNull(templateFileEntry)) {
+						modello = new DatiFileAllegato();
+						modello.setFileName(templateFileEntry.getFileName());
+
+						modello.setMimeType(templateFileEntry.getMimeType());
+						InputStream isTemplate = templateFileEntry.getContentStream();
+
+						if (Validator.isNotNull(isTemplate)) {
+							modello.setContenuto(isTemplate.readAllBytes());
+						}
+						else {
+							log.error("AllegatoRichiestaService :: getModelloAllegato :: Input stream modello NULL!");
+						}
+					}
+					else {
+						log.error("AllegatoRichiestaService :: getModelloAllegato :: fileEntry dell'allegato con ID : " + definizioneAllegatoId + " NULL");
+					}
+				}
+			}
+
+		}
+		catch (Exception e) {
+			log.error("Errore durante il recupero dell'allegato con id definizione : " + definizioneAllegatoId + e.getMessage(), e);
+		}
+
+		return modello;
+	}
+	
+	public void deleteAllAllegati(long istanzaDomandaBandoId) {
+		List<AllegatoDomandaBando> allegati = allegatoDomandaBandoLocalService.getListaAllegatiByIstanzaDomandaBandoId(istanzaDomandaBandoId).stream().filter(x -> x.getDefinizioneAllegatoId() != 0).collect(Collectors.toList());
+
+		FileService activeFileService = fileServiceFactory.getActiveFileService();
+
+		if(Validator.isNotNull(allegati) && !allegati.isEmpty()) {
+			for (AllegatoDomandaBando ar : allegati) {
+				activeFileService.deleteRequestFile(ar.getIdDocumentale(), ar.getGroupId());
+				allegatoDomandaBandoLocalService.deleteAllegatoDomandaBando(ar);
+			}
+		}
+	}
+	
+	public void deleteAllegato(long allegatoDomandaBandoId) {
+		AllegatoDomandaBando allegato = null;
+		try {
+			allegato = allegatoDomandaBandoLocalService.getAllegatoDomandaBando(allegatoDomandaBandoId);
+		} catch (PortalException e) {
+			log.error("Allegato da eliminare non trovato :: " + e.getMessage(), e);
+		}
+		FileService activeFileService = fileServiceFactory.getActiveFileService();
+		
+		if (Validator.isNotNull(allegato)) {
+			activeFileService.deleteRequestFile(allegato.getIdDocumentale(), allegato.getGroupId());
+			allegatoDomandaBandoLocalService.deleteAllegatoDomandaBando(allegato);
+		}
+	}
+}

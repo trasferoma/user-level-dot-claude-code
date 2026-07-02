@@ -1,0 +1,18 @@
+package org.example;
+
+import org.example.marketing.GeneratorePdfMarketing;
+import org.example.negoziale.GeneratorePdfNegozialeDisciplinareEsecuzione;
+
+public class Main {
+    public static void main(String[] args) {
+        GeneratorePdfMarketing generatorePdfMarketing = new GeneratorePdfMarketing();
+        GeneratorePdfNegozialeDisciplinareEsecuzione generatorePdfDisciplinareEsecuzione =
+                new GeneratorePdfNegozialeDisciplinareEsecuzione();
+        try {
+            // generatorePdfMarketing.execute();
+            generatorePdfDisciplinareEsecuzione.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+}

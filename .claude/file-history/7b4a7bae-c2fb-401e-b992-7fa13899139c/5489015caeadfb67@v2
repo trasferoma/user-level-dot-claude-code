@@ -1,0 +1,3 @@
+- [JAVA_HOME path](reference_java_home.md) — JDK 11 in `C:\lavoro\jdk\openlogic-openjdk-11.0.18+10-windows-x64`, da impostare prima di lanciare `gradlew`
+- ["Genera una classe" = nuovo file, mai overwrite](feedback_nuova_classe_non_sovrascrivere.md) — incidente: sovrascritto EsitoDomandaJasperReportTest invece di crearne una nuova
+- [I test li lancia l'utente](feedback_test_li_lancia_utente.md) — non avviare `gradlew test`, ferma alla scrittura del codice

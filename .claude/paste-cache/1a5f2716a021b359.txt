@@ -1,0 +1,43 @@
+import com.liferay.portal.kernel.dao.orm.QueryUtil
+import com.liferay.counter.kernel.service.CounterLocalServiceUtil
+import it.servizidigitali.gestionebandi.service.DatoBandoLocalServiceUtil
+
+final String CODICE_DATO = "ABILITA_FIRMA_DATA_ISTANZA"
+final String VALORE = "true"
+// 1. Definizione del dato. findByCodice rilancia RuntimeException se il
+// codice non esiste: la riga DatoBando va creata prima del popolamento.
+def datoBando
+try {
+ datoBando = DatoBandoLocalServiceUtil.findByCodice(CODICE_DATO)
+} catch (Throwable t) {
+      out.println "TIPO : " + t.getClass().getName()
+      out.println "MSG  : " + t.getMessage()
+      def cause = t.getCause()
+      while (cause != null) {
+          out.println "CAUSA: " + cause.getClass().getName() + " -> " + cause.getMessage()
+          cause = cause.getCause()
+      }
+  }
+long datoBandoId = datoBando.getDatoBandoId()
+// 2. Tutti i bandi (adattare al service del modulo se diverso)
+def bandi = BandoLocalServiceUtil.getBandos(QueryUtil.ALL_POS, QueryUtil.ALL_POS)
+int creati = 0, giaPresenti = 0
+bandi.each { bando ->
+ long bandoId = bando.getBandoId()
+ // idempotenza: salta se esiste gia un valore per (bando, dato)
+ def esistenti = ValoreDatoBandoLocalServiceUtil
+ .findByBandoIdAndDatoBandoId(bandoId, datoBandoId)
+ if (esistenti != null && !esistenti.isEmpty()) {
+ giaPresenti++
+ return
+ }
+ def v = ValoreDatoBandoLocalServiceUtil.createValoreDatoBando(
+ CounterLocalServiceUtil.increment(ValoreDatoBando.class.getName()))
+ v.setBandoId(bandoId)
+ v.setDatoBandoId(datoBandoId)
+ v.setValore(VALORE) // adattare al nome reale del campo valore
+ // se l'entita e scoped, valorizzare anche companyId/groupId e audit fields
+ ValoreDatoBandoLocalServiceUtil.addValoreDatoBando(v)
+ creati++
+}
+out.println "Bandi: ${bandi.size()} | valori creati: ${creati} | gia presenti:${giaPresenti}"

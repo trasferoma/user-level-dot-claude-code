@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(mvn -B verify)",
+      "Bash(mvn *)",
+      "mcp__ide__getDiagnostics"
+    ]
+  }
+}

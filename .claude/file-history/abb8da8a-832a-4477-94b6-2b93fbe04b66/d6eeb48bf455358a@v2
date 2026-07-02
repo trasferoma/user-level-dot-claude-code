@@ -1,0 +1,6 @@
+Bundle-Name: servizi-digitali-portal
+Bundle-SymbolicName: it.servizidigitali.portal
+Bundle-Version: 1.0.0
+Provide-Capability:\
+	liferay.language.resources;\
+		resource.bundle.base.name="content.Language"

@@ -1,0 +1,315 @@
+package it.servizidigitali.accreditamento.ente.integration.client.impl;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.Validator;
+import it.servizidigitali.accreditamento.ente.integration.client.AccreditamentoEnteClient;
+import it.servizidigitali.accreditamento.ente.integration.configuration.AccreditamentoEnteConfiguration;
+import it.servizidigitali.accreditamento.ente.integration.dto.DimensioneEnteDto;
+import it.servizidigitali.accreditamento.ente.integration.dto.EnteDto;
+import it.servizidigitali.accreditamento.ente.integration.dto.EnteSoggettoResponseDto;
+import it.servizidigitali.accreditamento.ente.integration.dto.FatturatoAnnuoDto;
+import it.servizidigitali.accreditamento.ente.integration.dto.NumeroDipendentiDto;
+import it.servizidigitali.accreditamento.ente.integration.dto.SedeEnteDto;
+import it.servizidigitali.accreditamento.ente.integration.dto.SettoreEconomicoDto;
+import it.servizidigitali.accreditamento.ente.integration.dto.SpecializzazioneProduttivaDto;
+import org.apache.cxf.jaxrs.client.WebClient;
+import org.codehaus.stax2.validation.Validatable;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
+
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+@Component(name="accreditamentoEnteClient", immediate = true, service = AccreditamentoEnteClient.class, configurationPid = "it.servizidigitali.accreditamento.ente.integration.configuration.AccreditamentoEnteConfiguration")
+public class AccreditamentoEnteClientImpl implements AccreditamentoEnteClient {
+    private static final Log log = LogFactoryUtil.getLog(AccreditamentoEnteClientImpl.class.getName());
+
+    private volatile  AccreditamentoEnteConfiguration accreditamentoEnteConfiguration;
+
+    private String baseUrl;
+    private String tokenPath;
+    private String dettaglioPath;
+    private String clientId;
+    private String clientSecret;
+    private String specializzazioneProduttiva;
+    private String settoreEconomico;
+    private String numeroDipendenti;
+    private String fatturatoAnnuo;
+    private String dimensioneImpresa;
+    private String getSediEnte;
+    private String getPartiteIvaUtente;
+    private String getEnteRegionale;
+
+    @Activate
+    @Modified
+    private void activate(Map<String, Object> props) {
+        accreditamentoEnteConfiguration = ConfigurableUtil.createConfigurable(AccreditamentoEnteConfiguration.class, props);
+        baseUrl = accreditamentoEnteConfiguration.baseUrl();
+        tokenPath = accreditamentoEnteConfiguration.tokenPath();
+        dettaglioPath = accreditamentoEnteConfiguration.dettaglioPath();
+        clientId = accreditamentoEnteConfiguration.clientId();
+        clientSecret = accreditamentoEnteConfiguration.clientSecret();
+        specializzazioneProduttiva = accreditamentoEnteConfiguration.specializzazioneProduttiva();
+        settoreEconomico = accreditamentoEnteConfiguration.settoreEconomico();
+        numeroDipendenti = accreditamentoEnteConfiguration.numeroDipendenti();
+        fatturatoAnnuo = accreditamentoEnteConfiguration.fatturatoAnnuo();
+        dimensioneImpresa = accreditamentoEnteConfiguration.dimensioneImpresa();
+        getSediEnte = accreditamentoEnteConfiguration.getSediEnte();
+        getPartiteIvaUtente = accreditamentoEnteConfiguration.getPartiteIvaUtente();
+        getEnteRegionale = accreditamentoEnteConfiguration.getEnteRegionale();
+    }
+
+    @Override
+    public String getToken() {
+        WebClient client = getClient(baseUrl + tokenPath);
+        client.query("grant_type", "client_credentials");
+
+        String credentials = clientId + ":" + clientSecret;
+        String basic = Base64.getEncoder().encodeToString(credentials.getBytes());
+        String authorization = "Basic " + basic;
+        client.header("Authorization", authorization);
+        MultivaluedMap<String,String> map = new MultivaluedHashMap<String,String>();
+
+        String response = client.post(Entity.form(map), String.class);
+        String token = toToken(response);
+
+        return token;
+    }
+
+    private WebClient getClient(String url) {
+        WebClient client;
+        List<Object> providers = new ArrayList<>();
+        providers.add(new JacksonJsonProvider());
+        client = WebClient.create(url, providers, null);
+        return client;
+    }
+
+    private WebClient getClientForList(String url) {
+        WebClient client;
+        List<Object> providers = new ArrayList<>();
+        providers.add(new JacksonJsonProvider());
+        client = WebClient.create(url, providers, null);
+        return client;
+    }
+
+    private String toToken(String json) {
+        String token = "";
+        JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
+        if (jsonObject.has("access_token")) {
+            token = jsonObject.get("access_token").getAsString();
+        }
+        return token;
+    }
+
+    @Override
+    public EnteDto getEnteAccreditato(String partitaIvaCodFis, String cfLoggato, List<String> province) {
+        // TODO MOCK TEMPORANEO - servizio AccreditamentoEnte non raggiungibile in locale.  Jester
+        // Rimuovere questo blocco per ripristinare la chiamata reale.
+        if (true) {
+            log.warn("MOCK AccreditamentoEnte attivo per getEnteAccreditato (con province), partitaIvaCodFis=" + partitaIvaCodFis);
+            return buildMockEnteAccreditato(partitaIvaCodFis);
+        }
+
+        WebClient client = getClient(baseUrl + getEnteRegionale);
+        client.query("partitaIva", partitaIvaCodFis);
+        client.query("cfLoggato", cfLoggato);
+        client.query("province", province);
+        String json = client.get(String.class);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        EnteDto enteAccreditato = null;
+        try {
+            enteAccreditato = objectMapper.readValue(json, EnteDto.class);
+        } catch (JsonProcessingException e) {
+            log.error("ERRORE NEL RECUPERO DEI DATI DELL'ENTE DA ACCREDITAMENTO ENTE :: ", e);
+        }
+        return enteAccreditato;
+    }
+
+    @Override
+    public EnteDto getEnteAccreditato(String partitaIvaCodFis, String cfLoggato) {
+        // TODO MOCK TEMPORANEO - servizio AccreditamentoEnte non raggiungibile in locale.
+        // Rimuovere questo blocco per ripristinare la chiamata reale.
+        if (true) {
+            log.warn("MOCK AccreditamentoEnte attivo per getEnteAccreditato, partitaIvaCodFis=" + partitaIvaCodFis);
+            return buildMockEnteAccreditato(partitaIvaCodFis);
+        }
+
+        WebClient client = getClient(baseUrl + dettaglioPath);
+        client.query("partitaIva", partitaIvaCodFis);
+        client.query("cfLoggato", cfLoggato);
+        String json = client.get(String.class);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        EnteDto enteAccreditato = null;
+        try {
+            enteAccreditato = objectMapper.readValue(json, EnteDto.class);
+        } catch (JsonProcessingException e) {
+            log.error("ERRORE NEL RECUPERO DEI DATI DELL'ENTE DA ACCREDITAMENTO ENTE :: ", e);
+        }
+        return enteAccreditato;
+    }
+
+    // TODO MOCK TEMPORANEO - factory dei dati ente finti usato finche' il servizio
+    // AccreditamentoEnte non e' raggiungibile in locale. Rimuovere insieme ai blocchi mock.
+    private EnteDto buildMockEnteAccreditato(String partitaIvaCodFis) {
+        EnteDto enteDto = new EnteDto();
+        enteDto.setId(1L);
+        enteDto.setPartitaIva(partitaIvaCodFis);
+        enteDto.setRagioneSociale("ENTE DI PROVA SRL");
+        enteDto.setTelefono("0800000000");
+        enteDto.setEmail("ente.prova@example.com");
+        enteDto.setPec("ente.prova@pec.example.com");
+        enteDto.setSitoWeb("https://www.example.com");
+        enteDto.setConsensoTrattamentoDati(true);
+        enteDto.setDatiCertificati(false);
+        enteDto.setDatiCertificatiModificati(false);
+
+        List<SedeEnteDto> sedi = new ArrayList<>();
+        sedi.add(buildMockSedeLegale());
+        enteDto.setSedeEnte(sedi);
+
+        // Dati company profile: valorizzati per evitare NPE in companyProfileEnrich
+        enteDto.setSpecializzazioneProduttiva(buildMockSpecializzazioneProduttiva());
+        enteDto.setSettoreEconomico(buildMockSettoreEconomico());
+        enteDto.setNumeroDipendenti(buildMockNumeroDipendenti());
+        enteDto.setFatturatoAnnuo(buildMockFatturatoAnnuo());
+        enteDto.setDimensioneEnte(buildMockDimensioneEnte());
+        return enteDto;
+    }
+
+    private SedeEnteDto buildMockSedeLegale() {
+        SedeEnteDto sedeLegale = new SedeEnteDto();
+        sedeLegale.setTipoSede("SEDE_LEGALE");
+        sedeLegale.setProvincia("BA");
+        sedeLegale.setComune("BARI");
+        sedeLegale.setDenominazioneComune("BARI");
+        sedeLegale.setIndirizzo("Via Roma 1");
+        sedeLegale.setCap("70121");
+        return sedeLegale;
+    }
+    private SpecializzazioneProduttivaDto buildMockSpecializzazioneProduttiva() {
+       SpecializzazioneProduttivaDto specializzazione = new SpecializzazioneProduttivaDto();
+       specializzazione.setCodice("01");
+       specializzazione.setDescrizione("Specializzazione di prova");
+       return specializzazione;
+    }
+
+    private SettoreEconomicoDto buildMockSettoreEconomico() {
+          SettoreEconomicoDto settoreEconomico = new SettoreEconomicoDto();
+          settoreEconomico.setCodice("01");
+          settoreEconomico.setDescrizione("Settore economico di prova");
+          return settoreEconomico;
+    }
+
+    private NumeroDipendentiDto buildMockNumeroDipendenti() {
+        NumeroDipendentiDto numeroDipendenti = new NumeroDipendentiDto();
+        numeroDipendenti.setCodice("01");
+        numeroDipendenti.setDescrizione("1-9");
+        return numeroDipendenti;
+    }
+    private FatturatoAnnuoDto buildMockFatturatoAnnuo() {
+        FatturatoAnnuoDto fatturatoAnnuo = new FatturatoAnnuoDto();
+        fatturatoAnnuo.setCodice("01");
+        fatturatoAnnuo.setDescrizione("Fino a 100.000");
+        return fatturatoAnnuo;
+    }
+
+    private DimensioneEnteDto buildMockDimensioneEnte() {
+        DimensioneEnteDto dimensioneEnte = new DimensioneEnteDto();
+        dimensioneEnte.setCodice("01");
+        dimensioneEnte.setDescrizione("Micro impresa");
+        return dimensioneEnte;
+    }
+
+    @Override
+    public List<SpecializzazioneProduttivaDto> getSpecializzazioneProduttiva() {
+        WebClient client = getClient(baseUrl + specializzazioneProduttiva);
+        List<SpecializzazioneProduttivaDto> response = (List<SpecializzazioneProduttivaDto>) client.getCollection(SpecializzazioneProduttivaDto.class);
+        return response;
+    }
+
+    @Override
+    public List<SettoreEconomicoDto> getSettoreEconomico() {
+        WebClient client = getClient(baseUrl + settoreEconomico);
+        List<SettoreEconomicoDto> response = (List<SettoreEconomicoDto>) client.getCollection(SettoreEconomicoDto.class);
+        return response;
+    }
+
+    @Override
+    public List<NumeroDipendentiDto> getNumeroDipendenti() {
+        WebClient client = getClient(baseUrl + numeroDipendenti);
+        List<NumeroDipendentiDto> response = (List<NumeroDipendentiDto>) client.getCollection(NumeroDipendentiDto.class);
+        return response;
+    }
+
+    @Override
+    public List<FatturatoAnnuoDto> getFatturatoAnnuo() {
+        WebClient client = getClient(baseUrl + fatturatoAnnuo);
+        List<FatturatoAnnuoDto> response = (List<FatturatoAnnuoDto>) client.getCollection(FatturatoAnnuoDto.class);
+        return response;
+    }
+
+    @Override
+    public List<DimensioneEnteDto> getDimensioneEnte() {
+        WebClient client = getClient(baseUrl + dimensioneImpresa);
+        List<DimensioneEnteDto> response = (List<DimensioneEnteDto>) client.getCollection(DimensioneEnteDto.class);
+        return response;
+    }
+
+    @Override
+    public List<SedeEnteDto> getSediEnte(String partitaIvaCodFis) {
+        WebClient client = getClient(baseUrl + getSediEnte);
+        client.path(partitaIvaCodFis);
+        List<SedeEnteDto> response = (List<SedeEnteDto>) client.getCollection(SedeEnteDto.class);
+        return response;
+    }
+
+    @Override
+    public List<EnteSoggettoResponseDto> getPartiteIvaUtente(String codiceFiscale) {
+        // TODO MOCK TEMPORANEO - servizio AccreditamentoEnte non raggiungibile in locale. Jester
+        // Rimuovere questo blocco per ripristinare la chiamata reale.
+        if (true) {
+            log.warn("MOCK AccreditamentoEnte attivo per getPartiteIvaUtente, codiceFiscale=" + codiceFiscale);
+            List<EnteSoggettoResponseDto> mockResponse = new ArrayList<>();
+            mockResponse.add(new EnteSoggettoResponseDto("12345678901", "ENTE DI PROVA SRL - 12345678901"));
+            mockResponse.add(new EnteSoggettoResponseDto("12345678902", "DITTA INDIVIDUALE - 12345678902"));
+            return mockResponse;
+        }
+
+        WebClient client = getClient(baseUrl + getPartiteIvaUtente);
+        client.path(codiceFiscale);
+        String responseString = client.get(String.class);
+        List<EnteSoggettoResponseDto> response = new ArrayList<>();
+        if (Validator.isNotNull(responseString)) {
+            Gson gson = new Gson();
+            Type listType = new TypeToken<List<EnteSoggettoResponseDto>>() {}.getType();
+            response = gson.fromJson(responseString, listType);
+        }
+        return response;
+    }
+}

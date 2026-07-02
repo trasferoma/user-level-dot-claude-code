@@ -1,0 +1,20 @@
+Modifiche gestione soccorso istruttorio in fase di esecuzione
+Evolvere la funzionalità di soccorso istruttorio (richiesta integrazioni) in fase di Esecuzione, consentendo la richiesta di integrazioni non solo in presenza di un'istanza relativa a un servizio della fase di esecuzione, ma anche quando è presente il modulo di compilazione del disciplinare (disciplinare di esecuzione).
+
+Caratteristiche del form disciplinare:
+
+non ha form parent associati;
+
+non abilita ulteriori form della fase di esecuzione, ad eccezione del form di sottoscrizione del disciplinare;
+
+di conseguenza, l'accettazione di tale servizio non abilita l'invio di ulteriori form di esecuzione, diversamente da tutti gli altri.
+
+Contesto codice (comportamento attuale)
+
+Eligibilità richiesta integrazioni in esecuzione - ScrivaniaOperatoreBandiFrontendService.getBandoFormStreamDaIntegrareByDomandaBandoId() (righe 6533-6598): itera solo i BandoForm di tipo ESECUZIONE e considera idoneo il form solo se esiste un'istanza (IstanzaDomandaBando) in stato INTEGRATA/CONFERMATA. Il form successivo è determinato dal campo formDaMostrare nel JSON dell'istanza.
+
+Abilitazione form successivi — ScrivaniaOperatoreBandiFrontendService.richiediIntegrazioni() (righe 2439-2495, ramo isEsecuzione): l'accettazione/integrazione marca DA_INTEGRARE i BandoForm ESECUZIONE il cui formDaMostrare corrisponde al form integrato. La catena è guidata dalle proprietà formAttuale/formDaMostrare nel JSON dell'istanza (non esiste un campo "parent" su DB).
+
+TipoFormEnum (gestione-bandi-common/.../TipoFormEnum.java): ogni valore ha due flag nel costruttore — 1° = appartenenza alla fase di esecuzione, 2° = è una richiesta di integrazione.
+
+CompletaEsecuzioniActionCommand (presentatore-forms): costruisce la lista dei form di esecuzione compilabili (getTipoFormEsecuzione) e gestisce updateIstanzaDaIntegrare.

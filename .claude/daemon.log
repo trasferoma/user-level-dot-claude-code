@@ -1,0 +1,10 @@
+[2026-06-23T09:31:54.678Z] [supervisor] ─── daemon start ─── version=2.1.186 pid=17588 origin=transient
+[2026-06-23T09:31:55.326Z] [supervisor] auth: scheduling proactive refresh in 19286s
+[2026-06-23T09:31:55.327Z] [supervisor] auth: scheduling proactive refresh in 19286s
+[2026-06-23T09:31:55.855Z] [supervisor] workers=0
+[2026-06-23T09:31:56.013Z] [bg] bg spawned 020c420c (spare)
+[2026-06-23T09:31:56.069Z] [bg] bg spawned db47a7c6 (fleet)
+[2026-06-23T09:33:56.397Z] [bg] bg settled 020c420c (done)
+[2026-06-23T12:35:58.276Z] [bg] bg settled db47a7c6 (done)
+[2026-06-23T12:36:03.287Z] [supervisor] idle 5s with no clients — exiting
+[2026-06-23T12:36:03.288Z] [supervisor] shutting down (cause=idle_exit, uptime=11049s, leases=0, live_workers=0)

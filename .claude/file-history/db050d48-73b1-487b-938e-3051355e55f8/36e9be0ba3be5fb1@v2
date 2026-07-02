@@ -1,0 +1,473 @@
+package it.servizidigitali.gestionebandi.frontend.constants;
+
+/**
+ * @author pindi
+ */
+public class GestioneBandiFrontendPortletKeys {
+
+	public static final String GESTIONEBANDIFRONTEND = "it_servizidigitali_gestionebandi_frontend_GestioneBandiFrontendPortlet";
+	public static final String BUNDLE_SYMBOLIC_NAME = "it.servizidigitali.gestionebandi.frontend";
+
+	public static final String BUDGET = "budget";
+
+	public static final String INDIRIZZO_PRECEDENTE = "indirizzoPrecedente";
+
+	public static final String NOME_RICERCA = "nomeRicerca";
+	public static final String STATO_RICERCA = "statoRicerca";
+	public static final String DATA_INSERIMENTO_DA = "dataInserimentoDa";
+	public static final String DATA_INSERIMENTO_A = "dataInserimentoA";
+
+	public static final String LISTA_SERVIZI = "listaServizi";
+
+	public static final String LISTA_STATO = "listaStato";
+	public static final String LISTA_PROCESSI = "listaProcessi";
+	public static final String LISTA_FORM_PRINCIPALI = "listaFormPrincipali";
+	public static final String LISTA_FORM_INTEGRATIVI = "listaFormIntegrativi";
+	public static final String LISTA_FORM_INTEGRATIVI_BANDO = "listaFormIntegrativiBando";
+	public static final String LISTA_TIPO_INTEGRAZIONE_BACKOFFICE = "listaTipoIntegrazioneBackoffice";
+	public static final String LISTA_TIPO_INTEGRAZIONE_BACKOFFICE_BANDO = "listaTipoIntegrazioneBackofficeBando";
+	public static final String LISTA_TIPO_GENERAZIONE_PDF = "listaTipoGenerazionePDF";
+	public static final String LISTA_TIPO_SERVIZIO = "listaTipoServizio";
+	public static final String LISTA_TIPO_COMPONENTI_FAMILIARI = "listaTipoComponentiFamiliari";
+	public static final String LISTA_SOTTO_ORGANIZZAZIONI = "listaSottoOrganizzazioni";
+    public static final String LISTA_TIPO_GESTIONE_PRIORITA = "listaTipoGestionePriorita";
+    public static final String LISTA_TIPOLOGIA_BANDO_GRADUATORIA = "listaTipologiaBandoGraduatoria";
+
+	public static final String LISTA_SOTTO_ORGANIZZAZIONI_DTO = "listaSottoOrganizzazioniDTO";
+
+	public static final String DATA_CREAZIONE = "data-creazione";
+	public static final String AZIONI = "Azioni";
+	public static final String STATO = "attiva";
+
+	public static final int DEFAULT_CUR = 1;
+	public static final int DEFAULT_DELTA = 10;
+	public static final String LISTA_VUOTA = "'listaVuota'";
+	public static final String LISTA_FORMATI_FIRMA_DIGITALE = "listaFormatiFirmaDigitale";
+
+
+	public static final String LISTA_BANDI = "listaBandi";
+
+	public static final String LISTA_TIPOLOGIA_BANDO = "listaTipologiaBando";
+
+	public static final String LISTA_STATO_DOMANDA = "listaDomandaBando";
+
+	public static final String STRUCTURE_NAME_SCHEDA_SERVIZIO = "Scheda servizio";
+	public static final String STRUCTURE_NAME_SCHEDA_BANDO = "Scheda bando";
+	public static final String STRUCTURE_NAME_FAQ = "FAQ";
+
+
+	public static final String SALVA_CREA_ACTION_COMMAND = "/salvaModifica";
+	public static final String RICERCA_ACTION_COMMAND = "/ricerca";
+
+	public static final String BANDO = "bando";
+	public static final String ID_BANDO = "idBando";
+	public static final String ID_FORM_PRINCIPALE = "idFormPrincipale";
+	public static final String NOME = "nome";
+	public static final String PUBBLICATO  = "pubblicato";
+	public static final String DESCRIZIONE_BANDO = "descrizioneBando";
+	public static final String ABILITAZIONE_DELEGA = "abilitazioneDelega";
+	public static final String RICHIESTA_FIRMA  = "richiestaFirma";
+	public static final String SIGILLO_QUALIFICATO  = "sigilloQualificato";
+	public static final String VERIFICA_FIRMA_CF = "verificaFirmaCf";
+	public static final String CODICEAOO = "CodiceAOO";
+	public static final String CODICEUO = "CodiceUO";
+	public static final String ABILITA_BOZZE_MULTIPLE = "abilitaBozzeMultiple";
+	public static final String OBBLIGO_ACCREDITAMENTO_ENTE = "obbligoAccreditamentoEnte";
+	public static final String ABILITA_NOTIFICHE_PEC = "abilitaNotifichePec";
+	public static final String UTENTE_DESTINATARIO = "utenteDestinatario";
+
+
+	public static final String TIPOLOGIA_BANDO = "tipologia";
+	public static final String TIPOLOGIA_BANDO_INSTANCE = "tipologiaBandoInstance";
+	public static final String PEC = "PEC";
+	public static final String ATTIVA_BANDO = "attivaBando";
+	public static final String SERVIZIO = "servizio";
+	public static final String PROCESSO_BPMN = "processoBpmn";
+	public static final String IDENTIFICATIVO_FORM_PRINCIPALE = "identificativoFormPrincipale";
+	public static final String FORMATI_FIRMA_DIGITALE = "formatiFirmaDigitale";
+
+
+	public static final String SERVIZI_INTEGRATIVI = "serviziIntegrativi";
+	public static final String FORM_SERVIZI_INTEGRATIVI = "formServiziIntegrativi";
+
+	public static final String IDENTIFICATIVI_FORM_INTEGRATIVI = "identificativiFormIntegrativi";
+
+	public static final String IDENTIFICATIVI_SERVIZI_INTEGRATIVI = "identificativiServiziIntegrativi";
+
+	public static final String CONFIGURAZIONE_STEP1_ATTIVO = "configurazioneStep1Attivo";
+	public static final String FILTRO_COMPONENTI_NUCLEO_FAMILIARE = "filtroComponentiNucleoFamiliare";
+	public static final String TIPOLOGIA_SERVIZIO = "tipologiaServizio";
+	public static final String TIPI_INTEGRAZIONI_BACKOFFICE = "tipiIntegrazioniBackoffice";
+	public static final String TIPI_GENERAZIONE_TEMPLATE = "tipiGenerazioneTemplate";
+
+	public static final String ABILITA_CACHE_INTEGRAZIONI_BACKOFFICE = "abilitaCacheIntegrazioniBackoffice";
+
+	public static final String JSP_HOME = "/view.jsp";
+	public static final String JSP_AGGIUNGI_MODIFICA_BANDO = "/aggiungiModificaBando.jsp";
+	public static final String JSP_MODIFICA_NON_AUTORIZZATA = "/modificaNonAutorizzata.jsp";
+
+	public static final String SESSION_MESSAGE_ESEGUITO_CORRETTAMENTE = "eseguito-correttamente";
+	public static final String SESSION_ERROR_CAMPI_OBBLIGATORI = "errore-campi-obbligatori";
+	public static final String SESSION_ERROR_CRITERI = "errore-criteri";
+	public static final String SESSION_ERROR_IMPOSSIBILE_RECUPERARE_BANDO = "impossibile-recuperare-bando";
+	public static final String SESSION_ERROR_IMPOSSIBILE_RECUPERARE_SERVIZI = "impossibile-recuperare-servizi";
+	public static final String SESSION_ERROR_IMPOSSIBILE_RECUPERARE_PROCESSI = "impossibile-recuperare-processi";
+	public static final String SESSION_ERROR_IMPOSSIBILE_RECUPERARE_FORM_PRINCIPALI = "impossibile-recuperare-form-principali";
+	public static final String SESSION_ERROR_IMPOSSIBILE_RECUPERARE_FORM_INTEGRATIVI = "impossibile-recuperare-form-integrativi";
+	public static final String SESSION_ERROR_FORM_ANNULLAMENTO_NON_UNIVOCO = "form-annullamento-non-univoco";
+	public static final String SESSION_ERROR_CODICE_BANDO_NON_UNIVOCO = "codice-bando-non-univoco";
+	public static final String SESSION_ERROR_DESCRIZIONE_STATO_NON_UNIVOCA = "descrizione-stato-non-univoca";
+	public static final String SESSION_ERROR_RANGE = "errore-range-importo-valutazione";
+	public static final String SESSION_ERROR_RANGE_OVERLAPPED = "errore-range-importo-valutazione-overlapped";
+	public static final String SESSION_ERROR_RANGE_CONTIGUITA = "errore-range-importo-valutazione-contiguita";
+
+	
+	public static final String DETTAGLIO_NUOVO_RENDER_COMMAND = "/dettaglioNuovo";
+
+	public static final String DESCRIZIONE = "descrizione";
+	public static final String DESCRIZIONE_VARIABILE = "descrizioneVariabile";
+	public static final String DESCRIZIONE_CRITERIO= "descrizioneVCriterio";
+	public static final String PUNTEGGIO_MINIMO = "punteggioMinimo";
+	public static final String PUNTEGGIO_MASSIMO = "punteggioMassimo";
+	public static final String SOGLIA_MINIMA = "sogliaMinima";
+	public static final String PRIORITA = "priorita";
+	public static final String ORDINE = "ordine";
+
+	public static final String CODICE  = "codice";
+	public static final String CODICE_REQUISITO = "codiceRequisito";
+	public static final String REQUISITO_OBBIGATORIO = "requisitoObbligatorio";
+	public static final String MOSTRA_VALORE_CORRETTO = "mostraValoreCorretto";
+
+	public static final String OPERAZIONE_ID = "operazioneId";
+	public static final String VALORE_RIFERIMENTO_OPERAZIONE_ID = "valoreRiferimentoOperazioneId";
+	public static final String VALORE_RIFERIMENTO = "valoreRiferimento";
+
+    public static final String TEMPLATES_PDF_INFO = "templatesPdfInfo";
+    public static final String TEMPLATES_PDF_LIST = "templatesPdfList";
+
+/*	public static final List<String> OPERATORI = Arrays.asList(
+			"==",
+			">=",
+			">",
+			"<=",
+			"<",
+			"IN"
+	);*/
+
+	//public static final String OPERATORI = "operatori";
+
+
+	public static final String VALORE_REQUISITO = "valoreRequisito";
+
+	public static final String REQUISITI_DOMANDA = "requisitiDomanda";
+
+	public static final String ID_REQUISITO = "requisitoId";
+
+	public static final String ID_CRITERIO_VALUTAZIONE = "criterioValutazioneId";
+
+	public static final String CRITERI_VALUTAZIONE_DOMANDA = "criteriValutazioneDomanda";
+
+	public static final String TERMINI_FISSI_DOMANDA = "terminiFissiDomanda";
+
+	public static final String TERMINI_VARIABILI_DOMANDA = "terminiVariabiliDomanda";
+
+	public static final String TERMINI_BANDO = "termineBando";
+
+	public static final String TERMINI_BANDO_VARIABILI = "termineBandoVariabili";
+
+	public static final String ID_TERMINE_DOMANDA = "termineDomandaId";
+
+	public static final String DATA_INIZIO = "dataInizio";
+
+	public static final String DATA_INIZIO_PUBBLICAZIONE = "dataInizioPubblicazione";
+
+	public static final String DATA_FINE_PUBBLICAZIONE = "dataFinePubblicazione";
+
+	public static final String DURATA = "durata";
+
+	public static final String DURATA_VARIABILE = "durataVariabile";
+
+	public static final String DATA_TERMINE = "dataTermine";
+
+	public static final String FESTIVI = "contaFestivi";
+
+	public static final String FESTIVI_VARIABILE = "contaFestiviVariabile";
+
+	public static final String CODICE_TERMINE = "codiceTermine";
+
+	public static final String CODICE_TERMINE_VARIABILE = "codiceTermineVariabile";
+
+	public static final String SALVATAGGIO_SUCCESSO = "salvataggio-successo";
+
+	public static final String ERRORE_SALVATAGGIO = "salvataggio-errore";
+
+	public static final String CARICA_DA_BANDO = "caricaDaBando";
+
+	public static final String CONTRIBUTI = "contributi";
+
+	public static final String STATI = "stati";
+
+	public static final String STATI_DTO = "statiDTO";
+
+	public static final String AUTOCOMPLETE_STATI = "autocompleteStati";
+
+	public static final String ID_CONTRIBUTO = "contributoId";
+
+	public static final String ID_STATO = "statoId";
+
+	public static final String ID_TIPOLOGIA_BENEFICIARIO = "tipologiaBeneficiarioId";
+
+	public static final String ID_CODICE_ATECO = "codiceAtecoId";
+	public static final String ID_CODICE_ATECO_RILEVANZA = "rilevanzaCodiceAtecoId";
+
+	public static final String ID_DIMENSIONE_AZIENDALE = "dimensioneAziendaleId";
+
+	public static final String CODICE_CONTRIBUTO = "codiceContributo";
+
+	public static final String CODICE_STATO = "codiceStato";
+
+	public static final String DESCRIZIONE_STATO = "descrizioneStato";
+
+	public static final String PERCENTUALE_CONTRIBUTO = "percentualeContributo";
+
+	public static final String ID_TERMINE_BANDO = "termineBandoId";
+
+	public static final String ID_TERMINE_BANDO_VARIABILE = "termineVariabileBandoId";
+
+	public static final String LISTA_URI_PRIVATE = "listaUriPrivata";
+
+	public static final String LISTA_URI_PUBBLICHE = "listaUriPubblica";
+
+	public static final String SERVIZI_FRIENDLY_URL = "/servizi";
+	public static final String BANDI_FRIENDLY_URL = "/bandi";
+
+	public static final String STATO_DOMANDA_BANDO = "statoDomandaBando";
+
+	public static final String STATO_ID = "statoId";
+
+	public static final String SOTTO_ORGANIZZAZIONI = "sottoOrganizzazioni";
+
+	public static final String ORGANIZZAZIONE_ID = "organizationId";
+
+	public static final String BANDO_SOTTO_ORGANIZZAZIONE_ID = "subOrganizationId";
+
+	public static final String LISTA_ARTICLE_CATALOGO_BANDI = "listaArticleCatalogoBandi";
+	public static final String LISTA_ARTICLE_FAQ_BANDI = "listaArticleFaqBandi";
+
+	public static final String BANDO_PRIVATE_LAYOUT_ID = "privateLayoutId";
+
+	public static final String BANDO_PUBLIC_LAYOUT_ID = "publicLayoutId";
+
+	public static final String BANDO_CATALOGO_BANDI_ARTICLE_ID = "catalogoBandiArticleId";
+	public static final String BANDO_FAQ_BANDI_ARTICLE_ID = "faqBandoArticleId";
+
+	public static final String CODICE_SOTTO_ORGANIZZAZIONE = "codiceSottoOrganizzazione";
+
+	public static final String TITOLO_FINANZIAMENTO ="titoloFinanziamento";
+
+	public static final String FORM_BANDI_INTEGRATIVI = "formBandiIntegrativi";
+
+	public static final String FORM_BANDI_INTEGRATIVI_ESECUZIONE = "formBandiIntegrativiEsecuzione";
+
+	public static final String IDENTIFICATIVI_FORM_INTEGRATIVI_ESECUZIONE = "identificativiFormIntegrativiEsecuzione";
+
+	public static final String BANDO_LAYOUT_ID = "layoutId";
+
+	public static final String TIPOLOGIA_BENEFICIARIO = "tipologiaBeneficiario";
+	public static final String CODICE_ATECO = "codiceAteco";
+	public static final String CODICE_ATECO_RILEVANZA = "codiceAtecoRilevanza";
+	public static final String DIMENSIONE_AZIENDALE = "dimensioneAziendale";
+	public static final String OPERAZIONE_ID_TIPOLOGIA_BENEFICIARIO = "operazioneIdTipologiaBeneficiario";
+	public static final String OPERAZIONE_ID_CODICE_ATECO = "operazioneIdCodiceAteco";
+	public static final String OPERAZIONE_ID_DIMENSIONE_AZIENDALE = "operazioneIdDimensioneAziendale";
+	public static final String VALORE_REQUISITO_TIPOLOGIA_BENEFICIARIO = "valoreRequisitoTipologiaBeneficiario";
+	public static final String VALORE_REQUISITO_CODICE_ATECO = "valoreRequisitoCodiceAteco";
+	public static final String VALORE_REQUISITO_DIMENSIONE_AZIENDALE = "valoreRequisitoDimensioneAziendale";
+
+	public static final String ABILITA_RICHIEDENTE = "abilitaRichiedente";
+
+	public static final String DATA_FINE = "dataFine";
+
+	public static final String OPERAZIONI = "operazioni";
+
+	public static final String RICERCA_BANDO = "ricercaBando";
+	public static final String RICERCA_BANDO_TIPOLOGIA_BENEFICIARI = "ricercaBandoTipologiaBeneficiari";
+	public static final String RICERCA_BANDO_DIMENSIONE_AZIENDA = "ricercaBandoDimensioneAzienda";
+	public static final String RICERCA_BANDO_CODICE_ATECO = "ricercaBandoCodiceAteco";
+
+	public static final String RICERCA_BANDO_TIPOLOGIA_BENEFICIARI_ID = "ricercaBandoTipologiaBeneficiariId";
+	public static final String RICERCA_BANDO_DIMENSIONE_AZIENDA_ID = "ricercaBandoDimensioneAziendaId";
+	public static final String RICERCA_BANDO_CODICE_ATECO_ID = "ricercaBandoCodiceAtecoId";
+	public static final String RICERCA_BANDO_TIPOLOGIA_BENEFICIARI_VALORI_ID = "ricercaBandoTipologiaBeneficiariValoriId";
+	public static final String RICERCA_BANDO_DIMENSIONE_AZIENDA_VALORI_ID = "ricercaBandoDimensioneAziendaValoriId";
+	public static final String RICERCA_BANDO_CODICE_ATECO_VALORI_ID = "ricercaBandoCodiceAtecoValoriId";
+
+	public static final String LISTA_TIPOLOGIA_BENEFICIARI = "listaTipologiaBeneficiari";
+
+	public static final String LISTA_DIMENSIONI_AZIENDALI = "listaDimensioniAziendali";
+	public static final String LISTA_TIPOLOGIE_AVVISO = "listaTipologieAvviso";
+	public static final String LISTA_RILEVANZA_CODICE_ATECO = "listaRilevanzaCodiceAteco";
+
+
+	public static final String ID_VALORE_DATO_BANDO_TIPOLOGIA_BENEFICIARIO 	= "idValoriDatoBandoTipologiaBeneficiario";
+	public static final String ID_VALORE_DATO_BANDO_DIMENSIONE_AZIENDALE 	= "idValoriDatoBandoDimensioneAziendale";
+	public static final String ID_VALORE_DATO_BANDO_CODICE_ATECO 			= "idValoriDatoBandoCodiceAteco";
+	public static final String ID_VALORE_DATO_BANDO_CODICE_ATECO_RILEVANZA 	= "idValoriDatoBandoCodiceAtecoRilevanza";
+	public static final String ID_VALORE_DATO_BANDO_DISABILITA_CONTROLLO_IMPORTO_AMMISSIBILE = "idValoriDatoBandoDisabilitaControlloImportoAmmissibile";
+	public static final String VALORE_DATO_BANDO_DISABILITA_CONTROLLO_IMPORTO_AMMISSIBILE = "valoriDatoBandoDisabilitaControlloImportoAmmissibile";
+	public static final String ID_VALORE_DATO_BANDO_DISABILITA_PROTOCOLLAZIONE_ALLEGATI_INTEGRAZIONE = "idValoriDatoBandoDisabilitaProtocollazioneAllegatiIntegrazione";
+	public static final String VALORE_DATO_BANDO_DISABILITA_PROTOCOLLAZIONE_ALLEGATI_INTEGRAZIONE = "valoriDatoBandoDisabilitaProtocollazioneAllegatiIntegrazione";
+	public static final String ID_VALORE_DATO_BANDO_DISABILITA_CAMPO_OGGETTO = "idValoriDatoBandoDisabilitaCampoOggetto";
+	public static final String VALORE_DATO_BANDO_DISABILITA_CAMPO_OGGETTO = "valoriDatoBandoDisabilitaCampoOggetto";
+	public static final String ID_VALORE_DATO_BANDO_ABILITA_FIRMA_DATA_ISTANZA = "idValoriDatoBandoAbilitaFirmaDataIstanza";
+	public static final String VALORE_DATO_BANDO_ABILITA_FIRMA_DATA_ISTANZA = "valoriDatoBandoAbilitaFirmaDataIstanza";
+	public static final String VALORE_DATO_BANDO_TIPOLOGIA_BENEFICIARIO = "valoriDatoBandoTipologiaBeneficiario";
+	public static final String VALORE_DATO_BANDO_DIMENSIONE_AZIENDALE 	= "valoriDatoBandoDimensioneAziendale";
+	public static final String VALORE_DATO_BANDO_CODICE_ATECO 			= "valoriDatoBandoCodiceAteco";
+	public static final String VALORE_DATO_BANDO_CODICE_ATECO_RILEVANZA = "valoriDatoBandoCodiceAtecoRilevanza";
+
+	public static final String AREA_TEMATICA_BANDO_LIST 			= "areaTematicaBandoList";
+	public static final String AREA_TEMATICA_BANDO_ID 			= "areaTematicaBandoId";
+	public static final String TIPOLOGIA_AVVISO_ID 			= "tipologiaAvvisoId";
+
+	public static final String DOMANDA_MULTIPLA_INDIVIDUALE = "domandaMultiplaIndividuale";
+	public static final String DOMANDA_MULTIPLA_RTI = "domandaMultiplaRti";
+
+	public static final String RESOURCE_AUTOCOMPLETE_CODICI_ATECO = "resourceAutocompleteCodiciAteco";
+
+	public static final String BUDGETS_BANDO = "budgetsBando";
+
+	public static final String ID_BUDGET_BANDO = "budgetBandoId";
+	public static final String NOME_ATTO = "nomeAtto";
+	public static final String IMPORTO_BUDGET = "importoBudget";
+
+	public static final String DATA_ATTO_BUDGET = "dataAttoBudget";
+
+	public static final String ERRORE_BUDGET_OBBLIGATORIO = "errore-budget-obbligatorio";
+	public static final String ERRORE_DATA_INIZIO_FINE = "errore-data-inizio-fine";
+	public static final String ERRORE_DATA_INIZIO_PUBBLICAZIONE = "errore-data-inizio-pubblicazione";
+	public static final String FILE_BUDGET = "fileBudget";
+	public static final String NOME_FILE = "nomeFile";
+	public static final String ID_DOCUMENTALE = "idDocumentale";
+	public static final String RESOURCE_COMMAND_DOWNLOAD_FILE_BUDGET = "/downloadFileBudget";
+	public static final String BUDGETS_SUM = "budgetsSum";
+	public static final String PROTOCOLLA_INTEGRAZIONI = "protocollaIntegrazioni";
+	public static final String ABILITA_VISIBILITA_ALLEGATI = "abilitaVisibilitaAllegati";
+
+	public static final String ID_CRIT_PUNTEGGIO_TOT = "idPunteggioTotale";
+	public static final String CODICE_CRIT_PUNTEGGIO_MIN = "codicePunteggioMinTotale";
+	public static final String DESCRIZIONE_CRIT_PUNTEGGIO_MIN = "descrizionePunteggioMinimoTotale";
+	public static final String PUNTEGGIO_MIN_TOTALE = "punteggioMinimoTotale";
+	public static final String PUNTEGGIO_MAX_TOTALE = "punteggioMaxCriterioPunteggioMinTotale";
+	public static final String SOGLIA_MIN_CRIT_PUNTEGGIO_MIN = "sogliaMinCriterioPunteggioMinTotale";
+	
+	public static final String CRITERIO_PUNTEGGIO_TOTALE = "criterioPunteggioTotale";
+	
+	public static final String MODELLO_ANNULLAMENTO = "modelloAnnullamento";
+
+	public static final String FORM_SERVIZI_INTEGRATIVI_ANULLAMENTO = "formServiziIntegrativiAnnullamento";
+	public static final String FORM_BANDI_INTEGRATIVI_ANNULLAMENTO = "formBandiIntegrativiAnnullamento";
+
+	public static final String RICHIESTA_FIRMA_INTEGRAZIONE  = "richiestaFirmaIntegrazione";
+	public static final String RESOURCE_VALIDA_CALCOLO_AUTOMATICO = "/validaCalcoloAutomatico";
+	public static final String RESOURCE_GET_FORM_FIELD= "/getFormField";
+	public static final String RESOURCE_VERIFICA_VALIDITA_FORM = "/verificaValiditaForm";
+
+	public static final String SUCCESSO_SALVATAGGIO_BANDO = "successoSalvataggioBando";
+
+	public static final String TIPO_CUSTOM_FIELD_CRONOPROGRAMMA = "cronoprogrammaBandi";
+	
+	public static final String TERMINE_INVIO_DATI_MONITORAGGIO = "termineInvioMonitoraggio";
+
+	public static final String ASSEGNAZIONE_AUTOMATICA_BUDGET = "calcoloAutoImportoAmmissibile";
+	public static final String ABILITA_IMPORTO_RICHIESTO = "abilitaImportoRichiesto";
+	public static final String STATI_ASSEGNAZIONE_IMPORTO = "fasiAssegnabilitaImporto";
+	public static final String IMPORTO_RANGE = "importoRange";
+	public static final String PUNTEGGIO_MINIMO_RANGE = "punteggioMinimoRange";
+	public static final String PUNTEGGIO_MASSIMO_RANGE = "punteggioMassimoRange";
+	public static final String LISTA_RANGE_IMPORTI_VALUTAZIONE = "listaRangeImportiValutazione";
+	public static final String ID_RANGE_IMPORTO_VALUTAZIONE = "rangeImportiValutazioneId";
+	public static final String LISTA_FASI_ASSEGNABILITA_IMPORTO = "listaFasiAssegnabilitaImporto";
+	public static final String LISTA_ENUM_FASI_ASSEGNABILITA_IMPORTO = "listaEnumFasiAssegnabilitaImporto";
+	public static final String TIPO_CUSTOM_FIELD_ESECUZIONE = "customFormEsecuzione";
+	public static final String TIPO_CUSTOM_FIELD_ANTICIPO = "customFormEsecuzioneAnticipo";
+    public static final String TIPO_CUSTOM_FIELD_SALDO= "customFormEsecuzioneSaldo";
+	public static final String TIPO_CUSTOM_FIELD_RINUNCIA= "customFormEsecuzioneRinuncia";
+    public static final String TIPO_CUSTOM_FIELD_INTEGRAZIONE_OPERATORE = "customFormIntegrazioneOperatore";
+    public static final String TIPO_CUSTOM_FIELD_INTEGRAZIONE_OPERATORE_ESECUZIONE = "customFormIntegrazioneOperatoreEsecuzione";
+    public static final String TIPO_CUSTOM_FIELD_INTEGRAZIONE_FRONTEND = "customFormIntegrazioneFrontend";
+
+    public static final String TIPO_DOCUMENTO = "tipoDocumento";
+    public static final String MITTENTE_INTERNO = "mittenteInterno";
+    public static final String ID_PRATICA = "idPratica";
+    public static final String IN_CARICO_A = "inCaricoA";
+    public static final String CLASSIFICA = "classifica";
+    public static final String TIPO_CLIENT_PROTOCOLLO = "tipoCLientProtocollo";
+    public static final String LISTA_CLIENT_PROTOCOLLAZIONE = "listaClientProtocollazione";
+    public static final String PEC_NOTIFICA_PROTOCOLLAZIONE = "pecNotificaProtocollazione";
+    public static final String CONTESTI = "contesti";
+    public static final String CONTESTO = "contesto";
+    public static final String FORZATURA_AVANZAMENTO = "forzaturaAvanzamento";
+    public static final String GESTIONE_BUDGET_RESIDUO = "gestioneBudgetResiduo";
+	public static final String RIMODULAZIONE_BUDGET_GRADUATORIA = "rimodulazioneBudgetGraduatoria";
+	public static final String MODALITA_ASSEGNAZIONE_BUDGET = "modalitaAssegnazioneBudgetEnumList";
+	public static final String ABILITA_ANAGRAFICA_UNICA = "abilitaAnagraficaUnica";
+	public static final String ABILITA_SCELTA_FIRMA_DOCUMENTO = "abilitaSceltaFirmaDocumento";
+	public static final String ABILITA_PROTOCOLLAZIONE_ESITO = "abilitaProtocollazioneEsito";
+	public static final String ABILITA_PROTOCOLLAZIONE_SOCCORSO_ISTRUTTORIO = "abilitaProtocollazioneSoccorsoIstruttorio";
+	public static final String ABILITA_ESECUZIONE_INTEGRAZIONE = "abilitaEsecuzioneIntegrazione";
+    public static final String MAIL_PASSWORD_DEC = "mailPasswordDec";
+
+    public static final String MAIL_ENABLED = "mailEnabled";
+    public static final String MAIL_PROTOCOL = "mailProtocol";
+    public static final String MAIL_HOST = "mailHost";
+    public static final String MAIL_PORT = "mailPort";
+    public static final String MAIL_SOCKET_FACTORY_PORT = "mailSocketFactoryPort";
+    public static final String MAIL_AUTH = "mailAuth";
+    public static final String MAIL_START_TLS_ENABLED = "mailStartTlsEnabled";
+    public static final String MAIL_DEBUG = "mailDebug";
+    public static final String MAIL_START_TLS_REQUIRED = "mailStartTlsRequired";
+    public static final String MAIL_SOCKET_FACTORY_PORT_FALLBACK = "mailSocketFactoryPortFallback";
+    public static final String MAIL_PROTOCOLS = "mailProtocols";
+    public static final String MAIL_FROM = "mailFrom";
+    public static final String MAIL_USERNAME = "mailUsername";
+    public static final String MAIL_PASSWORD = "mailPassword";
+
+    public static final String TIPOLOGIA_BANDO_ASSEGNAZIONE_BUDGET = "tipologiaBandoAssegnazioneBudget";
+    public static final String CRITERIO_SUPERIORE = "criterioSuperiore";
+
+    public static final String SESSION_ERROR_CRITERI_LOOP = "errorCriteriLoop";
+
+    public static final String TIPI_GENERAZIONE_TEMPLATE_ISTANZA = "tipoGenerazioneTemplateIstanza";
+    public static final String TIPI_GENERAZIONE_TEMPLATE_SOCCORSO_ISTRUTTORIO = "tipoGenerazioneTemplateSoccorsoIstruttorio";
+    public static final String TIPI_GENERAZIONE_TEMPLATE_ISTANZA_SOCCORSO_ISTRUTTORIO = "tipoGenerazioneTemplateIstanzaSoccorsoIstruttorio";
+    public static final String TIPI_GENERAZIONE_TEMPLATE_ISTANZA_ANNULLAMENTO = "tipoGenerazioneTemplateIstanzaAnnullamento";
+    public static final String TIPI_GENERAZIONE_TEMPLATE_DISCIPLINARE = "tipoGenerazioneTemplateDisciplinare";
+    public static final String TIPI_GENERAZIONE_TEMPLATE_DISCIPLINARE_ESECUZIONE = "tipoGenerazioneTemplateDisciplinareEsecuzione";
+    public static final String TIPI_GENERAZIONE_TEMPLATE_PRIMA_DOMANDA_ANTICIPO = "tipoGenerazioneTemplatePrimaDomandaAnticipo";
+    public static final String TIPI_GENERAZIONE_TEMPLATE_SECONDA_DOMANDA_ANTICIPO = "tipoGenerazioneTemplateSecondaDomandaAnticipo";
+    public static final String TIPI_GENERAZIONE_TEMPLATE_ESITO_DOMANDA = "tipoGenerazioneTemplateEsitoDomanda";
+    public static final String LISTA_TEMPLATE_PDF_ISTANZA = "listaTemplatePdfIstanza";
+    public static final String LISTA_TEMPLATE_PDF_SOCCORSO_ISTRUTTORIO = "listaTemplatePdfSoccorsoIstruttorio";
+    public static final String LISTA_TEMPLATE_PDF_ISTANZA_SOCCORSO_ISTRUTTORIO = "listaTemplatePdfIstanzaSoccorsoIstruttorio";
+    public static final String LISTA_TEMPLATE_PDF_ISTANZA_ANNULLAMENTO = "listaTemplatePdfIstanzaAnnullamento";
+    public static final String LISTA_TEMPLATE_PDF_ISTANZA_DISCIPLINARE = "listaTemplatePdfDisciplinare";
+    public static final String GESTIONE_PRIORITA_GRADUATORIA = "gestionePrioritaGraduatoria";
+	public static final String REQUISITO_TIPOLOGIA_VALIDAZIONE_PRE = "requisitoTipologiaValidazionePre";
+	public static final String REQUISITO_TIPOLOGIA_VALIDAZIONE_POST = "requisitoTipologiaValidazionePost";
+    public static final String REQUISITO_TIPOLOGIA_VALIDAZIONE_CONTESTUALE = "requisitoTipologiaValidazioneContestuale";
+	public static final String BANDO_TIPOLOGIA_ENTE = "bandoTipologiaEnte";
+    public static final String BANDO_TIPOLOGIA_ENTE_VALUES = "bandoTipologiaEnteValues";
+    public static final String PROTOCOLLA_ALLEGATI_AGGIUNTIVI = "protocollaAllegatiAggiuntivi";
+    public static final String ABILITA_SOTTO_FASCICOLAZIONE = "abilitaSottoFascicolazione";
+    public static final String IFA = "iFA";
+    public static final String DESCRIZIONE_BREVE_BANDO = "descrizioneBreve";
+    public static final String SESSION_ERROR_FILE_EXTENSION = "sessionErrorFileExtension";
+    public static final String DISABILITA_CONTROLLO_IMPORTO_AMMISSIBILE = "disabilitaControlloImportoAmmissibile";
+    public static final String DISABILITA_PROTOCOLLAZIONE_ALLEGATI_INTEGRAZIONE = "disabilitaProtocollazioneAllegatiIntegrazione";
+    public static final String DISABILITA_CAMPO_OGGETTO = "disabilitaCampoOggetto";
+    public static final String ABILITA_FIRMA_DATA_ISTANZA = "abilitaFirmaDataIstanza";
+
+    public static final String BANDO_UTENTE_DESTINATARIO_VALUES = "utenteDestinatarioValues";
+
+}

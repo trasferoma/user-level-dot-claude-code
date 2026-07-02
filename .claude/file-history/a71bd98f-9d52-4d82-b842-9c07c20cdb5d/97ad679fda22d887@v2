@@ -1,0 +1,290 @@
+package it.servizidigitali.scrivaniaoperatorebandi.scheduler;
+
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.messaging.BaseMessageListener;
+import com.liferay.portal.kernel.messaging.DestinationNames;
+import com.liferay.portal.kernel.messaging.Message;
+import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
+import com.liferay.portal.kernel.scheduler.SchedulerEngineHelper;
+import com.liferay.portal.kernel.scheduler.SchedulerEntryImpl;
+import com.liferay.portal.kernel.scheduler.SchedulerException;
+import com.liferay.portal.kernel.scheduler.StorageType;
+import com.liferay.portal.kernel.scheduler.StorageTypeAware;
+import com.liferay.portal.kernel.scheduler.Trigger;
+import com.liferay.portal.kernel.scheduler.TriggerFactory;
+import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.Validator;
+import it.servizidigitali.camunda.integration.client.CamundaClient;
+import it.servizidigitali.camunda.integration.configuration.CamundaConfiguration;
+import it.servizidigitali.gestionebandi.common.enumeration.StatoIntegrazioneDomandaBandoEnum;
+import it.servizidigitali.gestionebandi.common.enumeration.TipoFormEnum;
+import it.servizidigitali.gestionebandi.common.enumeration.TipoIstanzaPortale;
+import it.servizidigitali.gestionebandi.common.service.ProtocollazioneIntegrazioniService;
+import it.servizidigitali.gestionebandi.model.Bando;
+import it.servizidigitali.gestionebandi.model.BandoForm;
+import it.servizidigitali.gestionebandi.model.DomandaBando;
+import it.servizidigitali.gestionebandi.model.DomandaBandoIntegrazione;
+import it.servizidigitali.gestionebandi.model.IstanzaDomandaBando;
+import it.servizidigitali.gestionebandi.service.BandoFormLocalService;
+import it.servizidigitali.gestionebandi.service.BandoLocalService;
+import it.servizidigitali.gestionebandi.service.DomandaBandoDatoAggiuntivoLocalService;
+import it.servizidigitali.gestionebandi.service.DomandaBandoIntegrazioneLocalService;
+import it.servizidigitali.gestionebandi.service.DomandaBandoLocalService;
+import it.servizidigitali.gestionebandi.service.IstanzaDomandaBandoLocalService;
+import it.servizidigitali.scrivaniaoperatorebandi.scheduler.configuration.IstanzaProcessoBandiSchedulerConfiguration;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Component(immediate = true, //
+        service = ProtocollazioneDocumentazioneAggiuntivaBandiScheduler.class, //
+        configurationPid = { "it.servizidigitali.scrivaniaoperatorebandi.scheduler.configuration.IstanzaProcessoBandiSchedulerConfiguration",
+                "it.servizidigitali.camunda.integration.configuration.CamundaConfiguration" }//
+)
+public class ProtocollazioneDocumentazioneAggiuntivaBandiScheduler extends BaseMessageListener {
+
+    private static final Log _log = LogFactoryUtil.getLog(ProtocollazioneDocumentazioneAggiuntivaBandiScheduler.class);
+
+    private volatile boolean _initialized;
+    private TriggerFactory _triggerFactory;
+    private SchedulerEngineHelper _schedulerEngineHelper;
+    private SchedulerEntryImpl _schedulerEntryImpl = null;
+
+    private volatile IstanzaProcessoBandiSchedulerConfiguration avvioIstanzaProcessoSchedulerConfiguration;
+    private volatile CamundaConfiguration camundaConfiguration;
+
+    @Reference
+    private DomandaBandoLocalService domandaBandoLocalService;
+
+    @Reference
+    private CamundaClient camundaClient;
+
+    @Reference
+    private GroupLocalService groupLocalService;
+
+    @Reference
+    private UserLocalService userLocalService;
+
+    @Reference
+    private BandoLocalService bandoLocalService;
+
+    @Reference
+    private ProtocollazioneIntegrazioniService protocollazioneIntegrazioniService;
+
+    @Reference
+    private IstanzaDomandaBandoLocalService istanzaDomandaBandoLocalService;
+
+    @Reference
+    private DomandaBandoDatoAggiuntivoLocalService domandaBandoDatoAggiuntivoLocalService;
+
+    @Reference
+    private BandoFormLocalService bandoFormLocalService;
+    @Reference
+    private DomandaBandoIntegrazioneLocalService domandaBandoIntegrazioneLocalService;
+
+    protected void doReceive(Message message) throws Exception {
+
+        if (!camundaConfiguration.integrationEnabled()) {
+            return;
+        }
+
+        _log.debug("Scheduled task executed...");
+
+        List<DomandaBando> domandeBando = domandaBandoLocalService.getDomandaBandos(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+
+        if (ListUtil.isNotNull(domandeBando) && ListUtil.isNotEmpty(domandeBando)) {
+            List<String> tipiForm = List.of(TipoFormEnum.INTEGRAZIONE_FRONTEND.name(),TipoFormEnum.ESECUZIONE_SALDO_INTEGRAZIONE.name(),TipoFormEnum.ESECUZIONE_ANTICIPO_INTEGRAZIONE.name());
+            List<Long> formIds = bandoFormLocalService.getFormIdsTipoFormList(tipiForm);
+
+            for (DomandaBando domanda : domandeBando) {
+                try {
+                    Bando bando = bandoLocalService.getBando(domanda.getBandoId());
+
+                    if (bando.isProtocollaIntegrazioni()) {
+                        List<IstanzaDomandaBando> istanzeDaProtocollare = istanzaDomandaBandoLocalService.getIstanzeDomandeBandoByDomandaBandoId(domanda.getDomandaBandoId())
+                                .stream()
+                                .filter(i -> formIds.contains(i.getFormId()))
+                                .filter(i -> StatoIntegrazioneDomandaBandoEnum.CONFERMATA.name().equals(i.getStato()))
+                                .collect(Collectors.toList());
+
+                        for (IstanzaDomandaBando istanza : istanzeDaProtocollare) {
+                            DomandaBandoIntegrazione integrazione = domandaBandoIntegrazioneLocalService.getDomandaBandoIntegrazione(istanza.getIstanzaDomandaBandoId());
+
+                            if (Validator.isNull(integrazione) || (Validator.isNotNull(integrazione) && Validator.isNull(integrazione.getNumeroProtocollo()))) {
+                                protocollazioneIntegrazioniService.protocollaIstanzaBando(bando, domanda, istanza, TipoIstanzaPortale.BANDI_ISTANZA_INTEGRAZIONE_FE);
+                            }
+                        }
+                    }
+                }
+                catch (Exception e) {
+                    _log.error("Impossibile riprendere il processo. Id DomandaBando: " + domanda.getDomandaBandoId() + ", errore: " + e.getMessage(), e);
+                }
+            }
+        }
+
+        //TODO protocollare esecuzioni
+        List<String> tipoFormsToCheck = TipoFormEnum.getTipoFormEsecuzione().stream().map(Enum::name).collect(Collectors.toList());
+        tipoFormsToCheck.add(TipoFormEnum.ESECUZIONE_INTEGRAZIONE.name());
+        tipoFormsToCheck.add(TipoFormEnum.ESECUZIONE_INTEGRAZIONE_DISCIPLINARE.name());
+        List<Long> formIdsToCheck = bandoFormLocalService.getFormIdsTipoFormList(tipoFormsToCheck);
+        List<IstanzaDomandaBando> istanzeDomandaBandoEsecuzione = istanzaDomandaBandoLocalService.getByListaFormIdAndNotProtocollatoAndStato(formIdsToCheck, StatoIntegrazioneDomandaBandoEnum.CONFERMATA.name());
+        if (ListUtil.isNotNull(istanzeDomandaBandoEsecuzione) && ListUtil.isNotEmpty(istanzeDomandaBandoEsecuzione)) {
+            for (IstanzaDomandaBando istanzaDomandaBando: istanzeDomandaBandoEsecuzione) {
+                DomandaBando domanda = domandaBandoLocalService.getDomandaBando(istanzaDomandaBando.getDomandaBandoId());
+                Bando bando = bandoLocalService.getBando(domanda.getBandoId());
+                List<BandoForm> bandoForms = bandoFormLocalService.getBandoFormBandoAndForm(bando.getBandoId(), istanzaDomandaBando.getFormId());
+                if (ListUtil.isNotNull(bandoForms) && ListUtil.isNotEmpty(bandoForms) && bandoForms.size() == 1) {
+
+                    if (bando.isProtocollaIntegrazioni()) {
+                        BandoForm bandoForm = bandoForms.get(0);
+                        TipoFormEnum tipoFormEnum = TipoFormEnum.valueOf(bandoForm.getTipoForm());
+                        switch (tipoFormEnum) {
+                            case ESECUZIONE_SALDO:
+                                protocollazioneIntegrazioniService.protocollaIstanzaBando(bando, domanda, istanzaDomandaBando, TipoIstanzaPortale.ISTANZA_ESECUZIONE_SALDO);
+                                break;
+                            case ESECUZIONE_PRIMO_ANTICIPO:
+                                protocollazioneIntegrazioniService.protocollaIstanzaBando(bando, domanda, istanzaDomandaBando, TipoIstanzaPortale.ESECUZIONE_PRIMO_ANTICIPO);
+                                break;
+                            case ESECUZIONE_SECONDO_ANTICIPO:
+                                protocollazioneIntegrazioniService.protocollaIstanzaBando(bando, domanda, istanzaDomandaBando, TipoIstanzaPortale.ESECUZIONE_SECONDO_ANTICIPO);
+                                break;
+                            case ESECUZIONE_ANTICIPO:
+                                protocollazioneIntegrazioniService.protocollaIstanzaBando(bando, domanda, istanzaDomandaBando, TipoIstanzaPortale.ISTANZA_ESECUZIONE_ANTICIPO);
+                                break;
+                            case ESECUZIONE_INTEGRAZIONE:
+                            case ESECUZIONE_INTEGRAZIONE_DISCIPLINARE:
+                                protocollazioneIntegrazioniService.protocollaIstanzaBando(bando, domanda, istanzaDomandaBando, TipoIstanzaPortale.BANDI_ISTANZA_INTEGRAZIONE_ES);
+                                break;
+                            default:
+                                protocollazioneIntegrazioniService.protocollaIstanzaBando(bando, domanda, istanzaDomandaBando, TipoIstanzaPortale.BANDI_ISTANZA_ESECUZIONE);
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+
+
+    }
+
+    @Activate
+    @Modified
+    protected void activate(Map<String, Object> properties) throws SchedulerException {
+
+        // extract the cron expression from the properties
+        try {
+            avvioIstanzaProcessoSchedulerConfiguration = ConfigurableUtil.createConfigurable(IstanzaProcessoBandiSchedulerConfiguration.class, properties);
+            camundaConfiguration = ConfigurableUtil.createConfigurable(CamundaConfiguration.class, properties);
+
+            if (!avvioIstanzaProcessoSchedulerConfiguration.richiestaIntegrazioniConcessioneBandoSchedulerEnabled()) {
+                _log.info("Diattivazione scheduler " + this.getClass().getSimpleName());
+                deactivate();
+                return;
+            }
+
+            String cronExpression = avvioIstanzaProcessoSchedulerConfiguration.richiestaIntegrazioniConcessioneBandoSchedulerCronExpression();
+
+            _log.info("Attivazione scheduler " + this.getClass().getSimpleName() + " - cronExpression: " + cronExpression);
+
+            // create a new trigger definition for the job.
+            String listenerClass = getClass().getName();
+            Trigger jobTrigger = _triggerFactory.createTrigger(listenerClass, listenerClass, new Date(), null, cronExpression);
+
+            // wrap the current scheduler entry in our new wrapper.
+            // use the persisted storaget type and set the wrapper back to the class field.
+            _schedulerEntryImpl = new SchedulerEntryImpl(getClass().getName(), jobTrigger);
+
+            // if we were initialized (i.e. if this is called due to CA modification)
+            if (_initialized) {
+                // first deactivate the current job before we schedule.
+                deactivate();
+            }
+
+            // register the scheduled task
+            _schedulerEngineHelper.register(this, _schedulerEntryImpl, DestinationNames.SCHEDULER_DISPATCH);
+
+            // set the initialized flag.
+            _initialized = true;
+        }
+        catch (Exception e) {
+            _log.error(e);
+            deactivate();
+        }
+    }
+
+    @Deactivate
+    protected void deactivate() {
+        // if we previously were initialized
+        if (_initialized) {
+            // unschedule the job so it is cleaned up
+            try {
+                _schedulerEngineHelper.unschedule(_schedulerEntryImpl, getStorageType());
+            }
+            catch (SchedulerException se) {
+                if (_log.isWarnEnabled()) {
+                    _log.warn("Unable to unschedule trigger", se);
+                }
+            }
+
+            // unregister this listener
+            _schedulerEngineHelper.unregister(this);
+        }
+
+        // clear the initialized flag
+        _initialized = false;
+    }
+
+    /**
+     * getStorageType: Utility method to get the storage type from the scheduler entry wrapper.
+     *
+     * @return StorageType The storage type to use.
+     */
+    protected StorageType getStorageType() {
+        if (_schedulerEntryImpl instanceof StorageTypeAware) {
+            return ((StorageTypeAware) _schedulerEntryImpl).getStorageType();
+        }
+
+        return StorageType.MEMORY_CLUSTERED;
+    }
+
+    /**
+     * setModuleServiceLifecycle: So this requires some explanation...
+     *
+     * OSGi will start a component once all of it's dependencies are satisfied. However, there are
+     * times where you want to hold off until the portal is completely ready to go.
+     *
+     * This reference declaration is waiting for the ModuleServiceLifecycle's PORTAL_INITIALIZED
+     * component which will not be available until, surprise surprise, the portal has finished
+     * initializing.
+     *
+     * With this reference, this component activation waits until portal initialization has
+     * completed.
+     *
+     * @param moduleServiceLifecycle
+     */
+    @Reference(target = ModuleServiceLifecycle.PORTAL_INITIALIZED, unbind = "-")
+    protected void setModuleServiceLifecycle(ModuleServiceLifecycle moduleServiceLifecycle) {
+    }
+
+    @Reference(unbind = "-")
+    protected void setTriggerFactory(TriggerFactory triggerFactory) {
+        _triggerFactory = triggerFactory;
+    }
+
+    @Reference(unbind = "-")
+    protected void setSchedulerEngineHelper(SchedulerEngineHelper schedulerEngineHelper) {
+        _schedulerEngineHelper = schedulerEngineHelper;
+    }
+}

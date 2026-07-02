@@ -1,0 +1,50 @@
+package org.tasktelemetry;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+
+import java.time.Instant;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class TaskListenerTest {
+
+    @Mock
+    private TaskListener listener;
+
+    @Test
+    void mockedListener_receivesDispatchedEvent() {
+        TaskEvent event = sampleEvent();
+
+        listener.onEvent(event);
+
+        verify(listener).onEvent(event);
+    }
+
+    @Test
+    void lambdaListener_capturesEvent() {
+        AtomicReference<TaskEvent> received = new AtomicReference<>();
+        TaskListener lambdaListener = received::set;
+        TaskEvent event = sampleEvent();
+
+        lambdaListener.onEvent(event);
+
+        assertThat(received.get()).isSameAs(event);
+    }
+
+    private static TaskEvent sampleEvent() {
+        return TaskEvent.builder()
+                .eventId("event-1")
+                .taskName("IMPORT_CLIENTI")
+                .executionId("exec-1")
+                .type(TaskEventType.STARTED)
+                .timestamp(Instant.parse("2026-06-28T10:00:00Z"))
+                .sequenceNumber(0)
+                .build();
+    }
+}

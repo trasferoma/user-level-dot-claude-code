@@ -1,0 +1,835 @@
+# Spec-Driven Workflow — Switch Profilo Cittadino/Operatore & Migrazione Operatori SPID
+
+> Branch: `feature/iam-operatore`
+> Stato: ANCORATO AL CODICE (Phase 0 eseguita via ricognizione del repository il 2026-06-24)
+> Documento di partenza: Progettazione Tecnica e Funzionale v2.x fornita dal team.
+
+---
+
+## ⚠️ BLOCKER ARCHITETTURALE — Il tema NON è in questo repository (RISOLTO: A5/A6 svolte nel repo tema)
+
+> **Aggiornamento (2026-06-26):** le Fasi A5 (`header.ftl`) e A6 (`navigation.ftl`) sono state **implementate nel repository separato del tema** (`portale-istituzionale-theme`) sul contratto FTL prodotto da A3. Build `gulp` OK (direttive bilanciate, packaging OK); **rendering FTL da verificare a deploy avvenuto** (gulp non invoca il parser FreeMarker). Dettaglio in fondo alle Fasi A5/A6.
+
+La ricognizione ha accertato che **`portale-istituzionale-theme` non esiste in questo repo**. Non sono presenti `init_custom.ftl`, `header.ftl`, `navigation.ftl`, né alcuna logica `is_cittadino` / `is_guest_or_cittadino` / `pagina_per_cittadino`, né il theme setting `id_articolo_menu_utente`. Tutti i numeri di riga del documento di partenza riferiti al tema (246-260, 110-121, 67-93, 89-98, ecc.) **non trovano riscontro qui**.
+
+Cosa esiste invece in `extras/adt_strutture_templates/`:
+- `TEMPLATE_MENU_UTENTE.ftl` (62 righe) — rendering link menu, itera con `link.getSiblings()`; **nessuna** logica ruoli, **nessun** dropdown/logout.
+- `TEMPLATE_NAVIGAZIONE_HEADER_SLIM.ftl` (69 righe) — struttura navigazione; **nessun** dropdown utente.
+- `TEMPLATE_COMMON_MACROS.ftl` (130 righe) — utility articoli/contenuti.
+
+**Conseguenza:** le Fasi A5 (`header.ftl`) e A6 (`navigation.ftl`) **non sono eseguibili da questo repository**. Le modifiche FTL vanno fatte dove il tema vive realmente (repo separato del tema, oppure deploy diretto in Liferay non versionato). Questo va chiarito **prima** di iniziare la Capacità A. Vedi §Domande aperte → Q1.
+
+> Nota di rischio: il vincolo della spec "NON toccare ADT/COMMON_MACROS" qui è ambiguo, perché in questo repo la navigazione **è** realizzata con ADT (`TEMPLATE_NAVIGAZIONE_HEADER_SLIM.ftl`). Bisogna stabilire se il filtro navigazione vada nel tema (come da spec) o negli ADT presenti qui.
+
+---
+
+## Stato implementazione (2026-06-24) — Traccia A (Java) + Traccia B in questo repo
+
+Tutti i moduli toccati **compilano** (`./gradlew … :compileJava` → BUILD SUCCESSFUL).
+
+| Fase | Stato | File |
+|------|-------|------|
+| Costanti sessione | ✅ Fatto | `servizi-digitali-portal/.../constant/ServiziDigitaliPortalConstants.java` (+ `ACTIVE_ROLE`, `HAS_DUAL_ROLE`, `ROLE_OPERATORE`, `ROLE_CITTADINO`) |
+| A1 `RoleSelectionConfiguration` | ✅ Fatto | `servizi-digitali-portal/.../configuration/RoleSelectionConfiguration.java` (nuovo) |
+| A2 estensione `LoginPostAction` | ✅ Fatto | `servizi-digitali-portal/.../event/LoginPostAction.java` (config + `RoleLocalService`, Administrator bypass, default OPERATORE) |
+| A3 `ActiveRoleTemplateContextContributor` | ✅ Fatto | `servizi-digitali-portal/.../theme/ActiveRoleTemplateContextContributor.java` (nuovo, `prepare(Map, HttpServletRequest)`) |
+| A4 switch endpoint | ✅ Fatto (rivisto 2026-06-30) | **`RoleSwitchFilter`** (`…/portal/filter/RoleSwitchFilter.java`, `BasePortalFilter` su `/web/*` e `/group/*`, parametro `activeRoleSwitch`). Sostituisce il `RoleSwitchServlet` originale (rimosso). Verificato funzionante a runtime. Vedi Q5. |
+| A4-bis notifica toast | ✅ Fatto (2026-06-30) | **`RoleSwitchNoticeDynamicInclude`** (`…/portal/servlet/taglib/`, `DynamicInclude` su `bottom.jsp#post`): consuma il flag one-shot di sessione `ROLE_SWITCH_NOTICE` (impostato da `RoleSwitchFilter`) e inietta `Liferay.Util.openToast` (`type:'success'`, messaggio fisso). Verificato a runtime. Vedi Fase A4-bis. |
+| B1 `OldUserResolver` | ✅ Fatto | `servizi-digitali-common-utility/.../OldUserResolver.java` + `OldUserResolverImpl.java` (nuovi); `UserCustomAttributes.OLD_SCREEN_NAME` |
+| B3 estensione Camunda | ✅ Fatto | `ScrivaniaOperatoreFrontendService` (2 call site + helper `addOldUserTasks`), `ScrivaniaOperatoreBandiFrontendService` (1 + helper) |
+| B4 estensione Comunicazioni | ✅ Fatto | `ComunicazioneFinderImpl.generaQuery()` blocco `getDestinatarioId` → `in(destinatarioId, oldUserId)`; `+compileOnly common-utility` nel build.gradle |
+| A5/A6 tema | ✅ Fatto (repo tema, Q1) | `src/templates/header.ftl` (blocco switch nel dropdown), `src/templates/navigation.ftl` (filtro `target_role` via `<#function isVisibileByRuolo>`). Build gulp OK; render da verificare a deploy. |
+| A7 / A0 / B0 | ⏳ Manuali piattaforma | ruolo `operatore-backoffice`, Expando `target_role` (Layout) e `old_screen_name` (User), assegnazione `target_role` alle pagine |
+| B5 commenti | ✅ Fatto | `CommentoRichiestaFinderImpl` + `CommentoDomandaBandoFinderImpl`: `codiceFiscale IN (corrente, old_screen_name.toUpperCase())` su find + count non-lette; nuovo `OldUserResolver.getOldScreenNameByScreenName`; `+compileOnly common-utility` su scrivania-operatore-service |
+
+**Correzione architetturale rispetto alla spec:** `OldUserResolver` è collocato in **`servizi-digitali-common-utility`** (non in `servizi-digitali-portal`). Motivo: i consumer (scrivania-operatore, bandi, comunicazioni) dipendono già da common-utility, mentre `servizi-digitali-portal` è un bundle di glue che essi non importano — collocarvelo avrebbe creato una dipendenza invertita.
+
+**Note tecniche di implementazione:**
+- B3: `camundaClient.searchTasks` accetta un solo `assignee` → seconda chiamata col vecchio userId e merge in `Map<processInstanceId, Task>` via `putIfAbsent`. La paginazione è quindi per-assignee (limite noto, documentato nel codice).
+- B4: l'old userId è risolto **dal `destinatarioId` stesso** (`getOldUserId(destinatarioId)`), quindi l'estensione è per-utente e null-safe: nessun leak cross-utente, nessuna regressione per i non migrati.
+
+## Decisioni (2026-06-24)
+
+| # | Decisione | Impatto sul piano |
+|---|-----------|-------------------|
+| **Q1** | Il tema vive in un **repository separato** | Fasi **A5 (`header.ftl`) e A6 (`navigation.ftl`) NON si svolgono in questo repo**: vanno portate nel repo del tema. Qui la Capacità A copre **solo il lato Java + config piattaforma** (A0–A4, A7). Il contratto di interfaccia tra i due repo sono le 4 variabili FTL prodotte da A3 (`activeRole`, `hasDualRole`, `switchProfiloUrl`, `switchProfiloLabel`) + l'Expando `target_role`. |
+| **Q2** | Sviluppo di **A e B in parallelo** | Due tracce indipendenti, sviluppatori distinti. Nessun ordine imposto tra i blocchi. |
+| **Q3** | **Estendere `LoginPostAction`** invece di creare un nuovo `RoleSelectionFilter` | La Fase A2 cambia: niente BaseFilter dedicato. Si calcola e scrive `ACTIVE_ROLE`/`HAS_DUAL_ROLE` nel PostAction già esistente (`…/portal/event/LoginPostAction.java`), accanto a `CURRENT_USER_SCREEN_NAME`. Un solo punto, costo minimo, nessun filtro per-richiesta. |
+| **Q4** | **B5 implementata** dopo verifica del dominio | Accertato che i finder commenti sono usati solo dalla scrivania cittadino e filtrano per CF del richiedente. Scenario valido: utente migrato che aveva presentato pratiche sotto la vecchia screenName (codiceFiscale = vecchiaScreenName.toUpperCase()). Estensione fatta **dentro i finder impl** con `codiceFiscale IN (corrente, vecchio.toUpperCase())`. |
+| **Q5** (2026-06-30) | **Switch endpoint: da servlet OSGi a `BasePortalFilter`** | Il `RoleSwitchServlet` su `/o/role-switch` (a) non era raggiungibile — registrato con `osgi.http.whiteboard.context.path` (proprietà del *ServletContextHelper*, ignorata sul servlet) + pattern `/*`, collideva sul context di default `/o` con `AttivaEmailServlet`, che vinceva la registrazione e serviva l'URL; (b) anche risolto il routing, operava su una `HttpSession` distinta da quella del portale, quindi non vedeva `HAS_DUAL_ROLE` né poteva propagare `ACTIVE_ROLE` al tema. `PortalSessionContext` non è praticabile (è in `portal-impl`, non esportato agli OSGi). **Decisione:** gestire il toggle in `RoleSwitchFilter` (`BasePortalFilter`), che gira nel contesto del portale e vede la sessione corretta. Dettaglio nella Fase A4. |
+
+---
+
+## 0. Inquadramento
+
+Il progetto realizza **due capacità distinte e indipendenti** sia sul piano del rilascio sia su quello della manutenzione. Il workflow è organizzato in modo che ciascuna capacità possa essere sviluppata, testata e rilasciata **da sola**, senza dipendere dall'altra.
+
+| Capacità | Obiettivo | Rilasciabile da sola? |
+|----------|-----------|------------------------|
+| **A — Switch Profilo** | Profilo attivo Cittadino/Operatore in sessione + navigazione filtrata | Sì |
+| **B — Migrazione SPID** | Continuità operativa dei dati (task, comunicazioni, commenti) tra vecchia utenza interna e nuova identità SPID | Sì |
+
+Le due capacità condividono un solo punto di contatto: entrambe vivono (per la parte Java) nel modulo `modules/servizi-digitali-common/servizi-digitali-portal/`. Nessun nuovo bundle, nessuna nuova dipendenza di deploy.
+
+### Obiettivi verificabili
+
+- **O1** — Switch del profilo attivo nel dropdown del menu utente dell'header, visibile **solo** agli utenti con doppio ruolo.
+- **O2** — Navigazione dell'header filtrata secondo il profilo selezionato.
+- **O3** — Continuità operativa per chi migra dalle credenziali interne a SPID (task Camunda, comunicazioni, commenti restano raggiungibili).
+
+### Principio architetturale cardine (Capacità A)
+
+Si separano nettamente **due piani che oggi si sovrappongono**:
+
+| Piano | Finalità | Si interviene? | Come |
+|-------|----------|----------------|------|
+| **Macro-profilo** ("cosa vedo") | Cittadino o Operatore | **Sì** | `ACTIVE_ROLE` in sessione + Expando `target_role` sul Layout + filtro in `navigation.ftl` |
+| **Ruolo specifico** ("cosa posso fare") | Azioni consentite | **No — invariato** | `isUserInRole()` nelle portlet, tab condizionali, sola lettura helpdesk |
+
+È questa separazione ad **azzerare il rischio di regressioni sulla sicurezza applicativa**: i permessi restano in carico ai widget esattamente come oggi.
+
+> ⚠️ **Aggiornamento di scope (2026-06-30) — vedi Capacità C.** La riga "Ruolo specifico (cosa posso fare) → No, invariato" è **rivisitata** dalla nuova Capacità C: i selettori di accesso a funzionalità interne alle pagine (bottoni, tab, azioni oggi guidati dai soli ruoli posseduti) dovranno tener conto **anche** del profilo attivo. Resta fermo l'invariante di sicurezza: il profilo attivo **restringe**, non amplia (vedi Capacità C → Principio).
+
+### Modello dei ruoli
+
+Il censimento in produzione ha rilevato 66 ruoli eterogenei: impraticabile fondare lo switch su un'enumerazione. Si introduce un unico **marcatore stabile**:
+
+```
+nuovo Regular Role:  operatore-backoffice   (assegnato a chiunque operi sul backoffice)
+
+isOperatore  = utente possiede ruolo "operatore-backoffice"
+isCittadino  = utente possiede ruolo "cittadino"
+hasDualRole  = isOperatore AND isCittadino
+```
+
+### Vincoli progettuali (invarianti per tutto il workflow)
+
+1. Nessuna schermata intermedia di scelta del profilo dopo il login.
+2. Al login, per gli utenti con doppio ruolo il profilo di default è **OPERATORE**.
+3. Lo switch avviene **unicamente** dal dropdown del menu utente nell'header slim (`header.ftl`).
+4. Il componente di switch compare **solo** se l'utente possiede entrambi i profili.
+5. Markup HTML conforme al tema Liferay e al design system **Bootstrap Italia**.
+6. **NON toccare**: ADT, COMMON_MACROS, portlet core di Liferay.
+7. Modifiche confinate al tema FTL e al modulo `servizi-digitali-portal`.
+8. La gestione dei permessi per singolo ruolo resta invariata e in carico ai widget.
+9. **Zero impatto** sulle funzionalità esistenti delle portlet.
+
+---
+
+## PHASE 0 — Documentation & Code Discovery (PREREQUISITO OBBLIGATORIO)
+
+> Spec-driven: ogni fase successiva *copia* pattern esistenti e documentati, non *inventa* API. Questa fase produce la lista "Allowed APIs" e i punti di innesto esatti. **Nessuna fase implementativa parte prima che le caselle qui sotto siano spuntate con file:riga reali.**
+
+### 0.1 — Punti di innesto del tema (`portale-istituzionale-theme`)
+
+| Elemento | File atteso (spec) | Esito ricognizione |
+|----------|--------------------|--------------------|
+| Logica ruoli (`is_cittadino`, `is_guest_or_cittadino`) | `init_custom.ftl` 246–260 | ❌ **File assente nel repo** |
+| Theme setting `id_articolo_menu_utente` | `init_custom.ftl` 110–121 | ❌ assente |
+| Dropdown menu utente | `header.ftl` 67–93 | ❌ `header.ftl` assente |
+| Iniezione `${articoloMenuUtente}` | `header.ftl` 86 | ❌ assente |
+| Filtro `pagina_per_cittadino` | `navigation.ftl` 89–98 | ❌ `navigation.ftl` assente |
+| Lettura Expando di Layout in FTL | — | ❌ nessun FTL nel repo usa `getExpandoBridge()` |
+
+**ESITO 0.1: il tema non è versionato in questo repo (vedi BLOCKER in testa).** Le Fasi A5/A6 vanno svolte sul sorgente reale del tema. Da chiudere prima di iniziare A: Q1.
+
+ADT realmente presenti (alternativa/punto di attenzione):
+- `extras/adt_strutture_templates/TEMPLATE_MENU_UTENTE.ftl`
+- `extras/adt_strutture_templates/TEMPLATE_NAVIGAZIONE_HEADER_SLIM.ftl`
+- `extras/adt_strutture_templates/TEMPLATE_COMMON_MACROS.ftl`
+
+### 0.2 — Pattern copy-ready nel modulo `servizi-digitali-portal`
+
+Modulo: `modules/servizi-digitali-common/servizi-digitali-portal/` — Bundle `it.servizidigitali.portal`, base package **`it.servizidigitali.portal`**. Package esistenti: `.event`, `.filter`, `.constant`, `.modellistener`, `.util`. `build.gradle` ha già `compileOnly` su `release.portal.api`, `camunda-integration`, `profilo-utente-api`, `communication-utility`.
+
+| Pattern | File copy-ready (verificato) | Note |
+|---------|------------------------------|------|
+| Post-login action | `…/portal/event/LoginPostAction.java:21-40` | `@Component(property={"key=login.events.post"}, service=LifecycleAction.class)`; `User u = PortalUtil.getUser(le.getRequest())`; `le.getRequest().getSession().setAttribute(...)`. Scrive già `CURRENT_USER_SCREEN_NAME` in sessione (vedi `ServiziDigitaliPortalConstants`). |
+| BaseFilter OSGi | `…/portal/filter/PrivatePagesRedirectFilter.java:34-95` | estende **`BasePortalFilter`** (non `BaseFilter`); `@Component` props: `servlet-context-name=`, `servlet-filter-name`, `dispatcher=FORWARD/REQUEST`, `url-pattern=/web/*` e `/group/*`, `url-regex-ignore-pattern`. **NB: nessun `service.ranking` presente** → da aggiungere se serve ordinare. `processFilter(HttpServletRequest, HttpServletResponse, FilterChain)`; pattern early-`super.processFilter(...)` + `return` per il pass-through. |
+| Session destroy | `…/portal/event/SessionDestroyPostAction.java:22-26` | `key=servlet.session.destroy.events` |
+| TemplateContextContributor | ❌ **assente in tutto il repo** | Da scrivere da zero su pattern Liferay: `@Component(property={"type=theme"}, service=TemplateContextContributor.class)`, `prepare(Map<String,Object> contextObjects, HttpServletRequest, HttpServletResponse)`. ⚠️ verificare la firma esatta sulla versione di Liferay del progetto. |
+| OSGi HttpServlet | `…/profilo-utente-mieidati-frontend/…/servlet/AttivaEmailServlet.java:40-114` | `@Component(property={"osgi.http.whiteboard.context.path=…","osgi.http.whiteboard.servlet.pattern=/*"}, service=Servlet.class, configurationPid=…)`; `doGet(req,resp)`; redirect via `resp.sendRedirect(path)`. |
+| OSGi Configuration | `ProfiloUtenteConfiguration.java` (semplice), `AnagraficaUnicaConfiguration.java` (con `@ExtendedObjectClassDefinition(category=…, scope=GROUP)`), `SamlConfiguration.java` (`category="sso"`) | `@Meta.OCD(id=…, name=…)` + `@Meta.AD(deflt=…, required=false, description=…)` per ogni parametro. |
+| Lettura Expando String su User | `CertificatiResourceImpl.java:307-311`; `scrivania-operatore-frontend/.../util/MapUtil.java` | `Serializable v = user.getExpandoBridge().getAttribute("chiave"); String s = v!=null ? v.toString() : null;`. Le chiavi sono centralizzate in un enum `UserCustomAttributes` (PEC, TELEFONO, SPID_ADDRESS…). |
+
+### 0.3 — Punti di estensione per la Migrazione SPID
+
+| Componente | Riscontro reale (file:riga + firma) | Note |
+|-----------|--------------------------------------|------|
+| Camunda task (servizi) | `scrivania-operatore-frontend/.../service/ScrivaniaOperatoreFrontendService.java` — **3 overload** di `getUserTasks` (562, 575-597, 610-633). La call Camunda è `camundaClient.searchTasks(tenantId, String.valueOf(currentUser.getUserId()), …)` a riga **581** e **617**. | `currentUser = userLocalService.getUser(serviceContext.getUserId())` |
+| Camunda task (bandi) | `scrivania-operatore-bandi-frontend/.../service/ScrivaniaOperatoreBandiFrontendService.java:3589-3614` — `getUserTasks(...)`; call Camunda a riga **3597** con `String.valueOf(currentUser.getUserId())`. | tenantId = `organizationId` |
+| Comunicazioni | `gestione-comunicazioni-service/.../persistence/impl/ComunicazioneFinderImpl.java` — `generaQuery()` (92-202). Match `screenName` via `RestrictionsFactoryUtil.ilike("screenName", …)` a riga **136** (dentro una `Disjunction` con firstName/lastName) e nell'helper `searchUsers()` riga **207**. Join verso `Comunicazione` via `DestinatarioComunicazione` (`primaryKey.destinatarioId` = userId). | ✅ **DynamicQuery, NON SQL custom** |
+| Commenti richiesta | `scrivania-operatore-service/.../persistence/impl/CommentoRichiestaFinderImpl.java:23-44` — `findCommentiByCodiceFiscaleAndVisibileAndCompanyId(String codiceFiscale, long companyId)`. Filtra `Richiesta.codiceFiscale == codiceFiscale` (riga 31) poi commenti `visibile=true`. | ✅ DynamicQuery |
+| Commenti domanda bando | `gestione-bandi-service/.../persistence/impl/CommentoDomandaBandoFinderImpl.java:23-41` — stessa firma; filtra `DomandaBando.codiceFiscale`. | ✅ DynamicQuery |
+| Mappa screenName→CF | `ScrivaniaOperatoreFrontendService.java:1964` → `utente.setCodiceFiscale(user.getScreenName().toUpperCase())`. | **codiceFiscale = screenName in MAIUSCOLO** |
+| Expando `old_screen_name` esistente | ❌ nessun riscontro (`old_screen_name`/`oldUserId`/`OldUser`) | da creare |
+
+**Riscontri chiave che correggono la spec di partenza:**
+1. **Niente SQL custom**: tutti i finder usano l'API **DynamicQuery** (`RestrictionsFactoryUtil`, `Disjunction`, sub-query con `setProjection`). Le "query estese con old_screen_name" si fanno aggiungendo clausole `Disjunction`, non modificando file `.sql`.
+2. **codiceFiscale = `screenName.toUpperCase()`**. Quindi per i commenti, il "vecchio screenName" da affiancare va confrontato con `Richiesta.codiceFiscale` / `DomandaBando.codiceFiscale`. ⚠️ Ma questi campi contengono il CF del **cittadino richiedente**, non dell'operatore: l'applicabilità della migrazione ai commenti va verificata sul dominio (vedi Q4).
+3. `getUserTasks` in `ScrivaniaOperatoreFrontendService` ha **3 overload**: l'estensione va replicata su tutti i punti `searchTasks(...)` (righe 581 e 617), non su uno solo.
+
+**Anti-pattern guard Phase 0:** non costruire SQL per concatenazione; estendere la `DynamicQuery` con `Disjunction` parametrizzata. Aggiungere le clausole legacy solo quando i valori `old_*` sono non-null.
+
+**Uscita di Phase 0:** tutte le righe `[DA CONFERMARE]` risolte con `file:riga` e snippet verbatim. Lista "Allowed APIs" consolidata. Solo allora si procede.
+
+---
+
+# CAPACITÀ A — SWITCH PROFILO CITTADINO/OPERATORE
+
+> Rilasciabile indipendentemente. Composta da 4 componenti Java nuovi + 1 Expando + 2 modifiche FTL + config pagine.
+
+## Fase A0 — Prerequisiti di piattaforma (manuali, no codice)
+
+**Cosa fare**
+1. Creare il **Regular Role** `operatore-backoffice` in Liferay e assegnarlo agli operatori di backoffice (tutti i 66 ruoli operativi → marcatore unico).
+2. Creare il **Custom Field (Expando) `target_role`** sull'entità **Layout** (Pagina): tipo Testo, valori ammessi `CITTADINO` / `OPERATORE` / vuoto (default).
+
+**Verifica**
+- [ ] Il ruolo `operatore-backoffice` esiste e risulta da uno script Groovy di censimento.
+- [ ] L'Expando `target_role` è visibile in Pannello di Controllo → Custom Fields → Page.
+
+**Anti-pattern guard:** la chiave del ruolo deve coincidere **esattamente** con il default della configurazione (`operatore-backoffice`). Qualsiasi disallineamento rompe il calcolo `isOperatore`.
+
+---
+
+## Fase A1 — `RoleSelectionConfiguration` (OSGi)
+
+**Cosa implementare** — Copiare il pattern di `ProfiloUtenteConfiguration.java` (semplice) o `SamlConfiguration.java` (con `@ExtendedObjectClassDefinition(category="sso")`). Interfaccia con `@Meta.OCD(id=…, name=…)` + un `@Meta.AD(deflt=…, required=false, description=…)` per parametro, in Pannello di Controllo → Impostazioni di Sistema:
+
+| Parametro | Tipo | Default |
+|-----------|------|---------|
+| `ruoloOperatoreBackoffice` | String | `operatore-backoffice` |
+| `ruoloCittadino` | String | `cittadino` |
+| `switchProfiloAttivo` | boolean | `true` |
+
+**Documentation reference:** `[DA CONFERMARE — file:riga della config esempio]`.
+
+**Verifica**
+- [ ] La configurazione compare in Impostazioni di Sistema con i 3 parametri e i default corretti.
+- [ ] `switchProfiloAttivo=false` disabilita il comportamento (kill switch).
+
+**Anti-pattern guard:** non hard-codare le chiavi dei ruoli nei componenti; leggerle sempre dalla configuration.
+
+---
+
+## Fase A2 — Estensione di `LoginPostAction` (DECISIONE Q3)
+
+> **Cambio rispetto alla spec originale:** niente `RoleSelectionFilter`. Si estende il `LoginPostAction` già esistente.
+
+**Cosa implementare** — In `…/portal/event/LoginPostAction.java:21-40` aggiungere, accanto alla scrittura di `CURRENT_USER_SCREEN_NAME`, il calcolo e la scrittura in sessione di `ACTIVE_ROLE` e `HAS_DUAL_ROLE`.
+
+Logica (dentro `processLifecycleEvent`):
+- Ottenere `User` da `PortalUtil.getUser(lifecycleEvent.getRequest())` (già fatto) e `HttpSession` da `getRequest().getSession()`.
+- Determinare `isOperatore`, `isCittadino` via `roleLocalService.getUserRoles(userId)` (pattern in `PortletSecurityService.java:103-109`), confrontando con le chiavi della configuration A1.
+- `session.setAttribute(ACTIVE_ROLE, …)` e `session.setAttribute(HAS_DUAL_ROLE, …)`.
+- **Administrator escluso** (bypass, nessun `ACTIVE_ROLE`).
+- Default doppio ruolo ⇒ `ACTIVE_ROLE = "OPERATORE"`.
+- Definire le costanti chiave di sessione in `ServiziDigitaliPortalConstants` (dove vive già `CURRENT_USER_SCREEN_NAME`).
+
+Vantaggio: la logica gira **una sola volta** per login per costruzione (è un evento di login), senza il pass-through per-richiesta che servirebbe a un filtro.
+
+Comportamento al login:
+
+| Profili utente | `ACTIVE_ROLE` | `HAS_DUAL_ROLE` |
+|----------------|---------------|-----------------|
+| Solo cittadino | `CITTADINO` | `false` |
+| Solo operatore | `OPERATORE` | `false` |
+| Entrambi | `OPERATORE` (default) | `true` |
+| Administrator | bypass | — |
+
+**Documentation reference:** `LoginPostAction.java:21-40` (accesso `User`/`HttpSession`, scrittura attributi sessione); `PortletSecurityService.java:103-109` (iterazione ruoli via `roleLocalService.getUserRoles`).
+
+**Verifica**
+- [ ] Login con solo cittadino ⇒ sessione `ACTIVE_ROLE=CITTADINO`, `HAS_DUAL_ROLE=false`.
+- [ ] Login con doppio ruolo ⇒ `ACTIVE_ROLE=OPERATORE`, `HAS_DUAL_ROLE=true`.
+- [ ] Administrator ⇒ nessun `ACTIVE_ROLE` (bypass), navigazione completa.
+
+**Anti-pattern guard:** nessun redirect nel PostAction: solo set di attributi di sessione. Leggere le chiavi ruolo dalla configuration A1, non hard-coded.
+
+---
+
+## Fase A3 — `ActiveRoleTemplateContextContributor` (TYPE_THEME)
+
+**Cosa implementare** — ⚠️ **Nessun `TemplateContextContributor` esiste nel repo**: va scritto da zero seguendo il pattern Liferay. `@Component(property={"type=theme"}, service=TemplateContextContributor.class)`. Override `prepare(Map<String,Object> contextObjects, HttpServletRequest request, HttpServletResponse response)` — **verificare la firma esatta** sulla versione di Liferay del progetto (alcune versioni non hanno il parametro `response`).
+
+Variabili iniettate nel contesto FTL:
+
+| Variabile FTL | Tipo | Valore |
+|---------------|------|--------|
+| `activeRole` | String | `"OPERATORE"`, `"CITTADINO"` o `""` |
+| `hasDualRole` | Boolean | `true` se entrambi i profili |
+| `switchProfiloUrl` | String | URL per lo switch al profilo **opposto** |
+| `switchProfiloLabel` | String | `"Passa a Cittadino"` o `"Passa a Operatore"` |
+
+- Legge `ACTIVE_ROLE` / `HAS_DUAL_ROLE` dalla sessione (set da A2).
+- `switchProfiloUrl` punta a `/o/role-switch/toggle?role=<opposto>` (servlet A4).
+- Label e url calcolati in base al profilo corrente.
+
+**Documentation reference:** ⚠️ nessun esempio nel repo — usare la doc Liferay (vedi 0.2). Verificare la firma `prepare(...)` sulla versione del progetto.
+
+**Verifica**
+- [ ] In una pagina, dump FTL mostra `activeRole`, `hasDualRole`, `switchProfiloUrl`, `switchProfiloLabel` valorizzati per un utente doppio ruolo.
+- [ ] Per utente singolo profilo, `hasDualRole=false` e label/url coerenti (o assenti).
+- [ ] Se il modulo non è deployato, le variabili **non esistono** (presupposto delle guardie FTL).
+
+**Anti-pattern guard:** non duplicare in A3 la logica di calcolo ruoli di A2; A3 legge solo lo stato di sessione.
+
+---
+
+## Fase A4 — `RoleSwitchFilter` (BasePortalFilter) ✅ IMPLEMENTATA (rivista 2026-06-30, Q5)
+
+> **Storia della decisione.** L'implementazione iniziale era un `RoleSwitchServlet` OSGi su `/o/role-switch/toggle` (copiato da `AttivaEmailServlet`). In test si è rivelato inservibile per due motivi distinti:
+> 1. **Routing** — `osgi.http.whiteboard.context.path` è proprietà del `ServletContextHelper`, non del servlet: messa sul servlet viene ignorata. Con pattern `/*` il servlet finiva sul context di default `/o`, in collisione con `AttivaEmailServlet` (anch'esso `/*`), che vinceva la registrazione (service.id più basso) e serviva l'URL → compariva l'errore "codice di verifica scaduto" e il `doGet` del role-switch non scattava mai.
+> 2. **Sessione cross-context** — anche dando al servlet un pattern specifico (`/role-switch/*`, most-specific-wins), il servlet su `/o` ha una `HttpSession` distinta da quella del portale: `HAS_DUAL_ROLE` risultava `null` e l'eventuale scrittura di `ACTIVE_ROLE` non sarebbe stata vista dal tema. `PortalSessionContext` non è utilizzabile (in `portal-impl`, non esportato agli OSGi).
+>
+> **Soluzione adottata:** gestire il toggle in un `BasePortalFilter`, che gira nella pipeline del portale e quindi legge/scrive la **stessa** `HttpSession` popolata da `LoginPostAction` e letta dal contributor A3. Il `RoleSwitchServlet` è stato **rimosso**.
+
+**Cosa implementare** — `RoleSwitchFilter` in `…/portal/filter/RoleSwitchFilter.java`, copiando il pattern di `PrivatePagesRedirectFilter` (stesso modulo): estende `com.liferay.portal.servlet.filters.BasePortalFilter`, `@Component(service = Filter.class)` con `url-pattern=/web/*`, `/group/*`, `dispatcher=REQUEST`. Override `processFilter(request, response, filterChain)` + `getLog()`.
+
+Logica:
+- Legge il parametro `activeRoleSwitch` (costante `ServiziDigitaliPortalConstants.ROLE_SWITCH_PARAM`). Se assente ⇒ `super.processFilter(...)` (pass-through, overhead nullo).
+- Se presente: valida contro `CITTADINO`/`OPERATORE`; se valido **e** `HAS_DUAL_ROLE=true` in sessione ⇒ scrive `ACTIVE_ROLE` sulla sessione del portale.
+- `response.sendRedirect("/")`.
+
+L'URL di trigger è prodotto da A3: `ActiveRoleTemplateContextContributor.buildSwitchUrl(...)` = `themeDisplay.getURLHome() + "?activeRoleSwitch=<profiloOpposto>"` (letto da `WebKeys.THEME_DISPLAY`). Essendo un path `/web/*`/`/group/*`, viene intercettato dal filtro. **Nessuna modifica al tema:** l'href resta calcolato in Java.
+
+**Documentation reference:** `PrivatePagesRedirectFilter.java` (pattern `BasePortalFilter` + proprietà `@Component`).
+
+**Verifica**
+- [x] `…?activeRoleSwitch=CITTADINO` ⇒ `ACTIVE_ROLE=CITTADINO` in sessione portale, redirect home, dropdown mostra "Passa a Operatore".
+- [x] switch inverso ⇒ ritorno a profilo operatore, dropdown "Passa a Cittadino".
+- [x] valore non valido o assente ⇒ pass-through, nessuna modifica.
+
+**Anti-pattern guard:** validare il parametro; lo switch cambia solo la **vista**, mai i permessi. Non usare un servlet OSGi `/o` per mutare la sessione del portale (sessione distinta).
+
+---
+
+## Fase A4-bis — Notifica toast post-switch ✅ IMPLEMENTATA (2026-06-30)
+
+**Problema** — Lo switch in `RoleSwitchFilter` termina con un redirect, quindi la classica toast verde di Liferay (`Liferay.Util.openToast`, fatto client-side) non può essere emessa nello stesso request. Serve un meccanismo "flash message" che sopravviva al redirect, senza dipendere dal tema (repo separato).
+
+**Cosa implementare** — Due pezzi:
+1. `RoleSwitchFilter`, sullo switch riuscito, lascia un **flag one-shot** in sessione: `session.setAttribute(ROLE_SWITCH_NOTICE, requestedRole)` (costante in `ServiziDigitaliPortalConstants`).
+2. `RoleSwitchNoticeDynamicInclude` (`it.servizidigitali.portal.servlet.taglib`, `implements DynamicInclude`) registrato su `/html/common/themes/bottom.jsp#post`: legge il flag dalla sessione (via `Portal.getOriginalServletRequest`), lo **rimuove** (toast una sola volta) e scrive uno `<script>` che invoca `Liferay.Util.openToast({message:..., type:'success'})`. Lo script ritenta finché `Liferay.Util` è caricato (indipendenza dall'ordine di load del JS).
+
+**Scelte tecniche**
+- `DynamicInclude` **puro** (non `BaseJSPDynamicInclude`): il modulo `servizi-digitali-portal` non è un web bundle, non può servire JSP → lo script si scrive direttamente nella response.
+- **Messaggio fisso** `"Operazione eseguita con successo"` hardcoded nel componente: deroga consapevole alla regola "niente stringhe utente fisse", su richiesta esplicita. Un primo tentativo con `Language.properties` + capability `liferay.language.resources` non risolveva la chiave a runtime (compariva grezza) e comunque il requisito era un testo unico standard; l'infrastruttura i18n è stata rimossa.
+
+**Verifica**
+- [x] Dopo lo switch: compare la toast verde "Operazione eseguita con successo", una sola volta (un refresh successivo non la ripropone).
+- [x] `Liferay.Util.openToast` confermato disponibile sulla 7.4 del progetto.
+
+**Anti-pattern guard:** flag one-shot rimosso alla lettura (no toast persistente a ogni pagina); guardia di esistenza su `Liferay.Util.openToast` lato JS (se assente, nessun errore).
+
+---
+
+## Fase A5 — Tema: `header.ftl` (blocco switch nel dropdown, +7 righe) ✅ IMPLEMENTATA (repo tema)
+
+> 🔶 **Repo separato (Q1):** questa fase si svolge nel repository del tema, NON qui. Contratto in ingresso: le variabili FTL prodotte da A3.
+>
+> ✅ **Esito (2026-06-26):** implementata in `src/templates/header.ftl:88`. Il dropdown menu utente è `header.ftl:81-92` (`<ul class="link-list">` con `${articoloMenuUtente}` e l'`<li>` di logout). Blocco inserito dopo la chiusura del check su `articoloMenuUtente` (riga 87) e prima del divider del logout → voci menu → (nuovo) divider + "Passa a…" → divider esistente → "Esci". Guardia `hasDualRole?? && hasDualRole`. Build gulp OK; render da verificare a deploy.
+
+**Cosa implementare** — Inserire il blocco **tra** la chiusura di `${articoloMenuUtente}` (`[DA CONFERMARE: riga ~87]`) e il divider del logout (`[DA CONFERMARE: riga ~88]`):
+
+```ftl
+<#if hasDualRole?? && hasDualRole>
+    <li><span class="divider"></span></li>
+    <li>
+        <a class="list-item" href="${switchProfiloUrl}">
+            <span>${switchProfiloLabel}</span>
+        </a>
+    </li>
+</#if>
+```
+
+Resa attesa del dropdown (utente doppio ruolo, profilo Operatore attivo):
+
+```
++------------------------------+
+| Benvenuto Mario Rossi      v |  <- pulsante (invariato)
++------------------------------+
+| I miei dati                  |  <- articoloMenuUtente (invariato)
+| Le mie preferenze            |
++------------------------------+
+| Passa a Cittadino            |  <- NUOVO (solo se doppio ruolo)
++------------------------------+
+| Esci                         |  <- logout (invariato)
++------------------------------+
+```
+
+**Documentation reference:** struttura dropdown da `header.ftl` `[DA CONFERMARE: 67–93]`; nome variabile articolo (`articoloMenuUtente`) e `logout_url` da confermare in 0.1.
+
+**Verifica**
+- [ ] Utente doppio ruolo: il link "Passa a Cittadino/Operatore" appare nella posizione corretta, markup conforme Bootstrap Italia (`list-item`, `divider`).
+- [ ] Utente singolo profilo: il blocco **non** viene reso, dropdown identico all'attuale.
+- [ ] Modulo non deployato: `hasDualRole??` fallisce ⇒ blocco non reso ⇒ dropdown invariato (**zero regressioni**).
+
+**Anti-pattern guard:** non usare una portlet embeddata (`<@liferay_portlet["runtime"]>`) — aggiungerebbe wrapper `portlet-boundary` che rompe il CSS del link-list. Non aggiungere il link nel web content `articoloMenuUtente` (statico, niente logica condizionale).
+
+---
+
+## Fase A6 — Tema: `navigation.ftl` (filtro per profilo attivo) ✅ IMPLEMENTATA (repo tema)
+
+> 🔶 **Repo separato (Q1):** questa fase si svolge nel repository del tema, NON qui. Contratto in ingresso: `activeRole` (A3) + Expando `target_role` (A0).
+>
+> ✅ **Esito (2026-06-26):** implementata in `src/templates/navigation.ftl`. Il ciclo è `<#list nav_items as navItem>`. Logica estratta nella funzione `isVisibileByRuolo(navItem)` (`navigation.ftl:11-26`): guardia `!(activeRole??)` → `true` (modulo non deployato = nessun filtro); lettura Expando `navItem.getLayout().getExpandoBridge().getAttribute("target_role")` con null-guard dell'idioma esistente (`validator.isNotNull + hasAttribute + ??`) e **normalizzazione `?string?trim?upper_case`** (robusto a casing/spazi inseriti a mano nel Custom Field; `activeRole` è già garantito maiuscolo dal lato Java). Composizione con il filtro `pagina_per_cittadino` preesistente invariata: `nascondi_pagina_cittadino || !isVisibileByRuolo(navItem)` (`navigation.ftl:124`).
+>
+> ⚠️ **Filtro applicato alla sola voce di primo livello.** Le voci figlie (`getBrowsableChildren()`, `navigation.ftl:~110`) NON sono filtrate per `target_role`: conforme al contratto attuale. Se in A7 una pagina con `target_role` valorizzato risulta di **secondo livello**, estendere il filtro al loop figli con la singola chiamata `isVisibileByRuolo(childNavigationItem)`. Build gulp OK; render da verificare a deploy.
+
+**Cosa implementare** — Sostituire la logica `pagina_per_cittadino` (`[DA CONFERMARE: righe 89–98]`) con il confronto tra l'Expando `target_role` della pagina e `activeRole`:
+
+| `target_role` (Expando Layout) | Comportamento |
+|-------------------------------|---------------|
+| `CITTADINO` | Visibile solo con profilo Cittadino attivo |
+| `OPERATORE` | Visibile solo con profilo Operatore attivo |
+| (vuoto) | Visibile a tutti |
+
+Pseudo-logica (sintassi reale da adattare a come `navigation.ftl` legge l'Expando — vedi 0.1):
+
+```ftl
+<#-- guardia: se il contributor non è attivo, nessun filtro (comportamento attuale) -->
+<#assign target_role_value = ...lettura Expando target_role della pagina... />
+<#if !(activeRole??) || target_role_value == "" || target_role_value == activeRole>
+    <#-- pagina visibile: render voce di navigazione -->
+</#if>
+```
+
+**Documentation reference:** punto di innesto e modalità lettura Expando da 0.1.
+
+**Verifica**
+- [ ] Profilo Operatore: vede solo pagine `OPERATORE` + pagine vuote; non vede pagine `CITTADINO`.
+- [ ] Profilo Cittadino: speculare.
+- [ ] Pagina senza `target_role` ⇒ visibile a tutti.
+- [ ] `activeRole??` assente (modulo non deployato) ⇒ nessun filtro, tutte le pagine visibili (**zero regressioni**).
+
+**Anti-pattern guard:** non rimuovere la guardia `activeRole??`. Non introdurre filtri JavaScript post-render (FOUC inaccettabile).
+
+---
+
+## Fase A7 — Configurazione pagine (post-deploy, manuale)
+
+Assegnare `target_role` alle pagine:
+
+| Pagina | `target_role` |
+|--------|---------------|
+| Home | (vuoto) |
+| Scrivania Cittadino | `CITTADINO` |
+| I miei servizi | `CITTADINO` |
+| Le mie domande | `CITTADINO` |
+| Scrivania Operatore Servizi | `OPERATORE` |
+| Scrivania Operatore Bandi | `OPERATORE` |
+| Gestione Enti | `OPERATORE` |
+| Comunicazioni | (vuoto) |
+| Profilo utente | (vuoto) |
+
+**Verifica**
+- [ ] Walkthrough completo come utente doppio ruolo: login (Operatore) → vede scrivanie operatore → switch a Cittadino → vede scrivanie cittadino → switch indietro.
+
+---
+
+## Fase A-VERIFY — Verifica & regressioni Capacità A
+
+| Scenario | Esito atteso |
+|----------|-------------|
+| 1. Modulo non deployato | `hasDualRole??`/`activeRole??` falliscono ⇒ nessun blocco switch, nessun filtro ⇒ identico all'attuale |
+| 2. `target_role` non configurato su pagina | valore vuoto ⇒ pagina visibile a tutti |
+| 3. Utente senza ruolo operatore né cittadino | `ACTIVE_ROLE` non impostato ⇒ nessun filtro, nessun blocco switch |
+| 4. Administrator | bypass ⇒ navigazione completa |
+
+Checklist finale:
+- [ ] `grep` conferma che NON sono stati toccati ADT, COMMON_MACROS, portlet core.
+- [ ] Build OSGi del modulo `servizi-digitali-portal` ok.
+- [ ] Deploy tema ok, dropdown e navigazione corretti per ogni combinazione di ruoli.
+- [ ] `switchProfiloAttivo=false` ⇒ comportamento legacy.
+
+---
+
+# CAPACITÀ C — SELETTORI DI ACCESSO A FUNZIONALITÀ GUIDATI DAL RUOLO ATTIVO
+
+> Stato: **DA INIZIARE** (pianificata 2026-07-01).
+> Dipende da **Capacità A**: richiede `ACTIVE_ROLE`/`HAS_DUAL_ROLE` in sessione (prodotti da A2) e la configurazione A1 (`switchProfiloAttivo`, chiavi ruolo).
+> ⚠️ **Revisiona il "Principio architetturale cardine" di Capacità A**: il ruolo attivo passa da influenzare solo "cosa vedo" (navigazione) a influenzare anche "cosa posso fare" (funzionalità in pagina).
+
+## Problema
+
+L'analisi del 2026-06-30 ha accertato che **`ACTIVE_ROLE` non è considerato da nessun punto funzionale** dell'applicazione: la visibilità di voci di menu e di funzionalità interne alle pagine (es. un bottone mostrato solo all'amministratore, un tab riservato al gestore) dipende oggi **solo dai ruoli posseduti** (membership Liferay via `getUserRoles` / `UserGroupRoleLocalService`), **mai** dal profilo attivo selezionato con lo switch.
+
+Conseguenza: un utente con doppio ruolo che ha selezionato "Cittadino" continua a vedere bottoni e azioni da operatore, perché il selettore valuta solo "l'utente possiede il ruolo X", ignorando "il profilo attivo è cittadino".
+
+Inoltre si sospetta (da confermare in C0) che alcuni selettori siano **cablati direttamente nelle JSP**, oltre che nelle classi Java.
+
+## Obiettivo
+
+Far dipendere i selettori di visibilità/accesso alle funzionalità dal **profilo attivo** (`ACTIVE_ROLE` in sessione) invece che dalla sola **presenza del ruolo** sull'utenza. Nessun componente dedicato: si legge `ACTIVE_ROLE` (costante `ServiziDigitaliPortalConstants.ACTIVE_ROLE`) nei punti esistenti, confrontandola con `ROLE_CITTADINO` / `ROLE_OPERATORE` (costanti già presenti — niente stringhe magiche).
+
+> **Decisione (2026-07-01):** l'ipotesi iniziale di un componente OSGi centralizzato (`ProfileAccessService`) è **scartata**: troppo invasiva rispetto al beneficio attuale. Si procede con modifiche mirate ai selettori esistenti. Se in futuro le letture di `ACTIVE_ROLE` proliferassero, si potrà valutare un piccolo helper di sola lettura (non un componente di regole).
+
+## Perché basarsi su `ACTIVE_ROLE` è corretto e sicuro
+
+`LoginPostAction.resolveActiveRole` imposta `ACTIVE_ROLE` in sessione **per ogni utente non-Administrator**, in modo uniforme:
+
+| Profili utente | `ACTIVE_ROLE` |
+|----------------|---------------|
+| Solo cittadino | `CITTADINO` |
+| Solo operatore | `OPERATORE` |
+| Doppio ruolo | `OPERATORE` (default), commutabile a `CITTADINO` via switch |
+| Administrator | (non impostato → bypass) |
+
+Due proprietà rendono il ruolo attivo il discriminante corretto:
+1. **È sempre valorizzato** (tranne Administrator): anche l'utente a ruolo singolo ha un `ACTIVE_ROLE` coerente col suo unico ruolo, quindi un selettore basato su `ACTIVE_ROLE` si comporta come oggi per i single-role.
+2. **`ACTIVE_ROLE=CITTADINO` implica il possesso del ruolo cittadino** (lo switch a `CITTADINO` è consentito solo con `HAS_DUAL_ROLE`; il single-cittadino lo possiede per definizione). Quindi sostituire `hasRole("cittadino")` con `ACTIVE_ROLE == CITTADINO` **non concede** accesso a chi non possiede il ruolo.
+
+⇒ Per i selettori **macro-profilo** (cittadino vs operatore) leggere il ruolo attivo è **sufficiente** (implica già il possesso) e più corretto della presenza del ruolo: non serve una congiunzione esplicita possesso × attivo.
+
+## Principio (aggiorna il "cardine" di Capacità A)
+
+| Piano | Prima (Capacità A) | Ora (Capacità C) |
+|-------|--------------------|------------------|
+| Macro-profilo "cosa vedo" (navigazione/pagine) | guidato da `ACTIVE_ROLE` (Expando `target_role`) | invariato |
+| Macro-profilo "cosa posso fare" (funzionalità in pagina) | invariato, presenza del ruolo cittadino/operatore | **guidato da `ACTIVE_ROLE`** (al posto della presenza del ruolo) |
+| Vincoli di sicurezza assoluti (ruoli specifici: administrator, gestore, `test-bandi`…) | presenza del ruolo | **invariato** — resta sulla presenza del ruolo |
+
+**Comportamenti di salvaguardia (zero regressioni):**
+- Administrator / nessun `ACTIVE_ROLE` in sessione ⇒ comportamento legacy (nessun filtro per profilo).
+- `switchProfiloAttivo=false` (kill switch A1) ⇒ `ACTIVE_ROLE` non impostato ⇒ i selettori tornano al comportamento legacy.
+- Single-role ⇒ `ACTIVE_ROLE` coincide col ruolo posseduto: nessun cambiamento osservabile.
+
+⚠️ **Fallback obbligatorio:** ogni selettore migrato deve gestire il caso `ACTIVE_ROLE` **assente** (Administrator, kill switch, utente senza ruoli) mantenendo il comportamento attuale. Non assumere `ACTIVE_ROLE` sempre presente.
+
+---
+
+## Fase C0 — Discovery: censimento dei selettori di accesso (PREREQUISITO OBBLIGATORIO)
+
+Spec-driven: nessuna migrazione (C1) parte prima di aver prodotto l'inventario completo `file:riga` dei selettori, distinti tra Java e JSP, e classificati.
+
+**Cosa fare** — censire ogni punto che decide accesso/visibilità di una funzionalità in base al ruolo:
+- **Java**: `isUserInRole`, `roleLocalService.getUserRoles`, `hasRole*`, `UserGroupRoleLocalService.hasUserGroupRole`, `PermissionChecker`, confronti su nomi di ruolo hardcoded, tab/azioni condizionali in render/action command e service.
+- **JSP**: scriptlet/EL che leggono ruoli o `permissionChecker`, `<c:if>`/`<c:choose>` su flag di ruolo, blocchi condizionali che mostrano bottoni/sezioni in base al ruolo.
+
+**Leads già emersi (analisi 2026-06-30 — `[DA CONFERMARE in C0]`, NON esaustivi):**
+
+| Punto | file:riga (da confermare) | Selettore | Note |
+|-------|---------------------------|-----------|------|
+| `PortletBandiSecurityService` | `:72` | `getUserRoles` → ruolo `test-bandi` | accesso a funzioni di test |
+| `GestioneBandiMiddlewareService` | `:881` | `hasUserGroupRole("GESTORE_INTEGRAZIONE_DATI")` | ruolo di gruppo |
+| `DettaglioComunicazioneRenderCommand` | `:81, 290-294, 310-312` | ruolo `Cittadino` vs gestore/backoffice | filtra messaggi visibili |
+| `ScrivaniaOperatoreFrontendService` | `:234, 237` | `RoleLocalService` + `UserGroupRoleLocalService` | controlli permessi scrivania |
+| Scrivania cittadino / catalogo servizi | — | **nessun selettore di ruolo** | filtrano per identità utente + config ente |
+
+⚠️ **Criterio di classificazione (decisione per ogni voce):** non tutti i selettori vanno legati al profilo attivo.
+- Selettori **macro-profilo** (cittadino vs operatore: "questa azione appartiene alla scrivania operatore e non ha senso da cittadino") ⇒ **passano su `ACTIVE_ROLE`** (C1).
+- Selettori che esprimono un **vincolo di sicurezza assoluto** su ruoli specifici (administrator, gestore, `test-bandi`…) ⇒ **restano sulla presenza del ruolo**, fuori da C.
+
+**Verifica**
+- [ ] Inventario `file:riga` completo, separato Java / JSP.
+- [ ] Per ogni selettore: ruolo/i coinvolti, classificazione "macro-profilo" vs "sicurezza assoluta", flag "da migrare su `ACTIVE_ROLE`" sì/no con motivazione.
+
+**Anti-pattern guard:** non iniziare C1 con un censimento parziale; un selettore macro-profilo non migrato resta una falla di coerenza UI (l'utente vede ancora azioni del profilo non attivo).
+
+---
+
+## Fase C1 — Migrazione dei selettori a `ACTIVE_ROLE` (Java + JSP)
+
+**Cosa implementare** — sostituire i selettori censiti in C0 e classificati "macro-profilo" dal criterio *presenza del ruolo* al criterio *ruolo attivo*.
+
+**Lettura del ruolo attivo** — dalla sessione del portale, usando le costanti già esistenti (niente stringhe magiche):
+`session.getAttribute(ServiziDigitaliPortalConstants.ACTIVE_ROLE)`, confronto con `ROLE_CITTADINO` / `ROLE_OPERATORE`. La `HttpSession`/`PortletRequest` è disponibile nei render/action command e nei service che ricevono il `ServiceContext`/request.
+
+- **Java** (portlet, render/action command, service): rimpiazzare i check tipo `hasRole("cittadino")` / `getUserRoles(...)` con il confronto su `ACTIVE_ROLE`, **con fallback legacy** se `ACTIVE_ROLE` è assente (Administrator, kill switch).
+- **JSP**: **niente logica di ruolo nelle view** (regola di progetto). Il render/action command **pre-calcola** i flag booleani (es. `profiloCittadinoAttivo`) e li espone come request attribute; la JSP fa solo `<c:if test="${profiloCittadinoAttivo}">`. Dove oggi il selettore è cablato nella JSP, **spostare la decisione nel backend** e lasciare nella view solo il flag.
+- **Selettori di sicurezza assoluta** (ruoli specifici classificati in C0) ⇒ **non toccati**.
+
+⚠️ **Dipendenza sulle costanti** — `ServiziDigitaliPortalConstants` vive in `servizi-digitali-portal`, un bundle che i moduli frontend consumer (scrivania, bandi, comunicazioni) **potrebbero non importare**. Prima della migrazione va verificato dove sono raggiungibili `ACTIVE_ROLE` / `ROLE_CITTADINO` / `ROLE_OPERATORE`; se non lo sono, valutare lo spostamento di queste sole costanti in `servizi-digitali-common-utility` (stessa logica della correzione `OldUserResolver`, B1). Evitare in ogni caso di ri-cablare le stringhe `"ACTIVE_ROLE"`/`"CITTADINO"`/`"OPERATORE"` a mano nei moduli. Vedi Q6.
+
+**Documentation reference:** lettura `ACTIVE_ROLE` da sessione → `ActiveRoleTemplateContextContributor.java:46-57` (A3); assegnazione uniforme del ruolo attivo → `LoginPostAction.resolveActiveRole` (A2).
+
+**Verifica**
+- [ ] Utente doppio ruolo, profilo Cittadino attivo: le funzionalità operatore non compaiono; dopo switch a Operatore ricompaiono.
+- [ ] `ACTIVE_ROLE` assente (Administrator / kill switch): comportamento legacy.
+- [ ] Nessuna stringa di ruolo hardcoded introdotta; uso delle costanti condivise.
+- [ ] Nessuna logica di ruolo residua nelle JSP migrate (solo flag pre-calcolati).
+
+**Anti-pattern guard:** non lasciare selettori "misti" (alcuni migrati, altri no) sulla stessa funzionalità: incoerenza UI. Non spostare in JSP la valutazione del profilo "per comodità". Non dimenticare il fallback `ACTIVE_ROLE` assente.
+
+---
+
+## Fase C-VERIFY — Verifica & regressioni Capacità C
+
+| Scenario | Esito atteso |
+|----------|--------------|
+| Doppio ruolo, profilo Cittadino attivo | nessun bottone/azione/tab da operatore visibile o eseguibile |
+| Switch a Operatore | le funzionalità operatore ricompaiono |
+| Solo cittadino / solo operatore | nessun cambiamento rispetto a oggi |
+| Administrator | accesso pieno (bypass) |
+| `switchProfiloAttivo=false` (kill switch) | comportamento legacy (solo ruoli posseduti) |
+| Selettore di sola sicurezza (non legato al profilo) | invariato a prescindere dal profilo attivo |
+
+Checklist finale:
+- [ ] Build OSGi dei moduli toccati ok.
+- [ ] Inventario C0 interamente coperto o esplicitamente escluso con motivazione.
+- [ ] Walkthrough doppio ruolo: switch avanti/indietro con verifica delle funzionalità in pagina, non solo del menu.
+
+---
+
+# CAPACITÀ B — MIGRAZIONE OPERATORI SPID
+
+> Rilasciabile indipendentemente. Un Expando + un resolver + 5 estensioni mirate a query/servizi esistenti. Backward-compatible per definizione: `old_screen_name` vuoto ⇒ comportamento attuale.
+
+## Problema
+
+SPID genera una **nuova utenza Liferay**: `screenName = codice fiscale` (es. `RSSMRA80A01H501Z`), `userId` nuovo (es. `98765`). Il backoffice àncora i dati alla **vecchia identità interna**: `screenName` nominativo (es. `mario.rossi`), `userId` numerico (es. `12345`).
+
+| Componente | Chiave di associazione | Impatto post-migrazione |
+|-----------|------------------------|--------------------------|
+| Camunda — task in carico | `userId` numerico | task del vecchio userId non visibili |
+| Camunda — `getUserTasks` | `String.valueOf(user.getUserId())` | il nuovo userId non trova i task del vecchio |
+| Comunicazioni — destinatario | `userId` (`destinatario_comunicazione`) | comunicazioni del vecchio utente non visibili |
+| Comunicazioni — ricerca | `screenName` (`ComunicazioneFinderImpl`) | ricerca per CF non trova il vecchio screenName |
+| Commenti — finder per CF | `codiceFiscale = screenName` | commenti del vecchio CF non visibili |
+
+I **cittadini non sono toccati**: hanno da sempre `screenName = codice fiscale`.
+
+## Soluzione
+
+Un **Custom Field (Expando) `old_screen_name`** su `User`. Da esso si deriva tanto il vecchio `screenName` quanto il vecchio `userId`.
+
+| Campo | Esempio |
+|-------|---------|
+| Nuovo `screenName` | `RSSMRA80A01H501Z` |
+| Nuovo `userId` | `98765` |
+| Expando `old_screen_name` | `mario.rossi` |
+| Vecchio `userId` (derivato) | `12345` |
+
+---
+
+## Fase B0 — Prerequisito di piattaforma (manuale)
+
+**Cosa fare** — Creare il Custom Field (Expando) **`old_screen_name`** su entità **User**: tipo Testo, vuoto di default, valorizzato (manualmente/da processo amministrativo) solo per gli operatori transitati a SPID.
+
+**Verifica**
+- [ ] Expando `old_screen_name` visibile in Pannello di Controllo → Custom Fields → User.
+
+---
+
+## Fase B1 — `OldUserResolver` (servizio OSGi)
+
+**Cosa implementare** — Nuovo servizio OSGi nel modulo `servizi-digitali-common-utility` (correzione: vedi Stato implementazione — i consumer dipendono già da questo modulo) che concentra in un solo punto la risoluzione della vecchia utenza dall'Expando.
+
+```java
+public interface OldUserResolver {
+    String getOldScreenName(long userId);   // legge Expando old_screen_name; null se vuoto
+    Long   getOldUserId(long userId);        // risolve User da old_screen_name → vecchio userId; null se vuoto/non trovato
+}
+```
+
+- `getOldScreenName`: legge l'Expando `old_screen_name` sull'utente corrente: `Serializable v = user.getExpandoBridge().getAttribute("old_screen_name"); return v!=null ? v.toString() : null;` (pattern verificato in `CertificatiResourceImpl.java:307-311`; valutare di aggiungere la chiave all'enum `UserCustomAttributes`).
+- `getOldUserId`: da `old_screen_name` recupera lo `User` legacy (`UserLocalService.fetchUserByScreenName(companyId, oldScreenName)`) e ne ritorna lo `userId`.
+- **Backward compat:** Expando vuoto ⇒ entrambi ritornano `null`.
+
+**Documentation reference:** lettura Expando String su User da `[DA CONFERMARE: 0.2]`; `UserLocalService` per la risoluzione screenName→user.
+
+**Verifica**
+- [ ] Utente con `old_screen_name=mario.rossi` ⇒ `getOldScreenName` ritorna `mario.rossi`, `getOldUserId` ritorna il vecchio userId.
+- [ ] Utente con Expando vuoto ⇒ entrambi `null`.
+- [ ] `old_screen_name` valorizzato ma utente legacy inesistente ⇒ `getOldUserId` ritorna `null` (no eccezione).
+
+**Anti-pattern guard:** un solo punto di risoluzione; tutte le estensioni B3–B5 si appoggiano qui. Niente cache aggressiva senza invalidazione (l'Expando può cambiare).
+
+---
+
+## Fase B2 — *(riservata: eventuale caching/utility condivisa)*
+
+Da valutare solo se le estensioni B3–B5 mostrano un costo ripetuto di risoluzione. Default: nessun caching.
+
+---
+
+## Fase B3 — Estensione Camunda `getUserTasks`
+
+**Cosa implementare** — Oggi la call è `camundaClient.searchTasks(tenantId, String.valueOf(currentUser.getUserId()), …)`:
+- `ScrivaniaOperatoreFrontendService.java` — **righe 581 e 617** (la classe ha 3 overload di `getUserTasks`: 562, 575-597, 610-633; le call effettive sono a 581 e 617).
+- `ScrivaniaOperatoreBandiFrontendService.java` — **riga 3597** (metodo 3589-3614).
+
+**Affiancare** la ricerca sul vecchio userId quando `old_screen_name` è valorizzato (via `OldUserResolver.getOldUserId`): se non-null ⇒ interrogare Camunda per **entrambi** i userId (corrente + vecchio) e unire i risultati (deduplicare per task id se necessario).
+
+⚠️ Verificare se `camundaClient.searchTasks` accetta una **lista** di assignee o un singolo valore: se singolo, fare due chiamate e fondere i `Map<String,Task>`; se lista, passare entrambi.
+
+**Documentation reference:** `ScrivaniaOperatoreFrontendService.java:575-633`, `ScrivaniaOperatoreBandiFrontendService.java:3589-3614`.
+
+**Verifica**
+- [ ] Operatore migrato (`old_screen_name` valorizzato): la scrivania mostra task del nuovo **e** del vecchio userId.
+- [ ] Operatore non migrato (Expando vuoto): comportamento identico all'attuale (solo userId corrente).
+- [ ] Nessun task duplicato se per qualche ragione coincidono.
+
+**Anti-pattern guard:** non sostituire il userId corrente con quello vecchio — **affiancare**. Verificare il formato esatto del parametro Camunda (stringa) prima di passare il secondo id.
+
+---
+
+## Fase B4 — Estensione Comunicazioni
+
+**Cosa implementare** — `ComunicazioneFinderImpl.generaQuery()` (righe 92-202). Il match avviene via **DynamicQuery** (NON SQL custom): `RestrictionsFactoryUtil.ilike("screenName", val)` a riga 136 (dentro una `Disjunction` con firstName/lastName) e nell'helper `searchUsers()` a riga 207; la sub-query su `User` produce `userId` che poi filtra `DestinatarioComunicazione` (`primaryKey.destinatarioId`). Allargare la `Disjunction` per comprendere anche `old_screen_name` e il vecchio `userId` (via `OldUserResolver`).
+
+**Documentation reference:** `ComunicazioneFinderImpl.java:92-216`. Estendere con clausole `Disjunction` aggiuntive — niente SQL string.
+
+**Verifica**
+- [ ] Operatore migrato: ricerca comunicazioni trova quelle indirizzate al vecchio `screenName` e al vecchio `userId`.
+- [ ] Operatore non migrato: risultati identici all'attuale.
+
+**Anti-pattern guard:** estendere la `WHERE` con clausole `OR` parametrizzate; niente concatenazione di stringhe SQL (SQL injection). Aggiungere i parametri solo quando i valori legacy sono non-null.
+
+---
+
+## Fase B5 — Estensione Commenti ✅ IMPLEMENTATA (Q4)
+
+> **Verifica di dominio (esito):** i finder `findCommentiByCodiceFiscaleAndVisibileAndCompanyId` sono usati **solo** dalla scrivania cittadino (`ScrivaniaCittadinoMiddlewareService.getListaCommentiMergeRichiesteDomandeBando`) e filtrano per `codiceFiscale` del **richiedente**. Lo scenario valido è: un utente migrato che aveva presentato pratiche sotto la **vecchia screenName interna** (quindi `Richiesta/DomandaBando.codiceFiscale = vecchiaScreenName.toUpperCase()`), che dopo SPID non vedrebbe più i relativi commenti.
+>
+> **Implementazione:** dentro `CommentoRichiestaFinderImpl` e `CommentoDomandaBandoFinderImpl`, sia su `findCommentiByCodiceFiscaleAndVisibileAndCompanyId` sia su `countCommentiNonLettiByCodiceFiscaleAndCompanyId`, il filtro passa da `codiceFiscale == X` a `codiceFiscale IN (X, vecchio.toUpperCase())`. Il vecchio screenName è risolto via `OldUserResolver.getOldScreenNameByScreenName(companyId, codiceFiscale)` (null per i non migrati → nessuna regressione). La scrivania cittadino (caller) resta invariata.
+
+**Cosa implementare** — `CommentoRichiestaFinderImpl.java:23-44` e `CommentoDomandaBandoFinderImpl.java:23-41`, metodo `findCommentiByCodiceFiscaleAndVisibileAndCompanyId(String codiceFiscale, long companyId)`. Filtrano `Richiesta.codiceFiscale` / `DomandaBando.codiceFiscale == codiceFiscale` via **DynamicQuery** (`RestrictionsFactoryUtil.eq`). Aggiungere il **vecchio screenName in MAIUSCOLO** (`old_screen_name.toUpperCase()`, perché `codiceFiscale = screenName.toUpperCase()` — vedi 0.3) come clausola `Disjunction` (via `OldUserResolver.getOldScreenName`).
+
+⚠️ **Dominio da verificare (Q4):** `Richiesta.codiceFiscale`/`DomandaBando.codiceFiscale` contengono il CF del **cittadino richiedente**, non dell'operatore. Inoltre il vecchio screenName operatore (`mario.rossi`) **non è un CF**. Chiarire se questa estensione ha senso per i commenti prima di implementarla.
+
+**Documentation reference:** `CommentoRichiestaFinderImpl.java:23-69`, `CommentoDomandaBandoFinderImpl.java:23-41`.
+
+**Verifica**
+- [ ] Operatore migrato: vede i commenti associati al vecchio CF/screenName.
+- [ ] Operatore non migrato: comportamento identico.
+
+**Anti-pattern guard:** parametri bind, non concatenazione. Filtro `old_screen_name` solo se non-null.
+
+---
+
+## Fase B-VERIFY — Verifica & backward compatibility Capacità B
+
+| Scenario | Esito atteso |
+|----------|-------------|
+| `old_screen_name` vuoto (operatore nuovo o non migrato) | `OldUserResolver` ritorna `null` ⇒ logica lavora col solo `userId` corrente ⇒ **nessuna regressione** |
+| `old_screen_name` valorizzato | task/comunicazioni/commenti legacy tornano visibili |
+| Cittadino (mai migrato, `screenName=CF`) | nessun impatto |
+
+Checklist finale:
+- [ ] Build dei moduli interessati (scrivania operatore, comunicazioni, commenti) ok.
+- [ ] Walkthrough operatore migrato (flusso §10.3 della spec): login SPID → scrivania operatore → task del vecchio `mario.rossi` visibili.
+- [ ] Nessuna query SQL costruita per concatenazione.
+
+---
+
+## Fase B6 — Gestione generalizzata di `old_screen_name` sugli accessi per `screenName` (attività a seguire)
+
+> Stato: **DA INIZIARE** (attività successiva a B1–B5). Generalizza il principio di B3/B4/B5 a **tutti** gli accessi basati su `screenName`, riusando il resolver `OldUserResolver` (B1).
+
+### Problema
+
+Il Custom Field `old_screen_name` (B0) contiene lo `screenName` di **un'altra utenza Liferay** che, sul piano di business, è la **versione precedente della stessa persona** (identità interna pre-SPID). Di conseguenza, ogni punto che **legge o scrive dati sulla base dello `screenName`** (o del `codiceFiscale` derivato, = `screenName.toUpperCase()`) considerando solo l'identità corrente **perde** i dati agganciati all'identità precedente.
+
+Le fasi B3–B5 hanno risolto **casi specifici e noti** (task Camunda, comunicazioni, commenti). B6 rende **sistematico** il trattamento: censire e coprire *tutti* gli accessi per `screenName` non ancora gestiti.
+
+### Regola
+
+Per ogni accesso basato su `screenName`:
+- **Lettura** → interrogare con lo `screenName` **corrente** e con quello in `old_screen_name`, poi **fondere e deduplicare** i risultati.
+- **Scrittura** → semantica da definire caso per caso (vedi ⚠️): non è una semplice unione. In genere il nuovo dato va sull'identità **corrente**; l'`old_screen_name` rileva solo se occorre aggiornare/riconciliare record legacy già esistenti.
+
+Punto di risoluzione unico: `OldUserResolver` (B1) — `getOldScreenName(userId)` e, dove serve l'id, `getOldUserId(userId)`. Backward-compat garantita: `old_screen_name` vuoto ⇒ resolver `null` ⇒ comportamento attuale.
+
+⚠️ **Lettura vs scrittura.** Il "fondere i risultati" del requisito vale in modo naturale per le **letture**. Per le **scritture** va chiarito il comportamento atteso (scrivere solo sull'identità corrente? propagare/riconciliare sul legacy?): da decidere in B6.0 per ogni punto di scrittura individuato. Vedi Q7.
+
+### Fase B6.0 — Discovery: censimento degli accessi per `screenName` (PREREQUISITO)
+
+**Cosa fare** — inventario `file:riga` di ogni punto che legge/scrive per `screenName` o per `codiceFiscale` derivato, escludendo i già coperti (B3/B4/B5):
+- `user.getScreenName()`, `fetchUserByScreenName` / `getUserByScreenName`;
+- DynamicQuery / finder con `screenName` o `codiceFiscale` (`RestrictionsFactoryUtil.eq`/`ilike`);
+- resource command / service / JSP che filtrano per `screenName` o CF;
+- ⚠️ attenzione al **casing**: `codiceFiscale = screenName.toUpperCase()` (vedi 0.3) — l'old va confrontato in MAIUSCOLO dove il campo è un CF.
+
+**Output:** tabella con, per ciascun punto: tipo (lettura/scrittura), chiave usata (`screenName` vs `codiceFiscale`), se già coperto da B3–B5, azione prevista.
+
+**Verifica**
+- [ ] Inventario completo, con gli esclusi espliciti (già coperti in B) motivati.
+- [ ] Per ogni punto di scrittura: semantica decisa (corrente / riconciliazione legacy).
+
+### Fase B6.1 — Estensione degli accessi
+
+**Cosa implementare** — per i punti di **lettura** classificati in B6.0: affiancare l'`old_screen_name` (via `OldUserResolver`) e **fondere/deduplicare** i risultati. Riusare il pattern **DynamicQuery** già adottato in B4/B5 (clausole `Disjunction`/`IN` parametrizzate, aggiunte solo se il valore old è non-null). Per i punti di **scrittura**: applicare la decisione presa in B6.0 / Q7.
+
+**Verifica**
+- [ ] Operatore migrato: le letture per `screenName`/CF includono i dati dell'identità precedente, senza duplicati.
+- [ ] Operatore non migrato (`old_screen_name` vuoto): risultati identici all'attuale.
+- [ ] Casing CF gestito (old confrontato in MAIUSCOLO dove pertinente).
+
+**Anti-pattern guard:** niente SQL per concatenazione; clausole parametrizzate. Aggiungere il ramo legacy **solo** se `old_screen_name` è non-null. **Deduplicare** i risultati fusi. Non trattare la scrittura come una semplice unione senza aver deciso la semantica.
+
+---
+
+## Flussi operativi di riferimento (dalla spec, per i test E2E)
+
+**Primo accesso doppio ruolo:** Login SPID → `RoleSelectionFilter` rileva cittadino+operatore-backoffice → sessione `ACTIVE_ROLE=OPERATORE`, `HAS_DUAL_ROLE=true` → `ActiveRoleTemplateContextContributor` inietta variabili → `navigation.ftl` filtra → `header.ftl` mostra "Passa a Cittadino".
+
+**Switch a Cittadino:** click → `GET /web/<sito>?activeRoleSwitch=CITTADINO` → `RoleSwitchFilter` (contesto portale) aggiorna `ACTIVE_ROLE=CITTADINO` in sessione → redirect home → navigazione cittadino + "Passa a Operatore". *(Rivisto 2026-06-30, Q5: in origine servlet OSGi su `/o/role-switch/toggle`.)*
+
+**Operatore migrato a SPID:** login SPID (nuovo user, screenName=CF) → admin ha valorizzato `old_screen_name=mario.rossi` → `HAS_DUAL_ROLE=true`, `ACTIVE_ROLE=OPERATORE` → scrivania carica `getUserTasks` con userId corrente + vecchio userId → task di `mario.rossi` di nuovo visibili.
+
+---
+
+## Mappa componenti (riepilogo impatti)
+
+| Componente | File | Modifica | Capacità |
+|-----------|------|----------|:--------:|
+| `RoleSelectionConfiguration` | `servizi-digitali-portal` | Nuovo | A |
+| `LoginPostAction` (estensione) | `servizi-digitali-portal` | **Modifica** (set `ACTIVE_ROLE`/`HAS_DUAL_ROLE`) | A |
+| `ActiveRoleTemplateContextContributor` | `servizi-digitali-portal` | Nuovo | A |
+| `RoleSwitchFilter` (sostituisce `RoleSwitchServlet`, rimosso) | `servizi-digitali-portal` | Nuovo — `BasePortalFilter` su `/web/*`,`/group/*` (2026-06-30, Q5) | A |
+| `RoleSwitchNoticeDynamicInclude` | `servizi-digitali-portal` | Nuovo — `DynamicInclude` toast post-switch (2026-06-30, A4-bis) | A |
+| `header.ftl` | **repo tema separato** | +7 righe (blocco switch) ✅ | A |
+| `navigation.ftl` | **repo tema separato** | filtro `target_role` via `<#function isVisibileByRuolo>` ✅ | A |
+| Expando `target_role` (Layout) | piattaforma | Nuovo | A |
+| Ruolo `operatore-backoffice` | piattaforma | Nuovo | A |
+| Selettori macro-profilo Java + JSP | moduli vari (inventario C0) | Migrazione da presenza-ruolo a `ACTIVE_ROLE` | C |
+| Costanti `ACTIVE_ROLE` / `ROLE_*` | `servizi-digitali-portal` (→ forse `common-utility`, Q6) | Eventuale spostamento per i consumer | C |
+| `OldUserResolver` (+Impl) | `servizi-digitali-common-utility` | Nuovo | B |
+| `ScrivaniaOperatoreFrontendService#getUserTasks` | modulo scrivania | Estensione | B |
+| `ScrivaniaOperatoreBandiFrontendService#getUserTasks` | modulo scrivania bandi | Estensione | B |
+| `ComunicazioneFinderImpl` | modulo comunicazioni | Query estesa | B |
+| `CommentoRichiestaFinderImpl` | scrivania-operatore-service | Query estesa (CF IN) ✅ | B |
+| `CommentoDomandaBandoFinderImpl` | gestione-bandi-service | Query estesa (CF IN) ✅ | B |
+| Expando `old_screen_name` (User) | piattaforma | Nuovo | B |
+| Accessi per `screenName` (inventario B6.0) | moduli vari | Estensione `old_screen_name` — lettura: union + merge; scrittura: Q7 | B |
+
+### NON impattati (invarianti)
+Tutte le portlet (logica interna), `CheckPrivacyFilter`, `PrivatePagesRedirectFilter`, `LoginPostAction`, `SessionDestroyPostAction`, flusso SAML/SPID (`DefaultAttributeResolver`), web content `articoloMenuUtente`, ADT, COMMON_MACROS, footer, breadcrumb, API REST, scrivania cittadino.
+
+---
+
+## Domande aperte / risolte
+
+Risolte il 2026-06-24 (dettaglio nella tabella **Decisioni** in testa): Q1 tema in repo separato · Q2 sviluppo in parallelo · Q3 estendere `LoginPostAction` · Q4 sospendere B5.
+
+Risolte il 2026-06-26:
+- **Q1-bis** — A5/A6 implementate nel repo del tema sul contratto FTL di A3; build gulp OK. ✅
+- **Firma `TemplateContextContributor.prepare(...)`** — risolta a **2 parametri** (`prepare(Map<String,Object>, HttpServletRequest)`) nell'implementazione `ActiveRoleTemplateContextContributor`. ✅
+- **`camundaClient.searchTasks`** — accetta un solo `assignee` ⇒ seconda chiamata col vecchio userId e merge `putIfAbsent` (B3). ✅
+
+Risolte il 2026-06-30:
+- **Q5 — switch endpoint da servlet a filtro** — `RoleSwitchServlet` rimosso, sostituito da `RoleSwitchFilter` (`BasePortalFilter`). Causa doppia: collisione di routing sul context `/o` + sessione cross-context. ✅
+- **Toggle del profilo verificato a runtime** — lo switch alterna correttamente `ACTIVE_ROLE` e la label del dropdown ("Passa a Cittadino" ↔ "Passa a Operatore"). ✅
+- **Notifica toast post-switch (A4-bis)** — `RoleSwitchNoticeDynamicInclude` mostra la toast verde "Operazione eseguita con successo" dopo il redirect, una sola volta. ✅
+
+Ancora da chiudere:
+- **Q6 — Capacità C (selettori guidati dal ruolo attivo)** — aperta (2026-06-30, aggiornata 2026-07-01). **Componente centralizzato scartato** (troppo invasivo): si migrano i selettori esistenti a `ACTIVE_ROLE`. Da decidere: (a) dove sono raggiungibili le costanti `ACTIVE_ROLE`/`ROLE_CITTADINO`/`ROLE_OPERATORE` per i moduli consumer, con eventuale spostamento in `servizi-digitali-common-utility`; (b) classificazione per ogni selettore censito in C0 tra "macro-profilo (→ `ACTIVE_ROLE`)" e "sicurezza assoluta (invariato)". Prerequisito: C0 (inventario `file:riga` Java + JSP).
+- **Q7 — B6: semantica di scrittura per `old_screen_name`** — aperta (2026-07-01). Per gli accessi in **lettura** la regola è union corrente + old + dedup; per gli accessi in **scrittura** individuati in B6.0 va deciso se scrivere solo sull'identità corrente o riconciliare i record legacy. Prerequisito: B6.0 (inventario `file:riga` degli accessi per `screenName`).
+- **Filtro navigazione `target_role` (A6/A7)** — il *toggle* della sessione funziona, ma il filtraggio effettivo delle pagine per profilo non è ancora verificato (dipende da A6 lato tema e dalla configurazione `target_role` sulle pagine, A7). Pre-esistente all'intervento del 2026-06-30, fuori dallo scope di questo repo. Caso switch chiuso lato Java.
+- **Render a deploy** — verifica del rendering FTL di A5/A6 in ambiente con i bundle Java deployati (gulp non invoca il parser FreeMarker): walkthrough doppio ruolo, singolo profilo, modulo non deployato (zero regressioni via `??`).
+- **A7 — profondità albero pagine** — verificare se pagine con `target_role` (es. "I miei servizi", "Le mie domande", "Scrivania Operatore Bandi") sono di secondo livello: in tal caso estendere `isVisibileByRuolo` al loop figli.
+- **Q4-bis** — Verifica di dominio sui commenti già risolta in Q4 (B5 implementata); voce storica.
+
+## Ordine di esecuzione consigliato
+
+Phase 0 completata (2026-06-24). A e B procedono **in parallelo** (Q2), sviluppatori distinti.
+
+**Traccia A — questo repo (Java + config):** A0 (ruolo + Expando `target_role`) → A1 (`RoleSelectionConfiguration`) → A2 (estensione `LoginPostAction`, Q3) → A3 (`ActiveRoleTemplateContextContributor`) → A4 (`RoleSwitchFilter`, Q5 — rivisto da servlet a `BasePortalFilter`) → A-VERIFY (lato Java).
+**Traccia A — repo del tema (Q1):** A5 (`header.ftl`) ✅ + A6 (`navigation.ftl`) ✅ **implementate, build gulp OK** (render da verificare a deploy) + A7 (config pagine `target_role`, manuale). Dipendevano dal contratto FTL prodotto da A3.
+
+**Traccia B — questo repo:** B0 (Expando `old_screen_name`) → B1 (`OldUserResolver`) → B3 (Camunda, 2 servizi) → B4 (Comunicazioni) → B5 (commenti, scrivania cittadino) → B-VERIFY. **Tutte implementate e compilate.** A seguire: **B6** (gestione generalizzata `old_screen_name`: B6.0 discovery → B6.1 estensione), attività successiva ancora da iniziare (Q7).
+
+**Traccia C — questo repo (pianificata 2026-07-01):** C0 (discovery: inventario selettori Java + JSP) → C1 (migrazione dei selettori macro-profilo a `ACTIVE_ROLE`) → C-VERIFY. Dipende da Capacità A (`ACTIVE_ROLE` in sessione). **Da iniziare** — C0 è prerequisito bloccante per C1. Componente centralizzato scartato (vedi Capacità C → Obiettivo).

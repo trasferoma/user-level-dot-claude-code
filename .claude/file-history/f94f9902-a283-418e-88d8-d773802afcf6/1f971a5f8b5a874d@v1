@@ -1,0 +1,21 @@
+Bundle-Name: scrivania-operatore-bandi-frontend
+Bundle-SymbolicName: it.servizidigitali.gestionebandi.operatore.frontend
+Bundle-Version: 1.0.0
+Export-Package: it.servizidigitali.gestionebandi.operatore.frontend.constants
+Import-Package: \
+    !com.google.crypto.tink.*,\
+    !org.bouncycastle.*,\
+    !com.jayway.jsonpath.*,\
+    !jakarta.json.*,\
+    !org.apache.tapestry5.*,\
+    !org.codehaus.jettison.json,\
+    !org.slf4j.*,\
+    !com.google.gson.internal.*, \
+    it.servizidigitali.common.utility,\
+    javax.crypto,\
+    javax.crypto.spec,\
+    java.security,\
+    java.util,\
+    *
+    
+-fixupmessages "Classes found in the wrong directory"; restrict:=error; is:=warning

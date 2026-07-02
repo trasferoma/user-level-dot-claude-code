@@ -1,0 +1,27 @@
+private boolean checkFormIntegrazione(List<FormField> listaFields, String jsonForm, String nomeOpzione) {
+        JsonNode fieldOptions = null;
+        Set<Option> jsonPathOptions = new HashSet<Option>();
+        jsonPathOptions.add(Option.SUPPRESS_EXCEPTIONS);
+        jsonPathOptions.add(Option.ALWAYS_RETURN_LIST);
+
+        Configuration jsonPathConfiguration = Configuration.builder()
+                .jsonProvider(new JacksonJsonNodeJsonProvider()).mappingProvider(new JacksonMappingProvider())
+                .options(jsonPathOptions).build();
+        for (FormField campo : listaFields) {
+            String field = campo.getPath().substring(campo.getPath().indexOf(".") + 1);
+            String[] splitFields = field.split("(?<=\\])(?=\\[)");
+            String jsonPathOptionsField = ALPACA_OPTIONS_FIELD + ALPACA_FIELDS_FIELD + splitFields[0] + ALPACA_FIELDS_FIELD + splitFields[1];
+            fieldOptions = JsonPath.using(jsonPathConfiguration).parse(jsonForm).read(jsonPathOptionsField);
+
+            if (Validator.isNotNull(fieldOptions) && !fieldOptions.isEmpty()) {
+                JsonNode options = fieldOptions.get(0);
+                if (options.has(nomeOpzione)) {
+                    boolean opzioneAttiva = options.get(nomeOpzione).asBoolean();
+                    if (opzioneAttiva) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }

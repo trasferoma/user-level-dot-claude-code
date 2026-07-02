@@ -1,0 +1,318 @@
+/* Decompiler 12ms, total 141ms, lines 137 */
+package it.servizidigitali.gestionecomunicazioni.service.persistence.impl;
+
+import com.liferay.portal.kernel.dao.orm.Criterion;
+import com.liferay.portal.kernel.dao.orm.Disjunction;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.ProjectionList;
+import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
+import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
+import com.liferay.portal.kernel.util.Validator;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+import it.servizidigitali.gestionecomunicazioni.model.Comunicazione;
+import it.servizidigitali.gestionecomunicazioni.model.ComunicazioneFilters;
+import it.servizidigitali.gestionecomunicazioni.service.ComunicazioneLocalServiceUtil;
+import it.servizidigitali.gestionecomunicazioni.service.DestinatarioComunicazioneLocalServiceUtil;
+import it.servizidigitali.gestionecomunicazioni.service.LetturaMessaggioLocalServiceUtil;
+import it.servizidigitali.gestionecomunicazioni.service.MessaggioLocalServiceUtil;
+import it.servizidigitali.gestionecomunicazioni.service.persistence.ComunicazioneFinder;
+
+@Component(
+   immediate = true,
+   service = {ComunicazioneFinder.class}
+)
+public class ComunicazioneFinderImpl extends ComunicazioneFinderBaseImpl implements ComunicazioneFinder {
+   @Reference
+   private UserLocalService userLocalService;
+
+   public List<Comunicazione> findByRichiestaId(long richiestaId, int start, int end, OrderByComparator<Comunicazione> orderByComparator) {
+      return this.comunicazionePersistence.findByRichiestaId(richiestaId, start, end, orderByComparator);
+   }
+
+   public int countByRichiestaId(long richiestaId) {
+      return this.comunicazionePersistence.countByRichiestaId(richiestaId);
+   }
+
+   public List<Comunicazione> findByDomandaBandoId(long domandaBandoId, int start, int end, OrderByComparator<Comunicazione> orderByComparator) {
+      return this.comunicazionePersistence.findByDomandaBandoId(domandaBandoId, start, end, orderByComparator);
+   }
+
+   public int countByDomandaBandoId(long domandaBandoId) {
+      return this.comunicazionePersistence.countByDomandaBandoId(domandaBandoId);
+   }
+
+   public List<Comunicazione> findNotInviateAndNotInterna() {
+      DynamicQuery dq = DynamicQueryFactoryUtil.forClass(Comunicazione.class, this.getClass().getClassLoader());
+      dq.add(RestrictionsFactoryUtil.isNull("dataInvio"));
+      return this.comunicazionePersistence.findWithDynamicQuery(dq);
+   }
+
+   public List<Comunicazione> findByFilters(ComunicazioneFilters filters, int start, int end) {
+      List<Comunicazione> retVal = null;
+      DynamicQuery dynamicQuery = this.generaQuery(filters);
+      if (!Validator.isBlank(filters.getOrderByCol())) {
+         boolean direzione = true;
+         String orderByType = filters.getOrderByType();
+         if ("desc".equalsIgnoreCase(orderByType)) {
+            direzione = false;
+         }
+
+         String orderByCol = filters.getOrderByCol();
+         if ("tipologia".equalsIgnoreCase(orderByCol)) {
+            orderByCol = "tipologiaComunicazioneId";
+         }
+
+         OrderByComparator<Comunicazione> comparator = OrderByComparatorFactoryUtil.create("Comunicazione", new Object[]{orderByCol, direzione});
+         retVal = this.comunicazionePersistence.findWithDynamicQuery(dynamicQuery, start, end, comparator);
+      } else {
+         retVal = this.comunicazionePersistence.findWithDynamicQuery(dynamicQuery, start, end);
+      }
+
+      return retVal;
+   }
+
+   public int countByFilters(ComunicazioneFilters filters) {
+      DynamicQuery dynamicQuery = this.generaQuery(filters);
+      return (int)this.comunicazionePersistence.countWithDynamicQuery(dynamicQuery);
+   }
+
+   private DynamicQuery generaQuery(ComunicazioneFilters filters) {
+      DynamicQuery dynamicQuery = DynamicQueryFactoryUtil.forClass(Comunicazione.class, this.getClass().getClassLoader());
+      
+      if(filters.getGroupId()>0) {
+          dynamicQuery.add(RestrictionsFactoryUtil.eq("groupId", filters.getGroupId()));
+      }
+      
+      if(filters.getCompanyId()>0) {
+          dynamicQuery.add(RestrictionsFactoryUtil.eq("companyId", filters.getCompanyId()));
+      }
+
+      if(filters.getRichiestaId()>0){
+          dynamicQuery.add(RestrictionsFactoryUtil.eq("richiestaId", filters.getRichiestaId()));
+      }
+
+      if (filters.getDataInvioDa() != null) {
+         dynamicQuery.add(RestrictionsFactoryUtil.gt("dataInvio", filters.getDataInvioDa()));
+      }
+
+      if (filters.getDataInvioA() != null) {
+         dynamicQuery.add(RestrictionsFactoryUtil.lt("dataInvio", filters.getDataInvioA()));
+      }
+
+      if (filters.getOrganizzazione() != null) {
+         dynamicQuery.add(RestrictionsFactoryUtil.eq("destinatarioOrganizationId", filters.getOrganizzazione()));
+      }
+
+      if (filters.getTipologia() != null) {
+         dynamicQuery.add(RestrictionsFactoryUtil.eq("tipologiaComunicazioneId", filters.getTipologia()));
+      }
+
+      if (filters.getTitoloDescrizione() != null) {
+         String val = "%" + filters.getTitoloDescrizione() + "%";
+         dynamicQuery.add(RestrictionsFactoryUtil.ilike("titolo", val));
+      }
+      
+      if (Validator.isNotNull(filters.getUsername())) {
+    	  
+    	  DynamicQuery userQuery = UserLocalServiceUtil.dynamicQuery();
+    	  String val = "%" + filters.getUsername() + "%";
+
+    	  Disjunction disjunctionQuery = RestrictionsFactoryUtil.disjunction();
+    	  disjunctionQuery.add(RestrictionsFactoryUtil.ilike("firstName", val));
+    	  disjunctionQuery.add(RestrictionsFactoryUtil.ilike("lastName", val));
+    	  disjunctionQuery.add(RestrictionsFactoryUtil.ilike("screenName", val));
+    	  
+    	  userQuery.add(disjunctionQuery);
+    	  userQuery.setProjection(ProjectionFactoryUtil.property("userId"));
+    	  
+    	  List<Long> userIds = UserLocalServiceUtil.dynamicQuery(userQuery);
+    	  
+    	  
+    	  DynamicQuery destinatarioComunicazioneQuery = DestinatarioComunicazioneLocalServiceUtil.dynamicQuery();
+    	  destinatarioComunicazioneQuery.add(PropertyFactoryUtil.forName("primaryKey.destinatarioId").in(userIds));
+    	  destinatarioComunicazioneQuery.setProjection(ProjectionFactoryUtil.property("primaryKey.comunicazioneId"));
+
+    	  List<Long> comuIds = DestinatarioComunicazioneLocalServiceUtil.dynamicQuery(destinatarioComunicazioneQuery);
+    	  
+    	  Criterion criterion = PropertyFactoryUtil.forName("comunicazioneId").in(comuIds);
+    	  
+          dynamicQuery.add(criterion);
+
+       }
+
+      if (Validator.isNotNull(filters.getDestinatarioId())) {
+    	//SELECT primaryKey.comunicazioneId FROM DestinatarioComunicazione WHERE primaryKey.destinatarioId = filters.getDestinatarioId()
+         DynamicQuery destinatarioComunicazioneQuery = DestinatarioComunicazioneLocalServiceUtil.dynamicQuery();
+         destinatarioComunicazioneQuery.add(RestrictionsFactoryUtil.eq("primaryKey.destinatarioId", filters.getDestinatarioId()));
+         destinatarioComunicazioneQuery.setProjection(ProjectionFactoryUtil.property("primaryKey.comunicazioneId"));
+         Criterion criterion = PropertyFactoryUtil.forName("comunicazioneId").in(destinatarioComunicazioneQuery);
+         dynamicQuery.add(criterion);
+      }
+
+      if (Validator.isNotNull(filters.getOrganizzazioniIDs()) && !filters.getOrganizzazioniIDs().isEmpty()) {
+         Criterion criterion = PropertyFactoryUtil.forName("subOrganizationId").in(filters.getOrganizzazioniIDs());
+         dynamicQuery.add(criterion);
+      }
+      
+      
+      if (filters.getStato() != null) {
+    	
+    	DynamicQuery letturaQuery = LetturaMessaggioLocalServiceUtil.dynamicQuery();
+		letturaQuery.add(RestrictionsFactoryUtil.eq("primaryKey.userId", filters.getUserId()));
+		letturaQuery.add(RestrictionsFactoryUtil.isNotNull("dataLettura"));
+		letturaQuery.setProjection(ProjectionFactoryUtil.property("primaryKey.messaggioId"));
+			
+			
+			
+		DynamicQuery messaggioQuery = MessaggioLocalServiceUtil.dynamicQuery();
+		//where messaggioId not in
+		Criterion letturaCriterion = PropertyFactoryUtil.forName("messaggioId").in(letturaQuery);
+		messaggioQuery.add(RestrictionsFactoryUtil.not(letturaCriterion));
+		//select comunicazioneId
+		ProjectionList projectionList = ProjectionFactoryUtil.projectionList();
+		projectionList.add(ProjectionFactoryUtil.groupProperty("comunicazioneId"));
+		//groupBy comunicazioneId
+		//projectionList.add(ProjectionFactoryUtil.property("comunicazioneId"));
+		messaggioQuery.setProjection(projectionList);
+		//messaggioQuery.setProjection(ProjectionFactoryUtil.property("comunicazioneId"));
+		
+		Criterion comunicazioneCriterion = PropertyFactoryUtil.forName("comunicazioneId").in(messaggioQuery);
+
+		if (!filters.getStato()) {
+			dynamicQuery.add(comunicazioneCriterion);
+		} else {
+			dynamicQuery.add(RestrictionsFactoryUtil.not(comunicazioneCriterion));
+		}
+	}
+
+      return dynamicQuery;
+   }
+
+   private List<Long> searchUsers(String query) {
+      String pattern = "%" + query + "%";
+      DynamicQuery dq = DynamicQueryFactoryUtil.forClass(User.class, this.getClass().getClassLoader());
+      Criterion cfClause = RestrictionsFactoryUtil.ilike("screenName", pattern);
+      Criterion fnClause = RestrictionsFactoryUtil.ilike("firstName", pattern);
+      Criterion lnClause = RestrictionsFactoryUtil.ilike("lastName", pattern);
+      Criterion nameClause = RestrictionsFactoryUtil.or(fnClause, lnClause);
+      dq.add(RestrictionsFactoryUtil.or(nameClause, cfClause));
+      dq.setProjection(ProjectionFactoryUtil.property("userId"));
+      List<Long> ids = new ArrayList(this.userLocalService.dynamicQuery(dq));
+      ids.add(0L);
+      return ids;
+   }
+   
+   public List<Comunicazione> findComunicazioniNonLetteByUserId(Long userId) {
+		DynamicQuery letturaMessaggioQuery = LetturaMessaggioLocalServiceUtil.dynamicQuery();
+		letturaMessaggioQuery.add(RestrictionsFactoryUtil.eq("primaryKey.userId", userId));
+		letturaMessaggioQuery.add(RestrictionsFactoryUtil.isNotNull("dataLettura"));
+		letturaMessaggioQuery.setProjection(ProjectionFactoryUtil.property("primaryKey.messaggioId"));
+
+		DynamicQuery messaggioQuery = MessaggioLocalServiceUtil.dynamicQuery();
+		Criterion letturaCriterion =  PropertyFactoryUtil.forName("messaggioId").notIn(letturaMessaggioQuery);
+		messaggioQuery.add(letturaCriterion);
+		messaggioQuery.add(PropertyFactoryUtil.forName("userId").ne(userId));
+		messaggioQuery.setProjection(ProjectionFactoryUtil.property("comunicazioneId"));
+   
+	    DynamicQuery dynamicQuery = ComunicazioneLocalServiceUtil.dynamicQuery();
+	    Criterion comunicazioneCriterion = PropertyFactoryUtil.forName("comunicazioneId").in(messaggioQuery);
+	    dynamicQuery.add(comunicazioneCriterion);
+	    return comunicazionePersistence.findWithDynamicQuery(dynamicQuery);
+   }
+   
+   public List<Comunicazione> findComunicazioniNonLetteByUserIdAndSubOrgIds(Long userId, long[] userIds) {
+		DynamicQuery letturaMessaggioQuery = LetturaMessaggioLocalServiceUtil.dynamicQuery();
+		letturaMessaggioQuery.add(RestrictionsFactoryUtil.eq("primaryKey.userId", userId));
+		letturaMessaggioQuery.add(RestrictionsFactoryUtil.isNotNull("dataLettura"));
+		letturaMessaggioQuery.setProjection(ProjectionFactoryUtil.property("primaryKey.messaggioId"));
+  
+		DynamicQuery messaggioQuery = MessaggioLocalServiceUtil.dynamicQuery();
+		Criterion letturaCriterion =  PropertyFactoryUtil.forName("messaggioId").notIn(letturaMessaggioQuery);
+		messaggioQuery.add(letturaCriterion);
+		messaggioQuery.add(PropertyFactoryUtil.forName("userId").in(userIds));
+		messaggioQuery.setProjection(ProjectionFactoryUtil.property("comunicazioneId"));
+  
+	    DynamicQuery dynamicQuery = ComunicazioneLocalServiceUtil.dynamicQuery();
+	    Criterion comunicazioneCriterion = PropertyFactoryUtil.forName("comunicazioneId").in(messaggioQuery);
+	    dynamicQuery.add(comunicazioneCriterion);
+	    return comunicazionePersistence.findWithDynamicQuery(dynamicQuery);
+  }
+
+    public long countComunicazioniNonLetteByUserId(Long userId) {
+        DynamicQuery letturaMessaggioQuery = LetturaMessaggioLocalServiceUtil.dynamicQuery();
+        letturaMessaggioQuery.add(RestrictionsFactoryUtil.eq("primaryKey.userId", userId));
+        letturaMessaggioQuery.add(RestrictionsFactoryUtil.isNotNull("dataLettura"));
+        letturaMessaggioQuery.setProjection(ProjectionFactoryUtil.property("primaryKey.messaggioId"));
+
+
+        DynamicQuery messaggioQuery = MessaggioLocalServiceUtil.dynamicQuery();
+        Criterion letturaCriterion =  PropertyFactoryUtil.forName("messaggioId").in(letturaMessaggioQuery);
+        messaggioQuery.add(letturaCriterion);
+        messaggioQuery.setProjection(ProjectionFactoryUtil.property("comunicazioneId"));
+
+        DynamicQuery destinatarioComunicazioneQuery = DestinatarioComunicazioneLocalServiceUtil.dynamicQuery();
+        Criterion comunicazioniId =  PropertyFactoryUtil.forName("primaryKey.comunicazioneId").notIn(messaggioQuery);
+        destinatarioComunicazioneQuery.add(comunicazioniId);
+        destinatarioComunicazioneQuery.add(PropertyFactoryUtil.forName("primaryKey.destinatarioId").eq(userId));
+        destinatarioComunicazioneQuery.setProjection(ProjectionFactoryUtil.property("primaryKey.comunicazioneId"));
+
+        DynamicQuery dynamicQuery = ComunicazioneLocalServiceUtil.dynamicQuery();
+        Criterion comunicazioneCriterion = PropertyFactoryUtil.forName("comunicazioneId").in(destinatarioComunicazioneQuery);
+        dynamicQuery.add(comunicazioneCriterion);
+        return comunicazionePersistence.countWithDynamicQuery(dynamicQuery);
+    }
+
+    public long countComunicazioniNonLetteByUserId(Long userId, long groupId, long companyId) {
+        DynamicQuery letturaMessaggioQuery = LetturaMessaggioLocalServiceUtil.dynamicQuery();
+        letturaMessaggioQuery.add(RestrictionsFactoryUtil.eq("primaryKey.userId", userId));
+        letturaMessaggioQuery.add(RestrictionsFactoryUtil.isNotNull("dataLettura"));
+        letturaMessaggioQuery.setProjection(ProjectionFactoryUtil.property("primaryKey.messaggioId"));
+
+        DynamicQuery messaggioQuery = MessaggioLocalServiceUtil.dynamicQuery();
+        Criterion letturaCriterion = PropertyFactoryUtil.forName("messaggioId").in(letturaMessaggioQuery);
+        messaggioQuery.add(letturaCriterion);
+        messaggioQuery.setProjection(ProjectionFactoryUtil.property("comunicazioneId"));
+
+        DynamicQuery destinatarioComunicazioneQuery = DestinatarioComunicazioneLocalServiceUtil.dynamicQuery();
+        Criterion comunicazioniId = PropertyFactoryUtil.forName("primaryKey.comunicazioneId").notIn(messaggioQuery);
+        destinatarioComunicazioneQuery.add(comunicazioniId);
+        destinatarioComunicazioneQuery.add(PropertyFactoryUtil.forName("primaryKey.destinatarioId").eq(userId));
+        destinatarioComunicazioneQuery.setProjection(ProjectionFactoryUtil.property("primaryKey.comunicazioneId"));
+
+        DynamicQuery dynamicQuery = ComunicazioneLocalServiceUtil.dynamicQuery();
+        Criterion comunicazioneCriterion = PropertyFactoryUtil.forName("comunicazioneId").in(destinatarioComunicazioneQuery);
+        dynamicQuery.add(comunicazioneCriterion);
+
+        if (groupId > 0) {
+            dynamicQuery.add(RestrictionsFactoryUtil.eq("groupId", groupId));
+        }
+        if (companyId > 0) {
+            dynamicQuery.add(RestrictionsFactoryUtil.eq("companyId", companyId));
+        }
+
+        return comunicazionePersistence.countWithDynamicQuery(dynamicQuery);
+    }
+
+
+
+    public List<Comunicazione> findByRichiestaReferenteIstanzaId(long domandaBandoId, int start, int end, OrderByComparator<Comunicazione> orderByComparator) {
+        return this.comunicazionePersistence.findByRichiestaReferenteIstanzaId(domandaBandoId, start, end, orderByComparator);
+    }
+
+    public int countByRichiestaReferenteIstanzaId(long domandaBandoId) {
+        return this.comunicazionePersistence.countByRichiestaReferenteIstanzaId(domandaBandoId);
+    }
+}

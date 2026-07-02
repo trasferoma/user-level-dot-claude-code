@@ -1,0 +1,74 @@
+package it.servizidigitali.portal.theme;
+
+import com.liferay.portal.kernel.template.TemplateContextContributor;
+import com.liferay.portal.kernel.util.Validator;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.osgi.service.component.annotations.Component;
+
+import it.servizidigitali.portal.constant.ServiziDigitaliPortalConstants;
+
+/**
+ * Porta nel contesto FTL del tema le variabili necessarie allo switch del profilo attivo.
+ *
+ * <p>
+ * Variabili esposte:
+ * </p>
+ * <ul>
+ * <li>{@code activeRole} - "OPERATORE", "CITTADINO" o "".</li>
+ * <li>{@code hasDualRole} - true se l'utente possiede entrambi i profili.</li>
+ * <li>{@code switchProfiloUrl} - URL per lo switch al profilo opposto (vuoto se non doppio ruolo).</li>
+ * <li>{@code switchProfiloLabel} - "Passa a Cittadino" / "Passa a Operatore" (vuoto se non doppio ruolo).</li>
+ * </ul>
+ *
+ * <p>
+ * Le guardie FTL ({@code activeRole??}, {@code hasDualRole??}) garantiscono che, se questo
+ * contributor non è deployato, il tema si comporti esattamente come oggi.
+ * </p>
+ */
+@Component(immediate = true, //
+		property = { "type=" + TemplateContextContributor.TYPE_THEME }, //
+		service = TemplateContextContributor.class//
+)
+public class ActiveRoleTemplateContextContributor implements TemplateContextContributor {
+
+	private static final String SWITCH_BASE_URL = "/o/role-switch/toggle?role=";
+
+	@Override
+	public void prepare(Map<String, Object> contextObjects, HttpServletRequest request) {
+		String activeRole = "";
+		boolean hasDualRole = false;
+
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			Object activeRoleAttr = session.getAttribute(ServiziDigitaliPortalConstants.ACTIVE_ROLE);
+			if (activeRoleAttr != null) {
+				activeRole = String.valueOf(activeRoleAttr);
+			}
+
+			Object hasDualRoleAttr = session.getAttribute(ServiziDigitaliPortalConstants.HAS_DUAL_ROLE);
+			if (hasDualRoleAttr instanceof Boolean) {
+				hasDualRole = (Boolean) hasDualRoleAttr;
+			}
+		}
+
+		String switchProfiloUrl = "";
+		String switchProfiloLabel = "";
+
+		if (hasDualRole && Validator.isNotNull(activeRole)) {
+			boolean operatoreAttivo = ServiziDigitaliPortalConstants.ROLE_OPERATORE.equals(activeRole);
+			String targetRole = operatoreAttivo ? ServiziDigitaliPortalConstants.ROLE_CITTADINO : ServiziDigitaliPortalConstants.ROLE_OPERATORE;
+			switchProfiloUrl = SWITCH_BASE_URL + targetRole;
+			switchProfiloLabel = operatoreAttivo ? "Passa a Cittadino" : "Passa a Operatore";
+		}
+
+		contextObjects.put("activeRole", activeRole);
+		contextObjects.put("hasDualRole", hasDualRole);
+		contextObjects.put("switchProfiloUrl", switchProfiloUrl);
+		contextObjects.put("switchProfiloLabel", switchProfiloLabel);
+	}
+}

@@ -1,0 +1,11 @@
+Abbiamo ereditato questo sviluppo cominciato da altri perciò verifichiamo lo stato dei lavori fino a oggi prima di intervenire:                                              
+                                                                                                                                                                               
+  Carica le info del progetto                                                                                                                                                  
+  Questo file rappresenta i requisiti da implementare                                                                                                                          
+  C:\Users\fabio.dearcangelis\Desktop\desktop\lavoro\attivita\Emi\paservdig\iam\riunione_allineamento_alberto\requisitiDaImplementare.md                                       
+                                                                                                                                                                               
+  Confrontalo con spec-switch-profilo-migrazione-spid.md per verificare se tutto è stato implementato                                                                          
+                                                                                                                                                                               
+  Non modificare nulla, crea solo un report sintetico dando enfasi a cosa manca se manca qualcosa                                                                              
+                                                                                                                                                                               
+  Tutte le logiche di thema non sono in questo progetto e verranno gestite altrove   

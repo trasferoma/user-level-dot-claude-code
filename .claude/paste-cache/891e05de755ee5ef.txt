@@ -1,0 +1,79 @@
+{
+    "focus": false,
+    "type": "object",
+    "helpers": [],
+    "helpersPosition": "below",
+    "validate": true,
+    "disabled": false,
+    "showMessages": true,
+    "collapsible": false,
+    "legendStyle": "button",
+    "fields": {
+        "esecuzione": {
+            "type": "customFormEsecuzione",
+            "label": "",
+            "helpers": [],
+            "validate": true,
+            "disabled": false,
+            "showMessages": true,
+            "collapsible": false,
+            "legendStyle": "button",
+            "view": "customFormEsecuzione-view",
+            "fields": {
+                "configurazione": {
+                    "type": "text",
+                    "hidden": true,
+                    "focus": false,
+                    "optionLabels": [],
+                    "typeahead": {},
+                    "allowOptionalEmpty": true,
+                    "data": {},
+                    "formAttuale": "sottoscrizione-disciplinare-esecuzione",
+                    "formDaMostrare": "",
+                    "autocomplete": false,
+                    "disallowEmptySpaces": false,
+                    "disallowOnlyEmptySpaces": false,
+                    "manualEntry": false,
+                    "disabled": false,
+                    "helpers": [],
+                    "validate": true,
+                    "showMessages": true,
+                    "renderButtons": true,
+                    "attributes": {},
+                    "integrazione": true,
+                    "fields": {}
+                }
+            }
+        },
+        "commentiOp": {
+            "type": "commentiOperatoreFormIntegrativi",
+            "label": "",
+            "helpers": [],
+            "validate": true,
+            "disabled": false,
+            "showMessages": true,
+            "collapsible": false,
+            "legendStyle": "button",
+            "view": "commentiOperatoreFormIntegrativi-view",
+            "fields": {
+                "note": {
+                    "label": "Annotazioni relative alla richiesta integrazione",
+                    "type": "text",
+                    "disabled": false,
+                    "view": "bootstrap-display",
+                    "renderButtons": true,
+                    "helpers": [],
+                    "validate": true,
+                    "showMessages": true,
+                    "data": {},
+                    "attributes": {},
+                    "allowOptionalEmpty": true,
+                    "autocomplete": false,
+                    "disallowEmptySpaces": false,
+                    "disallowOnlyEmptySpaces": false,
+                    "fields": {}
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,396 @@
+<%@ page import="it.servizidigitali.scrivaniacittadino.frontend.portlet.ScrivaniaCittadinoPortlet" %>
+<script id="serviziPiuUtilizzatiTpl" type="text/x-jsrender">
+	<div class="row">
+		{{for servizi}}
+			<!--start card-->
+			<div class="col-4">
+			    <div class="card-wrapper card-space">
+			        <div class="card card-bg card-img rounded shadow">
+			            <div class="card-body p-4">
+			                <div class="category-top">
+			                    <svg class="icon icon-sm">
+			                      <use href="/o/portale-istituzionale-theme/svg/sprite.svg#it-settings"></use>
+			                    </svg>
+			                    <span class="category">{{>areaTematica}}</span>
+			                </div>
+			                <h3 class="card-title">{{>nome}}</h3>
+			                <p class="card-text">{{>descrizione}}</p>
+			                {{for tipologie}}
+			                    <div class="chip chip-simple chip-primary chip-no-link">
+			                        <span class="chip-label">{{>#data}}</span>
+			                    </div>
+			                {{/for}}
+			                <a class="read-more" href="{{>catalogoServiziPath}}">
+			                    <span class="text"><liferay-ui:message key="leggi-di-piu"/></span> 
+			                    <svg class="icon">
+			                        <use xlink:href="/o/portale-istituzionale-theme/svg/sprite.svg#it-arrow-right"></use>
+			                    </svg>
+			                </a>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+			<!--end card-->
+		{{/for}}
+	</div>
+</script>
+
+<script id="alertTpl" type="text/x-jsrender">
+	<div class="alert alert-{{>tipo}}" role="alert">
+ 		{{>message}}
+ 	</div>
+</script>
+
+
+<script id="accordionTpl" type="text/x-jsrender">
+<div name="collapseDiv" class="collapse-div collapse-background-active">
+	{{for dataToRender tmpl=templateName ~listCur=cur/}}
+</div>
+<div class="mt-5 text-center">
+{{if cur > 1}}
+	<button type="button" class="btn btn-primary" onclick="{{>methodName}}({{>cur - 1}})">
+		<svg class="icon icon-sm icon-white" aria-label="next">
+			<use href="/o/portale-istituzionale-theme/svg/sprite.svg#it-arrow-left"></use>
+		</svg>
+	</button>
+{{/if}}
+{{if hasNext}}
+	<button type="button" class="btn btn-primary" onclick="{{>methodName}}({{>cur + 1}})">
+		<svg class="icon icon-sm icon-white" aria-label="next">
+			<use href="/o/portale-istituzionale-theme/svg/sprite.svg#it-arrow-right"></use>
+		</svg>
+	</button>
+{{/if}}
+
+</div>
+</script>
+
+<portlet:renderURL var="dettaglioRichiestaURL">
+	<portlet:param name="mvcRenderCommandName" value="<%=ScrivaniaCittadinoPortletKeys.RENDER_COMMAND_DETTAGLIO_RICHIESTA %>" />
+	<portlet:param name="<%=ScrivaniaCittadinoPortletKeys.TAB_ATTIVA_DETTAGLIO %>" value="<%=ScrivaniaCittadinoPortletKeys.DETTAGLIO_DATI_RICHIESTA %>" />
+</portlet:renderURL>
+
+<portlet:renderURL var="dettaglioRichiestaReferenteURL">
+    <portlet:param name="mvcRenderCommandName" value="<%=ScrivaniaCittadinoPortletKeys.RENDER_COMMAND_DETTAGLIO_RICHIESTA_REFERENTE %>" />
+</portlet:renderURL>
+
+<portlet:resourceURL id="<%=ScrivaniaCittadinoPortletKeys.RESOURCE_COMMAND_DOWNLOAD_FILE %>" var="downloadAllegatoURL">
+</portlet:resourceURL>
+
+<portlet:resourceURL id="<%= ScrivaniaCittadinoPortletKeys.RESOURCE_COMMAND_SCARICA_RICEVUTA_PAGAMENTO %>" var="scaricaRicevutaPagamentoUrl">
+</portlet:resourceURL>
+
+<script id="richiestaTpl" type="text/x-jsrender">
+	<div class="collapse-header" id="heading{{>richiesta.richiestaId }}">
+	  <button class="text-decoration-none py-0" data-toggle="collapse" data-target="#collapse{{>richiesta.richiestaId }}" aria-expanded="false" aria-controls="collapse{{>richiesta.richiestaId }}">
+	    <div class="d-flex justify-content-between">
+		  <span class="text-uppercase">
+	        {{>richiesta.oggetto}}
+	      </span>
+	      <span class="apri-collapse">Apri</span>
+	      <span class="chiudi-collapse" >Chiudi</span>
+	    </div>
+	    <div class="d-flex short-info" id="shortInfo{{>richiesta.richiestaId }}">
+			<small class="mr-3"><liferay-ui:message key="id-richiesta-home" />: {{>richiesta.richiestaId}}</small>
+			<small class="mr-3"><liferay-ui:message key="data-richiesta" />: {{>dataUltimaModificaRichiestaLabel}}</small>
+			<small class="mr-3"><liferay-ui:message key="stato" />: {{>statoRichiestaLabel}}</small>
+	    	{{if nomeEnte }}
+				<small><liferay-ui:message key="ente" />: {{>nomeEnte}}</small>
+			{{/if}}
+	    </div>
+	  </button>
+	</div>
+	<div id="collapse{{>richiesta.richiestaId }}" class="collapse" role="region" aria-labelledby="heading{{>richiesta.richiestaId}}">
+		<div class="collapse-body py-3">
+	    	{{if richiesta.numeroProtocollo }}
+				<p>
+	      			<liferay-ui:message key="protocollo" />: {{>numeroProtocolloLabel }}
+	    		</p>
+			{{/if}}
+			{{if allegatiRichiesta && allegatiRichiesta.length > 0}}
+				<div class="card-wrapper card-teaser-wrapper">
+					{{for allegatiRichiesta}}
+	   					<div class="card card-teaser rounded shadow py-1">
+    						<svg class="icon">
+      							<use href="/o/portale-istituzionale-theme/svg/sprite.svg#it-clip"></use>
+    						</svg>
+    						<div class="card-body mb-0">
+      							<h5 class="card-title">
+									{{if url}}
+        								<a target="_blank" href="${scaricaRicevutaPagamentoUrl}&<portlet:namespace/>pagamentoId={{>url}}">{{>titolo ? titolo : nome}}</a>
+									{{else}}
+        								<a target="_blank" href="${downloadAllegatoURL}&<portlet:namespace/>fileId={{>idDocumentale}}">{{>titolo ? titolo : nome}}</a>
+									{{/if}}
+      							</h5>
+    						</div>
+  						</div>
+	  				{{/for}}
+				</div>
+			{{/if}}
+	   		<a class="btn btn-outline-primary" href="${dettaglioRichiestaURL}&<portlet:namespace/>id={{>richiesta.richiestaId}}">
+				<liferay-ui:message key="dettaglio" />
+	    	</a>
+	    	<a class="btn btn-outline-primary" href="#" style='display: none !important;'>
+				<liferay-ui:message key="vai-al-servizio" />
+	    	</a>
+	  	</div>
+	</div>
+</script>
+
+<portlet:renderURL var="dettaglioDomandaBandoURL">
+	<portlet:param name="mvcRenderCommandName" value="<%=ScrivaniaCittadinoPortletKeys.RENDER_COMMAND_DETTAGLIO_DOMANDABANDO %>" />
+	<portlet:param name="<%=ScrivaniaCittadinoPortletKeys.TAB_ATTIVA_DETTAGLIO %>" value="<%=ScrivaniaCittadinoPortletKeys.DETTAGLIO_DATI_RICHIESTA %>" />
+</portlet:renderURL>
+
+<portlet:renderURL var="annullaDomandaBandoURL">
+	<portlet:param name="mvcRenderCommandName" value="<%=ScrivaniaCittadinoPortletKeys.RENDER_COMMAND_ANNULLA_DOMANDABANDO %>" />
+	<portlet:param name="<%=ScrivaniaCittadinoPortletKeys.TAB_ATTIVA_DETTAGLIO %>" value="<%=ScrivaniaCittadinoPortletKeys.DETTAGLIO_DATI_RICHIESTA %>" />
+</portlet:renderURL>
+
+<portlet:resourceURL id="<%=ScrivaniaCittadinoPortletKeys.RESOURCE_COMMAND_DOWNLOAD_FILE_DOMANDABANDO %>" var="downloadAllegatoDomandaBandoURL">
+</portlet:resourceURL>
+
+<script id="domandaBandoTpl" type="text/x-jsrender">
+	<div class="collapse-header" id="heading{{>domandaBando.domandaBandoId }}">
+	  <button class="text-decoration-none py-0" data-toggle="collapse" data-target="#collapse{{>domandaBando.domandaBandoId }}" aria-expanded="false" aria-controls="collapse{{>domandaBando.domandaBandoId }}">
+	    <div class="d-flex justify-content-between">
+		  <span class="text-uppercase">
+	        {{>nomeBandoLabel}}
+	      </span>
+	      <span class="apri-collapse">Apri</span>
+	      <span class="chiudi-collapse" >Chiudi</span>
+	    </div>
+	    <div class="d-flex short-info" id="shortInfo{{>domandaBando.domandaBandoId }}">
+			<small class="mr-3"><liferay-ui:message key="id-domandabando" />: {{>domandaBando.domandaBandoId}}</small>
+			<small class="mr-3"><liferay-ui:message key="data-richiesta" />: {{>dataUltimaModificaRichiestaLabel}}</small>
+			<small><liferay-ui:message key="stato" />: {{>statoDomandaBando}}</small>
+			{{if allegatoScaduto}}
+				<small><i class="icon-warning-sign" style="color: orange;"></i></small>
+			{{/if}}
+
+	    </div>
+	  </button>
+	</div>
+		<div id="collapse{{>domandaBando.domandaBandoId }}" class="collapse" role="region" aria-labelledby="heading{{>domandaBando.domandaBandoId}}">
+			<div class="collapse-body py-3">
+			{{if allegatiDomandeBando && allegatiDomandeBando.length > 0}}
+				<div class="card-wrapper card-teaser-wrapper">
+					{{for allegatiDomandeBando}}
+	   					<div class="card card-teaser rounded shadow py-3">
+    						<svg class="icon">
+      							<use href="/o/portale-istituzionale-theme/svg/sprite.svg#it-clip"></use>
+    						</svg>
+    						<div class="card-body">
+      							<h5 class="card-title mb-0">
+									{{if url}}
+        								<a target="_blank" href="{{>url}}">{{>titolo ? titolo : nome}}</a>
+									{{else}}
+        								<a target="_blank" href="${downloadAllegatoDomandaBandoURL}&<portlet:namespace/>fileId={{>idDocumentale}}">{{>titolo ? titolo : nome}}</a>
+									{{/if}}
+      							</h5>
+    						</div>
+  						</div>
+	  				{{/for}}
+				</div>
+			{{/if}}
+			<small class="mr-3"><liferay-ui:message key="partita-iva-codice-fiscale" />: {{if domandaBando.partitaIva}} {{>domandaBando.partitaIva}}{{else}} n.d.{{/if}}</small>
+            <small class="mr-3"><liferay-ui:message key="ragione-sociale" />: {{if domandaBando.ragioneSociale}} {{>domandaBando.ragioneSociale}}{{else}} n.d.{{/if}}</small>
+	   		<div class = "mt-2">
+				<a class="btn btn-outline-primary" href="${dettaglioDomandaBandoURL}&<portlet:namespace/>domandaBandoId={{>domandaBando.domandaBandoId}}">
+					<liferay-ui:message key="dettaglio" />
+	    		</a>
+				{{if mostraAnnullamentoDomanda==true}}
+					<a class="btn btn-outline-primary" href="${annullaDomandaBandoURL}&<portlet:namespace/>domandaBandoId={{>domandaBando.domandaBandoId}}">
+				    	<liferay-ui:message key="annulla-domanda-bando" />
+	    	   	 	</a>
+           	 	{{/if}}
+			</div>
+	    	<a class="btn btn-outline-primary" href="#" style='display: none !important;'>
+				<liferay-ui:message key="vai-al-servizio" />
+	    	</a>
+	  	</div>
+	</div>
+</script>
+
+<script id="pagamentoTpl" type="text/x-jsrender">
+<div class="collapse-header" id="heading{{>richiesta.richiestaId }}">
+		<button class="text-decoration-none pt-0 pb-0" data-toggle="collapse" data-target="#collapse{{>richiesta.richiestaId }}" aria-expanded="false" aria-controls="collapse{{>richiesta.richiestaId }}">
+			<div class="d-flex justify-content-between">
+			  <span class="text-uppercase">
+				 {{>richiesta.oggetto}}
+			  </span>
+			  <span class="apri-collapse">Apri</span>
+			  <span class="chiudi-collapse" >Chiudi</span>
+			</div>
+			<div class="d-flex short-info" id="shortInfo{{>richiesta.richiestaId }}">
+				<small class="mr-3"><liferay-ui:message key="id-richiesta-home" />: {{>richiesta.richiestaId}}</small>
+				<small class="mr-3"><liferay-ui:message key="data-richiesta" />: {{>dataUltimaModificaRichiestaLabel}}</small>
+				<small><liferay-ui:message key="stato" />: {{>statoRichiestaLabel}}</small>
+			</div>
+		</button>
+	</div>
+	<div id="collapse{{>richiesta.richiestaId }}" class="collapse" role="region" aria-labelledby="heading{{>richiesta.richiestaId }}">
+		<div class="collapse-body py-3" >
+			{{if note }}
+				<p class="mb-3">{{>richiesta.note}}</p>
+			{{/if}}
+			{{if allegatiRichiesta && allegatiRichiesta.length > 0}}
+				<div class="card-wrapper card-teaser-wrapper">
+					{{for allegatiRichiesta}}
+	   					<div class="card card-teaser rounded shadow py-1">
+    						<svg class="icon">
+      							<use href="/o/portale-istituzionale-theme/svg/sprite.svg#it-clip"></use>
+    						</svg>
+    						<div class="card-body mb-0">
+      							<h5 class="card-title">
+									{{if url}}
+        								<a target="_blank" href="{{>url}}">{{>titolo ? titolo : nome}}</a>
+									{{else}}
+        								<a target="_blank" href="${downloadAllegatoURL}&<portlet:namespace/>fileId={{>idDocumentale}}">{{>titolo ? titolo : nome}}</a>
+									{{/if}}
+      							</h5>
+    						</div>
+  						</div>
+	  				{{/for}}
+				</div>
+			{{/if}}
+			<a class="btn btn-outline-primary" href="${dettaglioRichiestaURL}&<portlet:namespace/>id={{>richiesta.richiestaId}}">
+				<liferay-ui:message key="dettaglio" />
+			</a>
+			<a class="btn btn-outline-primary" href="#" style='display: none !important;'>
+				<liferay-ui:message key="vai-al-servizio" />
+			</a>
+		</div>
+	</div>
+</script>
+
+<script id="comunicazioneTpl" type="text/x-jsrender">
+<div class="collapse-header" id="heading{{>id}}">
+		<button class="text-decoration-none py-0" data-toggle="collapse" data-target="#collapse{{>id }}" aria-expanded="false" aria-controls="collapse{{>id }}">
+			<div class="d-flex justify-content-between">
+				<span class="text-uppercase">
+					{{if tipologia == "COMMENTO_RICHIESTA_SERVIZIO" }}
+						<liferay-ui:message key="titolo-comunicazione-richiesta-servizio" arguments="{{>richiestaId}}"/>	
+					{{/if}} 
+
+					{{if tipologia == "COMMENTO_DOMANDA_BANDO"}}
+						<liferay-ui:message key="titolo-comunicazione-domanda-bando" arguments="{{>domandaBandoId}}"/>
+					{{/if}}
+
+					{{if tipologia == "COMUNICAZIONE" }}
+						{{>titolo}}
+					{{/if}}
+							         
+				</span>
+
+                <span class="apri-collapse">Apri</span>
+                <span class="chiudi-collapse" >Chiudi</span>
+			</div>
+
+                <div class="d-flex short-info" id="shortInfo{{>id }}">
+                    {{if dataUltimoMessaggio}}
+						<small class="mr-3"><liferay-ui:message key="data-ultimo-messaggio" />: {{localDateTime:dataUltimoMessaggio}}</small>
+					{{/if}}
+					
+					{{if letta!=null && letta==true}}
+						<small class="mr-3"><liferay-ui:message key="stato-lettura" />: <liferay-ui:message key="letta" /></small>
+          		  	{{/if}}
+
+					{{if letta!=null && letta==false}}
+						<small class="mr-3"><liferay-ui:message key="stato-lettura" />: <liferay-ui:message key="non-letta" /></small>
+          		  	{{/if}}
+					
+                </div>
+		</button>
+	</div>
+	<div id="collapse{{>id}}" class="collapse" role="region" aria-labelledby="heading{{>id}}">	
+		<div class="collapse-body py-3">
+			<a class="d-none" href="{{>uriServizio ? uriServizio : "#" }}"><span class="t-primary underline"><liferay-ui:message key="vai-al-servizio"/></span></a>  
+			
+			<portlet:renderURL var="comunicazioneURL">
+				<portlet:param name="mvcRenderCommandName" value="/render/comunicazione" />
+			</portlet:renderURL>
+			<a class="btn btn-outline-primary" href="${comunicazioneURL}&<portlet:namespace />comunicazioneId={{>id}}&<portlet:namespace />tipologiaComunicazione={{>tipologia}}&<portlet:namespace />listCur={{>~listCur}}"><liferay-ui:message key="dettaglio" /></a>
+		</div>
+	</div>
+</script>
+
+<script id="richiestaReferenteTpl" type="text/x-jsrender">
+    <div class="collapse-header" id="heading{{>richiestaReferenteId }}">
+      <button class="text-decoration-none py-0" data-toggle="collapse" data-target="#collapse{{>richiestaReferenteId }}" aria-expanded="false" aria-controls="collapse{{>richiestaReferenteId }}">
+        <div class="d-flex justify-content-between">
+          <span class="text-uppercase">
+           <liferay-ui:message key="variazione-referente" /> - {{>dominio}}
+           {{if richiestaId > 0}}
+               | <liferay-ui:message key="istanza-di-riferimento" />: {{>richiestaId}}
+           {{else partitaIva}}
+               | <liferay-ui:message key="p-iva" />: {{>partitaIva}}
+           {{/if}}
+          </span>
+          <span class="apri-collapse">Apri</span>
+          <span class="chiudi-collapse" >Chiudi</span>
+        </div>
+        <div class="d-flex short-info" id="shortInfo{{>richiestaReferenteId }}">
+            <small class="mr-3"><liferay-ui:message key="id-richiesta-referente" />: {{>richiestaReferenteId}}</small>
+            <small class="mr-3"><liferay-ui:message key="data-inserimento" />: {{localDate:dataInvio}}</small>
+            <small class="mr-3"><liferay-ui:message key="stato" />: {{>statoLabel}}</small>
+            {{if nomeEnte }}
+                <small><liferay-ui:message key="ente" />: {{>nomeEnte}}</small>
+            {{/if}}
+        </div>
+      </button>
+    </div>
+    <div id="collapse{{>richiestaReferenteId }}" class="collapse" role="region" aria-labelledby="heading{{>richiestaReferenteId}}">
+        <div class="collapse-body py-3">
+               <a class="btn btn-outline-primary" href="${dettaglioRichiestaReferenteURL}&<portlet:namespace/>richiestaReferenteId={{>richiestaReferenteId}}">
+                <liferay-ui:message key="dettaglio" />
+            </a>
+            <a class="btn btn-outline-primary" href="#" style='display: none !important;'>
+                <liferay-ui:message key="vai-al-servizio" />
+            </a>
+          </div>
+    </div>
+</script>
+
+<script type="text/javascript">
+
+	$( document ).ready(function() {
+		//registro template
+	 	$.templates("accordion", {
+				markup: "#accordionTpl",
+				templates: {
+					richiesta: "#richiestaTpl",
+	 				pagamento: "#pagamentoTpl",
+	 				comunicazione: "#comunicazioneTpl",
+	 				domandaBando : "#domandaBandoTpl",
+	 				richiestaReferente: "#richiestaReferenteTpl"
+				},
+			}
+		);
+		
+	 	$.templates({
+	 		alert: "#alertTpl"
+	 	}); 
+		
+	 	$.templates({
+	 		serviziPiuUtilizzati: "#serviziPiuUtilizzatiTpl"
+	 	}); 
+	
+		$.views.converters(
+			{
+				localDate: function(date){
+					const options = { year: 'numeric', month: 'numeric', day: 'numeric'};
+					var date = new Date(date);
+					var formatted = date.toLocaleDateString(navigator.language, options);
+					return formatted;			
+				},
+				localDateTime: function(date) {
+					var date = new Date(date);
+	                return moment(date).format("DD/MM/YYYY HH:mm");
+				}
+			}
+		);
+		
+		document.dispatchEvent(new CustomEvent("scrivaniaCittadinoTemplateLoaded"));
+	});
+</script>

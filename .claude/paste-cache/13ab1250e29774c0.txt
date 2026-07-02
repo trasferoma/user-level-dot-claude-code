@@ -1,0 +1,46 @@
+"options": {
+            "type": "object",
+            "fields": {
+                "titoloForm": {
+                    "type": "label",
+                    "validate": false,
+                    "showMessages": true,
+                    "disabled": false,
+                    "hidden": false,
+                    "label": "v2.ISTANZA di VARIAZIONE, RIMODULAZIONE O RINUNCIA\u003cbr\u003e (Erogazione di Contributi per Marketing Territoriale- Criteri anno 2027)",
+                    "helpers": [],
+                    "fieldClass": "text-center",
+                    "hideInitValidationError": false,
+                    "focus": false,
+                    "optionLabels": [],
+                    "typeahead": {},
+                    "allowOptionalEmpty": true,
+                    "data": {},
+                    "autocomplete": false,
+                    "disallowEmptySpaces": false,
+                    "disallowOnlyEmptySpaces": false,
+                    "sort": false,
+                    "fields": {},
+                    "order": 2.0,
+                    "renderButtons": true,
+                    "attributes": {}
+                },
+               
+               
+                "inQualitaDi": {
+                    "label": "in qualità di",
+                    "type": "text",
+                    "validate": true,
+                    "helpers": [],
+                    "disabled": false,
+                    "showMessages": true,
+                    "renderButtons": true,
+                    "data": {},
+                    "attributes": {},
+                    "allowOptionalEmpty": true,
+                    "autocomplete": false,
+                    "disallowEmptySpaces": false,
+                    "disallowOnlyEmptySpaces": false,
+                    "order": 5.0,
+                    "fields": {}
+                },

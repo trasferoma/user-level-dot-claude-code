@@ -1,0 +1,65 @@
+/* =====================================================================
+ * Script Groovy - Liferay Script Console (Pannello di Controllo > Server Administration > Script, linguaggio: Groovy)
+ *
+ * SCOPO: aggiungere la variabile Camunda COMPILA_DISCIPLINARE = "true" a SCOPE LOCALE ("Esecuzione")
+ * USO:
+ *   1) (Opz.) DRY_RUN = true per verificare il task e l'executionId senza scrivere.
+ *   2) DRY_RUN = false -> SCRIVE. Atteso HTTP 204.
+ *   3) Refresh completo del dettaglio pratica 556101 -> compare "Compila disciplinare".
+ * ===================================================================== */
+
+import com.liferay.portal.kernel.json.JSONFactoryUtil
+
+// ====== PARAMETRI ======
+final String CAMUNDA_REST = "http://192.168.56.102:8082/engine-rest" // sostituire con HOST relativo all'ambiente specifico
+final String USER         = "admin"  //valorizzare con user associato al Camunda Client
+final String PASS         = "Links2022" // valorizzare con password relativa all'utenza applicativa utilizzata nel Camunda client
+final String PROC_INST_ID = "323201"   // valorizzare con idDomandaBando (Fase Esecuzione)
+final String ACTIVITY_KEY = "Activity_0ou33qi"                       // task Esecuzione
+final String VAR_NAME     = "COMPILA_DISCIPLINARE_ESECUZIONE"
+final String VAR_VALUE    = "true"
+final boolean DRY_RUN     = false                                    // false = SCRIVE
+// =======================
+
+final String AUTH = "Basic " + "${USER}:${PASS}".bytes.encodeBase64().toString()
+
+// 1) Recupera il task Esecuzione attivo sull'istanza specifica -> executionId
+def getUrl = "${CAMUNDA_REST}/task?processInstanceBusinessKey=${PROC_INST_ID}&taskDefinitionKey=${ACTIVITY_KEY}"
+def gconn = new URL(getUrl).openConnection()
+gconn.setRequestProperty("Authorization", AUTH)
+gconn.setRequestProperty("Accept", "application/json")
+
+int gcode = gconn.responseCode
+if (gcode >= 400) { out.println "ERRORE GET task: HTTP ${gcode} - " + gconn.errorStream?.text; return }
+
+String respText = gconn.inputStream.getText("UTF-8")
+def tasks = JSONFactoryUtil.createJSONArray(respText)
+if (tasks == null || tasks.length() == 0) { out.println "Nessun task '${ACTIVITY_KEY}' attivo sull'istanza ${PROC_INST_ID}"; return }
+
+out.println "Task trovati:"
+for (int i = 0; i < tasks.length(); i++) {
+    def t = tasks.getJSONObject(i)
+    out.println "  id=${t.getString('id')} name=${t.getString('name')} exec=${t.getString('executionId')}"
+}
+
+if (tasks.length() > 1) { out.println "ATTENZIONE: piu' di un task: mi fermo per sicurezza."; return }
+def executionId = tasks.getJSONObject(0).getString("executionId")
+out.println "Execution target = ${executionId}"
+
+// 2) Scrive la variabile a scope LOCALE sull'execution
+if (DRY_RUN) {
+    out.println "DRY-RUN: PUT ${CAMUNDA_REST}/execution/${executionId}/localVariables/${VAR_NAME} = '${VAR_VALUE}' (String)"
+    return
+}
+
+def pconn = new URL("${CAMUNDA_REST}/execution/${executionId}/localVariables/${VAR_NAME}").openConnection()
+pconn.setRequestMethod("PUT")
+pconn.setDoOutput(true)
+pconn.setRequestProperty("Authorization", AUTH)
+pconn.setRequestProperty("Content-Type", "application/json")
+pconn.outputStream.withWriter("UTF-8") { it.write("{\"value\":\"${VAR_VALUE}\",\"type\":\"String\"}") }
+
+int pcode = pconn.responseCode
+out.println "PUT -> HTTP ${pcode} (atteso 204 No Content)"
+if (pcode >= 400) out.println "ERRORE: " + pconn.errorStream?.text
+else out.println "OK: ${VAR_NAME}=${VAR_VALUE} impostata su execution ${executionId} (pratica 556101, scope locale 'Esecuzione')"

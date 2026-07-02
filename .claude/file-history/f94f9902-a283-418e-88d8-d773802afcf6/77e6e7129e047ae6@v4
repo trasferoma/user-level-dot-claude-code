@@ -1,0 +1,297 @@
+package it.servizidigitali.presentatoreforms.bandi.frontend.portlet.action;
+
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.upload.UploadPortletRequest;
+import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.util.WebKeys;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.MutableRenderParameters;
+
+import it.servizidigitali.common.fdr.dto.VerificaResponse;
+import it.servizidigitali.common.utility.enumeration.Contesto;
+import it.servizidigitali.common.utility.enumeration.EsitoVerificaFirma;
+import it.servizidigitali.gestionebandi.common.enumeration.TipologiaBandoEnum;
+import it.servizidigitali.gestionebandi.model.TipologiaBando;
+import it.servizidigitali.gestionebandi.service.TipologiaBandoLocalService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+import it.servizidigitali.audit.common.service.AuditService;
+import it.servizidigitali.common.utility.enumeration.TipoFirmaDigitale;
+import it.servizidigitali.gestionebandi.common.enumeration.StatoDomandaBandoEnum;
+import it.servizidigitali.gestionebandi.common.enumeration.StatoIntegrazioneDomandaBandoEnum;
+import it.servizidigitali.gestionebandi.common.exception.PDFSignatureException;
+import it.servizidigitali.gestionebandi.model.AllegatoDomandaBando;
+import it.servizidigitali.gestionebandi.model.Bando;
+import it.servizidigitali.gestionebandi.model.DomandaBando;
+import it.servizidigitali.gestionebandi.model.IstanzaDomandaBando;
+import it.servizidigitali.gestionebandi.service.BandoLocalService;
+import it.servizidigitali.gestionebandi.service.DomandaBandoLocalService;
+import it.servizidigitali.gestionebandi.service.IstanzaDomandaBandoLocalService;
+import it.servizidigitali.gestionebandi.common.service.DatoBandoService;
+import it.servizidigitali.gestioneforms.model.Form;
+import it.servizidigitali.gestioneforms.service.FormLocalService;
+import it.servizidigitali.presentatoreforms.bandi.common.service.AllegatoDomandaBandoService;
+import it.servizidigitali.presentatoreforms.bandi.common.service.integration.input.jsonenrich.model.UserPreferences;
+import it.servizidigitali.presentatoreforms.bandi.frontend.constants.PresentatoreFormsPortletKeys;
+import it.servizidigitali.presentatoreforms.bandi.frontend.exception.WrongStateException;
+import it.servizidigitali.presentatoreforms.bandi.frontend.service.PresentatoreFormFrontendService;
+
+@Component(//
+		immediate = true, //
+		property = { //
+				"javax.portlet.name=" + PresentatoreFormsPortletKeys.PRESENTATOREFORMS, //
+				"mvc.command.name=" + PresentatoreFormsPortletKeys.INVIA_DOMANDA_ANNULLAMENTO_ACTION_COMMAND //
+		}, //
+		service = { MVCActionCommand.class }//
+)
+public class InviaDomandaAnnullamentoActionCommand extends BaseMVCActionCommand{
+	
+	public static final Log _log = LogFactoryUtil.getLog(InviaDomandaAnnullamentoActionCommand.class);
+	private static final SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH-mm");
+	
+	@Reference
+	private PresentatoreFormFrontendService presentatoreFormFrontendService;
+	
+	@Reference
+	private AllegatoDomandaBandoService allegatoDomandaBandoService;
+	
+	@Reference
+	private DomandaBandoLocalService domandaBandoLocalService;
+	
+	@Reference
+	private BandoLocalService bandoLocalService;
+	
+	@Reference
+	private IstanzaDomandaBandoLocalService istanzaDomandaBandoLocalService;
+	
+	@Reference
+	private FormLocalService formLocalService;
+
+	@Reference
+	private AuditService auditService;
+
+    @Reference
+    private TipologiaBandoLocalService tipologiaBandoLocalService;
+
+	@Reference
+	private DatoBandoService datoBandoService;
+
+	@Override
+	protected void doProcessAction(ActionRequest actionRequest, ActionResponse actionResponse) throws Exception {
+		ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
+		MutableRenderParameters renderParameters = actionResponse.getRenderParameters();
+		ServiceContext serviceContext = ServiceContextFactory.getInstance(actionRequest);
+		
+		long istanzaDomandaBandoId = ParamUtil.getLong(actionRequest, PresentatoreFormsPortletKeys.ISTANZA_DOMANDABANDO_ID);
+		DomandaBando domandaBando = null;
+		Form form = null;
+		
+		User user = themeDisplay.getUser();
+		Bando bando = null;
+		
+		boolean firmaDigitaleDocumentoAbilitata = false;
+		List<TipoFirmaDigitale> listaFormatiFirma = null;
+
+		UploadPortletRequest uploadPortletRequest = PortalUtil.getUploadPortletRequest(actionRequest);
+
+		UserPreferences userPreferences = new UserPreferences();
+		userPreferences.setCodiceFiscaleRichiedente(user.getScreenName());
+		userPreferences.setCompanyId(themeDisplay.getCompanyId());
+		
+		try {
+			IstanzaDomandaBando istanzaDomandaBando = istanzaDomandaBandoLocalService.getIstanzaDomandaBando(istanzaDomandaBandoId);
+			domandaBando = domandaBandoLocalService.fetchDomandaBando(istanzaDomandaBando.getDomandaBandoId());
+            bando = bandoLocalService.fetchBando(domandaBando.getBandoId());
+            TipologiaBando tipologiaBando = tipologiaBandoLocalService.fetchTipologiaBando(bando.getTipologiaBandoId());
+			
+			if (!StatoDomandaBandoEnum.PROTOCOLLATA.name().equals(domandaBando.getStato()) && !tipologiaBando.getCodice().equalsIgnoreCase(TipologiaBandoEnum.AVVISO_LIQUIDAZIONE_CONTRIBUTI.name())) {
+				throw new WrongStateException("Impossibile annullare una domanda bando con stato diverso da Protocollata!");
+			}
+			
+			if(istanzaDomandaBandoId>0) {
+
+				form = formLocalService.getForm(istanzaDomandaBando.getFormId());
+
+				if(Validator.isNotNull(domandaBando)) {
+					Contesto contesto = Contesto.valueOf(bando.getContesto());
+					
+					if (Validator.isNotNull(bando) && bando.getBandoId() > 0) {
+
+						String listaFormatiFirmaDigitale = bando.getFormatiFirmaDigitale();
+
+						if (Validator.isNotNull(listaFormatiFirmaDigitale) && bando.getRichiestaFirmaIntegrazione()) {
+							listaFormatiFirma = new ArrayList<TipoFirmaDigitale>();
+							String[] split = listaFormatiFirmaDigitale.split(",");
+							for (String string : split) {
+								listaFormatiFirma.add(TipoFirmaDigitale.valueOf(string));
+							}
+
+							firmaDigitaleDocumentoAbilitata = !listaFormatiFirma.isEmpty();
+						}
+
+
+						File fileFirmato = uploadPortletRequest.getFile("uploadFileFirmato");
+						
+						if(Validator.isNotNull(fileFirmato)) {
+							byte[] allegatoBytes = Files.readAllBytes(fileFirmato.toPath());
+							long definizioneAllegatoId = 0;
+							String fullFileName = uploadPortletRequest.getFileName("uploadFileFirmato");
+							String extension = FileUtil.getExtension(fullFileName);
+							String nomeFile = FileUtil.stripExtension(fullFileName);
+							String titolo = String.format("allegato-annullamento-%s-%s.%s",
+									nomeFile,
+									formatter.format(new Date()),
+									extension);
+							String impronta = "";
+							String firmatario = "";
+							boolean firmatoDigitalmente = false;
+							EsitoVerificaFirma esitoVerificaFirma = null;
+							
+							if (allegatoBytes != null) {
+								if (firmaDigitaleDocumentoAbilitata) {
+									// Verifica firma digitale documento
+									try {
+										boolean verificaFirmaSoloDataOggi = datoBandoService.isVerificaFirmaSoloDataOggiByBandoId(bando.getBandoId());
+
+										VerificaResponse controlloFirma = allegatoDomandaBandoService.checkFirmaDigitaleDocumento(
+												allegatoBytes,
+												"Documento",
+												user.getScreenName(),
+												listaFormatiFirma,
+												bando.isSigilloQualificato(),
+												bando.isVerificaFirmaCf(),
+												themeDisplay.getScopeGroupId(),
+												contesto,
+												verificaFirmaSoloDataOggi);
+
+										firmatario = getFirmatarioDocumento(controlloFirma);
+
+										if(Validator.isNotNull(controlloFirma) && Validator.isNotNull(controlloFirma.getImpronta())){
+											impronta = controlloFirma.getImpronta();
+										}
+
+										firmatoDigitalmente = true;
+									}
+									catch (PDFSignatureException e) {
+										auditService.saveErrorLog(actionRequest, e.getMessage());
+										_log.error("Verifica firma digitale documento per domanda bando " + domandaBando.getBandoId() + " fallita :: " + e.getMessage(), e);
+										actionRequest.setAttribute(PresentatoreFormsPortletKeys.LISTA_ERRORI, e.getMessage());
+										actionResponse.getRenderParameters().setValue(PresentatoreFormsPortletKeys.DOMANDABANDO_ID, String.valueOf(domandaBando.getDomandaBandoId()));
+										actionResponse.getRenderParameters().setValue(PresentatoreFormsPortletKeys.ANNULLAMENTO_DOMANDA_BANDO, Boolean.TRUE.toString());
+										actionResponse.getRenderParameters().setValue("mvcRenderCommandName", PresentatoreFormsPortletKeys.FORM_INTEGRATIVO_ALLEGATI);
+										return;
+									}
+								}else{
+									VerificaResponse dettagliAllegato = null;
+									try {
+										dettagliAllegato = allegatoDomandaBandoService.recuperaDettagliAllegato(themeDisplay.getScopeGroupId(), allegatoBytes, contesto);
+										esitoVerificaFirma = EsitoVerificaFirma.OK;
+									} catch (Exception e) {
+										_log.warn(e);
+										esitoVerificaFirma = EsitoVerificaFirma.ERRORE;
+									}
+
+									if(Validator.isNotNull(dettagliAllegato)){
+										if(dettagliAllegato.isFirmato() && dettagliAllegato.isFirmaValida()){
+											firmatoDigitalmente = true;
+										}
+
+										firmatario = getFirmatarioDocumento(dettagliAllegato);
+
+										if(Validator.isNotNull(dettagliAllegato) && Validator.isNotNull(dettagliAllegato.getImpronta())){
+											impronta = dettagliAllegato.getImpronta();
+										}
+									}
+								}
+
+								AllegatoDomandaBando allegato = allegatoDomandaBandoService.salvaAllegatoRichiesta(allegatoBytes, impronta, titolo, titolo, bando, domandaBando.getDomandaBandoId(), definizioneAllegatoId, istanzaDomandaBando.getIstanzaDomandaBandoId(), firmatario, firmatoDigitalmente, user.getFullName(), user.getUserId(),
+										themeDisplay.getSiteGroupId(), themeDisplay.getCompanyId(), esitoVerificaFirma, null);
+								
+								if (fileFirmato != null && fileFirmato.exists()) {
+									fileFirmato.delete();
+								}
+								
+								if(Validator.isNotNull(allegato)) {
+									presentatoreFormFrontendService.annullaDomandaBando(serviceContext, domandaBando.getDomandaBandoId(), allegato.getAllegatoDomandaBandoId());
+									istanzaDomandaBando.setStato(StatoIntegrazioneDomandaBandoEnum.VALIDATA.name());
+									istanzaDomandaBandoLocalService.updateIstanzaDomandaBando(istanzaDomandaBando);
+									
+									actionRequest.setAttribute(PresentatoreFormsPortletKeys.TITOLO_PORTLET_SERVIZIO, form.getNome());
+									actionRequest.setAttribute(PresentatoreFormsPortletKeys.INVIO_ISTANZA, true);
+									actionRequest.setAttribute(PresentatoreFormsPortletKeys.ANNULLAMENTO_DOMANDA_BANDO, true);
+									actionRequest.setAttribute(PresentatoreFormsPortletKeys.DOMANDABANDO, domandaBando);
+									actionResponse.getRenderParameters().setValue("mvcPath", PresentatoreFormsPortletKeys.JSP_ESITO_INVIO);
+								}
+
+							}
+						}
+
+					}
+				}
+			}
+
+		}
+		catch (PDFSignatureException e) {
+			auditService.saveErrorLog(actionRequest, e.getMessage());
+			_log.error("Verifica firma digitale per annullamento domanda bando " + domandaBando.getDomandaBandoId() + " fallita :: " + e.getMessage(), e);
+			actionRequest.setAttribute(PresentatoreFormsPortletKeys.LISTA_ERRORI, e.getMessage());
+			renderParameters.setValue("mvcRenderCommandName", PresentatoreFormsPortletKeys.FORM_INTEGRATIVO_ALLEGATI);
+			renderParameters.setValue(PresentatoreFormsPortletKeys.ANNULLAMENTO_DOMANDA_BANDO, Boolean.TRUE.toString());
+			renderParameters.setValue(PresentatoreFormsPortletKeys.ISTANZA_DOMANDABANDO_ID, String.valueOf(istanzaDomandaBandoId));
+		}
+		catch (WrongStateException e) {
+			auditService.saveErrorLog(actionRequest, e.getMessage());
+			_log.error(e);
+			SessionErrors.add(actionRequest, PresentatoreFormsPortletKeys.ERRORE_STATO_NON_CORRETTO);
+			renderParameters.setValue("mvcRenderCommandName", PresentatoreFormsPortletKeys.FORM_INTEGRATIVO_ALLEGATI);
+			renderParameters.setValue(PresentatoreFormsPortletKeys.ANNULLAMENTO_DOMANDA_BANDO, Boolean.TRUE.toString());
+			renderParameters.setValue(PresentatoreFormsPortletKeys.ISTANZA_DOMANDABANDO_ID, String.valueOf(istanzaDomandaBandoId));
+		}
+		catch (Exception e) {
+			auditService.saveErrorLog(actionRequest, e.getMessage());
+			_log.error(e);
+			SessionErrors.add(actionRequest, PresentatoreFormsPortletKeys.ERRORE_GENERICO);
+			renderParameters.setValue("mvcRenderCommandName", PresentatoreFormsPortletKeys.FORM_INTEGRATIVO_ALLEGATI);
+			renderParameters.setValue(PresentatoreFormsPortletKeys.ANNULLAMENTO_DOMANDA_BANDO, Boolean.TRUE.toString());
+			renderParameters.setValue(PresentatoreFormsPortletKeys.ISTANZA_DOMANDABANDO_ID, String.valueOf(istanzaDomandaBandoId));
+		}
+	
+	}
+
+	private String getFirmatarioDocumento(VerificaResponse controlloFirma){
+		String firmatari = "";
+
+		if(Validator.isNotNull(controlloFirma)){
+			Set<String> firmatariSet = controlloFirma.getFirmatari();
+
+			if(Validator.isNotNull(firmatariSet) && !firmatariSet.isEmpty()){
+				firmatari = String.join(",", firmatariSet);
+			}
+		}
+
+		return firmatari;
+	}
+
+}

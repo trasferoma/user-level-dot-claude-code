@@ -1,0 +1,34 @@
+Confronta il branch ambiente-coll di oros con la baseline origin/master e dammi l'elenco dei moduli impattati.
+  
+  BRANCH DA VALUTARE: ambiente-coll
+    Repo OROS: https://oros-git.regione.puglia.it/innovapuglia/rp2412-hubpa/hubpa-servizi-digitali/hubpa-egov-bandi-codice-s
+  orgente/hubpa-servizi-digitali-liferay.git
+
+  BASELINE: master
+    Repo BITBUCKET (è la fetch URL del remote origin già presente):
+    https://tools.linksmt.it/bitbucket/scm/sdrp/servizi-digitali-build.git
+
+  VINCOLI TASSATIVI sul repo locale:
+  - NON aggiungere remote, NON creare branch locali, NON modificare config/ref/working tree.
+  - Scarica gli oggetti solo con `git fetch <URL> <branch>` (vanno in FETCH_HEAD).
+  - Procedi così, perché FETCH_HEAD viene sovrascritto a ogni fetch:
+      1. fetch di `master` dal repo BITBUCKET, salva subito lo SHA risultante;
+      2. fetch di `ambiente-coll` dal repo OROS, salva subito lo SHA risultante;
+      3. confronta esclusivamente per SHA (git diff/log/rev-list <shaMaster> <shaAmbienteColl>).
+  - NON usare origin/master locale se può essere stale: usa lo SHA appena scaricato.
+
+  COSA VOGLIO IN OUTPUT:
+  1. SHA dei due tip, merge-base, e quanti commit avanti/indietro è ambiente-coll rispetto a master.
+  2. Numero totale di file differenti tra i due tip (diff netto).
+  3. Elenco dei moduli impattati raggruppati per `modules/<dominio>/<modulo>`, con conteggio file
+     e file principali per ciascuno; tieni separati gli asset frontend `alpaca/` (fuori da modules/).
+  4. Breve lettura d'insieme dei filoni di modifica.
+
+  ATTENZIONE (lezione dei confronti precedenti):
+  - Il diff NETTO tra i due tip è la verità di riferimento: una modifica presente in modo IDENTICO
+    in entrambi i branch NON deve comparire (es. fix applicate sia a master sia ad ambiente-coll).
+  - Se un modulo "sembra" impattato ma il diff netto è 0, verificalo con `git log <merge-base>..<sha>`
+    e spiega perché si annulla (commit comune, modifica sotto il merge-base, ecc.) invece di elencarlo.
+  - oros/main e origin/master sono storie diverse: usa SEMPRE origin/master (Bitbucket) come baseline, mai oros/main.
+
+  Non entrare nel merito dei singoli diff salvo che te lo chieda dopo.

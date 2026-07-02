@@ -1,0 +1,1549 @@
+package it.servizidigitali.gestionebandi.common.service.impl;
+
+import com.google.gson.Gson;
+import com.liferay.document.library.kernel.service.DLAppService;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.*;
+import com.liferay.portal.kernel.module.configuration.ConfigurationProvider;
+import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.service.*;
+import com.liferay.portal.kernel.util.Validator;
+import it.servizidigitali.backoffice.integration.enums.RelazioneParentela;
+import it.servizidigitali.backoffice.integration.enums.StatoCivile;
+import it.servizidigitali.backoffice.integration.enums.TitoloStudio;
+import it.servizidigitali.common.model.Comune;
+import it.servizidigitali.common.model.Provincia;
+import it.servizidigitali.common.model.StatoEstero;
+import it.servizidigitali.common.service.ComuneEsteroLocalService;
+import it.servizidigitali.common.service.ComuneLocalService;
+import it.servizidigitali.common.service.ProvinciaLocalService;
+import it.servizidigitali.common.service.StatoEsteroLocalService;
+import it.servizidigitali.common.utility.OrganizationUtility;
+import it.servizidigitali.common.utility.enumeration.CodiceTemplatePdf;
+import it.servizidigitali.common.utility.enumeration.EsitoVerificaFirma;
+import it.servizidigitali.common.utility.enumeration.TipoTemplate;
+import it.servizidigitali.gestionebandi.common.configuration.JasperTemplateEnteConfiguration;
+import it.servizidigitali.gestionebandi.common.model.AnnotazioneOperatore;
+import it.servizidigitali.gestionebandi.common.util.CostiUnificatoDataSourceBuilder;
+import it.servizidigitali.gestionebandi.common.enumeration.JasperArrayMappingEnum;
+import it.servizidigitali.gestionebandi.common.enumeration.JasperObjectMappingEnum;
+import it.servizidigitali.gestionebandi.common.enumeration.JasperScalarMappingEnum;
+import it.servizidigitali.gestionebandi.common.enumeration.OrganizationRoleEnum;
+import it.servizidigitali.gestionebandi.common.enumeration.StatoDomandaBandoEnum;
+import it.servizidigitali.gestionebandi.common.exception.PDFServiceException;
+import it.servizidigitali.gestionebandi.common.model.AllegatoReportDTO;
+import it.servizidigitali.gestionebandi.common.model.AlpacaJsonStructure;
+import it.servizidigitali.gestionebandi.common.service.PDFService;
+import it.servizidigitali.gestionebandi.model.*;
+import it.servizidigitali.gestionebandi.service.*;
+import it.servizidigitali.gestioneforms.model.DefinizioneAllegato;
+import it.servizidigitali.gestioneforms.service.DefinizioneAllegatoLocalService;
+import it.servizidigitali.gestionebandi.model.AllegatoDomandaBando;
+import it.servizidigitali.gestionebandi.service.AllegatoDomandaBandoLocalService;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.data.JsonDataSource;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
+
+import javax.net.ssl.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.cert.X509Certificate;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import java.util.stream.Collectors;
+
+/**
+ * @author pindi
+ *
+ */
+@Component(name = "gestioneBandiJasperReportPDFService", immediate = true, service = PDFService.class, configurationPid = "it.servizidigitali.gestionebandi.common.configuration.JasperTemplateEnteConfiguration")
+public class JasperReportPDFService implements PDFService {
+
+    private static final String JR_PARAMETER_LOGO_COMUNE = "logoComune";
+    private static final String JR_PARAMETER_COMUNE = "comune";
+    private static final String JR_PARAMETER_COMUNI = "comuni";
+    private static final String JR_PARAMETER_COMUNI_ESTERI = "comuniEsteri";
+    private static final String JR_PARAMETER_PROVINCE = "province";
+    private static final String JR_PARAMETER_STATI = "stati";
+
+    private static final String JR_PARAMETER_TITOLI_STUDIO = "titoliStudio";
+    private static final String JR_PARAMETER_STATI_CIVILI = "statiCivili";
+    private static final String JR_PARAMETER_RELAZIONI_PARENTELA = "relazioniParentela";
+    private static final String JR_PARAMETER_URL_PORTALE = "urlPortale";
+    private static final String JR_PARAMETER_NOME_COGNOME_UTENTE = "nomeCognomeUtente";
+    private static final String JR_PARAMETER_NOME_BANDO = "nomeBando";
+    private static final String JR_PARAMETER_LISTA_ALLEGATI = "listaAllegati";
+    private static final String JR_PARAMETER_SUBREPORT_ALLEGATI = "subreportAllegati";
+    private static final int ORDINE_SUBREPORT_ALLEGATI = 1;
+
+    // Mapping dei path JSON -> parametri JasperReport per array dinamici (centralizzato in JasperArrayMappingEnum)
+
+    private static final Log log = LogFactoryUtil.getLog(JasperReportPDFService.class.getName());
+
+    private ConfigurationProvider configurationProvider;
+
+    private volatile JasperTemplateEnteConfiguration jasperTemplateEnteConfiguration;
+
+    @Reference
+    protected void setConfigurationProvider(ConfigurationProvider configurationProvider) {
+        this.configurationProvider = configurationProvider;
+    }
+
+    @Activate
+    @Modified
+    private void activate(Map<String, Object> props) {
+        jasperTemplateEnteConfiguration = ConfigurableUtil.createConfigurable(JasperTemplateEnteConfiguration.class, props);
+    }
+
+    @Reference
+    private TemplatePdfLocalService templatePdfLocalService;
+
+    @Reference
+    private DLAppService dlAppService;
+
+    @Reference
+    private StatoEsteroLocalService statoEsteroLocalService;
+
+    @Reference
+    private ProvinciaLocalService provinciaLocalService;
+
+    @Reference
+    private ComuneLocalService comuneLocalService;
+
+    @Reference
+    private ComuneEsteroLocalService comuneEsteroLocalService;
+
+    @Reference
+    private ImageLocalService imageLocalService;
+
+    @Reference
+    private OrganizationLocalService organizationLocalService;
+
+    @Reference
+    private LayoutSetLocalService layoutSetLocalService;
+
+    @Reference
+    private OrganizationUtility organizationUtility;
+
+    @Reference
+    private BandoLocalService bandoLocalService;
+
+    @Reference
+    private CommentoDomandaBandoLocalService commentoDomandaBandoLocalService;
+
+    @Reference
+    private UserLocalService userLocalService;
+
+    @Reference
+    private DomandaBandoIntegrazioneLocalService domandaBandoIntegrazioneLocalService;
+
+    @Reference
+    private IstanzaDomandaBandoLocalService istanzaDomandaBandoLocalService;
+
+    @Reference
+    private RoleLocalService roleLocalService;
+
+    @Reference
+    private UserGroupRoleLocalService userGroupRoleLocalService;
+
+    @Reference
+    private CompanyLocalService companyLocalService;
+
+    @Reference
+    private DefinizioneAllegatoLocalService definizioneAllegatoLocalService;
+
+    @Reference
+    private AllegatoDomandaBandoLocalService allegatoDomandaBandoLocalService;
+
+    @Override
+    public byte[] generaPDFAlpacaForm(String codiceFiscaleRichiedente, AlpacaJsonStructure alpacaStructure,
+                                      DomandaBando domandaBando, boolean isDelega, String dettagliRichiesta) throws PDFServiceException {
+
+        // Imposta headless mode per evitare errori Swing in ambiente server
+        System.setProperty("java.awt.headless", "true");
+
+        // Configura SSL per accettare tutti i certificati (necessario per caricare immagini da URL HTTPS)
+        configureTrustAllCertificates();
+
+        Gson gson = new Gson();
+
+        try {
+            long bandoId = domandaBando.getBandoId();
+            Bando bando = bandoLocalService.getBando(bandoId);
+            long groupId = bando.getGroupId();
+            long organizationId = organizationUtility.getSiteOrganization(groupId).getOrganizationId();
+
+            // Get templates list and optional override from configuration
+            List<TemplatePdf> templatesPdf = templatePdfLocalService.getTemplatePdfByBandoIdAndTipoAndCodice(
+                    bando.getBandoId(),
+                    TipoTemplate.JASPER_REPORT.name(),
+                    CodiceTemplatePdf.ISTANZA.name());
+
+            jasperTemplateEnteConfiguration = configurationProvider.getGroupConfiguration(JasperTemplateEnteConfiguration.class, groupId);
+            long overrideFileEntryId = 0L;
+            if (jasperTemplateEnteConfiguration != null) {
+                overrideFileEntryId = jasperTemplateEnteConfiguration.defaultAlpacaTemplate();
+            }
+
+            TemplatePdf templatePdfPrincipale = getTemplatePdfPrincipale(templatesPdf);
+            List<TemplatePdf> templatesPdfFigli = getTemplatesPdfFigli(templatesPdf);
+
+            if (overrideFileEntryId <= 0 && templatePdfPrincipale == null) {
+                throw new PDFServiceException("Report JRXML principale non presente.");
+            }
+
+            Map<String, Object> param = new HashMap<>();
+            Object data = alpacaStructure.getData();
+            InputStream stream = new ByteArrayInputStream(gson.toJson(data).getBytes(StandardCharsets.UTF_8));
+            Organization organization = organizationLocalService.getOrganization(organizationId);
+            JRDataSource jsonDataSource = new JsonDataSource(stream);
+
+            long fileEntryId = overrideFileEntryId > 0 ? overrideFileEntryId : templatePdfPrincipale.getFileEntryId();
+            FileEntry documentoPrincipalefileEntry = dlAppService.getFileEntry(fileEntryId);
+            InputStream reportPrincipaleInputStream = new ByteArrayInputStream(documentoPrincipalefileEntry.getContentStream().readAllBytes());
+            JasperReport reportPrincipaleJasperReport = JasperCompileManager.compileReport(reportPrincipaleInputStream);
+
+            // Sottoreport, se presenti
+            if (templatesPdfFigli != null && !templatesPdfFigli.isEmpty()) {
+                for (TemplatePdf templatePdfFiglio : templatesPdfFigli) {
+                    FileEntry documentoFiglioEntry = dlAppService.getFileEntry(templatePdfFiglio.getFileEntryId());
+                    InputStream subReportInputStream = new ByteArrayInputStream(documentoFiglioEntry.getContentStream().readAllBytes());
+                    JasperReport subJasperReport = JasperCompileManager.compileReport(subReportInputStream);
+                    String subreportKey = documentoFiglioEntry.getFileName();
+                    param.put(subreportKey, subJasperReport);
+                    log.debug("Compilato subreport con chiave: '" + subreportKey + "'");
+                }
+            } else {
+                log.debug("Nessun subreport figlio trovato per questo bando");
+            }
+
+            addParametriAggiuntivi(param);
+
+            LayoutSet layout = layoutSetLocalService.getLayoutSet(groupId, false);
+            Image image = imageLocalService.getCompanyLogo(layout.getLogoId());
+
+            if (Validator.isNotNull(image)) {
+                ByteArrayInputStream logoComune = new ByteArrayInputStream(image.getTextObj());
+                param.put(JR_PARAMETER_LOGO_COMUNE, logoComune);
+            }
+
+            param.put(JR_PARAMETER_COMUNE, organization.getName());
+            param.put(JR_PARAMETER_NOME_BANDO, bando.getNome());
+
+            // URL del portale per caricare risorse dalla Document Library
+            try {
+                Company company = companyLocalService.getCompany(organization.getCompanyId());
+                String portalURL = company.getPortalURL(groupId);
+                param.put(JR_PARAMETER_URL_PORTALE, portalURL);
+            } catch (Exception e) {
+                log.warn("Impossibile ottenere URL portale: " + e.getMessage());
+            }
+
+            // Nome e cognome dell'utente che genera il documento
+            if (Validator.isNotNull(codiceFiscaleRichiedente)) {
+                User user = userLocalService.fetchUserByScreenName(organization.getCompanyId(), codiceFiscaleRichiedente);
+                if (user != null) {
+                    String nomeCognome = user.getFirstName() + " " + user.getLastName();
+                    param.put(JR_PARAMETER_NOME_COGNOME_UTENTE, nomeCognome);
+                }
+            }
+
+            // Costruisce lista allegati DTO dagli allegati caricati nella domanda
+            List<AllegatoReportDTO> listaAllegati = new ArrayList<>();
+
+            List<AllegatoDomandaBando> allegatiDomanda = allegatoDomandaBandoLocalService
+                    .getListaAllegatiByDomandaBandoId(domandaBando.getDomandaBandoId());
+
+            for (AllegatoDomandaBando allegato : allegatiDomanda) {
+                if (allegato.getDefinizioneAllegatoId() > 0) {
+                    // Recupera denominazione dalla DefinizioneAllegato
+                    String denominazione = allegato.getTitolo();
+
+                    String nomeFile = allegato.getNome() != null ? allegato.getNome() : "";
+                    String impronta;
+                    boolean firmato;
+
+                    if (EsitoVerificaFirma.ERRORE.name().equals(allegato.getEsitoVerificaFirma())) {
+                        impronta = "Non disponibile";
+                        firmato = false;
+                    } else {
+                        impronta = allegato.getImpronta() != null ? allegato.getImpronta() : "";
+                        firmato = allegato.isFirmatoDigitalmente();
+                    }
+
+                    String firmatario = allegato.getFirmatario() != null ? allegato.getFirmatario() : "";
+                    listaAllegati.add(new AllegatoReportDTO(denominazione, nomeFile, impronta, firmato, firmatario));
+                }
+            }
+
+            param.put(JR_PARAMETER_LISTA_ALLEGATI, new JRBeanCollectionDataSource(listaAllegati));
+            addDynamicArrayParameters(param, data, gson);
+            addDynamicScalarParameters(param, data, gson);
+            addDynamicObjectParameters(param, data, gson);
+            addCostiUnificatoDataSource(param, data, gson);
+
+            log.debug("generaPDFAlpacaForm :: Parametri disponibili per il report: " + param.keySet());
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(reportPrincipaleJasperReport, param, jsonDataSource);
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, out);
+            return out.toByteArray();
+        }
+        catch (Exception e) {
+            log.error("generaPDFAlpacaForm :: " + e.getMessage(), e);
+            throw new PDFServiceException("Errore durante il processo di generazione del PDF :: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public byte[] generaPDFDisciplinareForm(DomandaBando domandaBando, AlpacaJsonStructure alpacaJsonStructure, String tipoTemplateNativo)
+            throws PDFServiceException {
+
+        // Configura SSL per accettare tutti i certificati (necessario per caricare immagini da URL HTTPS)
+        configureTrustAllCertificates();
+
+        Gson gson = new Gson();
+
+        try {
+            long bandoId = domandaBando.getBandoId();
+            Bando bando = bandoLocalService.getBando(bandoId);
+            long groupId = bando.getGroupId();
+            long organizationId = organizationUtility.getSiteOrganization(groupId).getOrganizationId();
+
+            // Il parametro tipoTemplateNativo contiene il codice template (es. DISCIPLINARE o DISCIPLINARE_ESECUZIONE)
+            List<TemplatePdf> templatesPdf = templatePdfLocalService.getTemplatePdfByBandoIdAndTipoAndCodice(
+                    bando.getBandoId(),
+                    TipoTemplate.JASPER_REPORT.name(),
+                    tipoTemplateNativo);
+            jasperTemplateEnteConfiguration = configurationProvider.getGroupConfiguration(JasperTemplateEnteConfiguration.class, groupId);
+            long overrideFileEntryId = 0L;
+            if (jasperTemplateEnteConfiguration != null) {
+                overrideFileEntryId = jasperTemplateEnteConfiguration.disciplinareTemplate();
+            }
+
+            TemplatePdf templatePdfPrincipale = getTemplatePdfPrincipale(templatesPdf);
+            List<TemplatePdf> templatesPdfFigli = getTemplatesPdfFigli(templatesPdf);
+
+            if (overrideFileEntryId <= 0 && templatePdfPrincipale == null) {
+                throw new PDFServiceException("Report JRXML disciplinare non presente.");
+            }
+
+            Map<String, Object> param = new HashMap<>();
+            Object data = alpacaJsonStructure.getData();
+            InputStream stream = new ByteArrayInputStream(gson.toJson(data).getBytes(StandardCharsets.UTF_8));
+            Organization organization = organizationLocalService.getOrganization(organizationId);
+            JRDataSource jsonDataSource = new JsonDataSource(stream);
+
+            long fileEntryId = overrideFileEntryId > 0 ? overrideFileEntryId : templatePdfPrincipale.getFileEntryId();
+            FileEntry documentoPrincipalefileEntry = dlAppService.getFileEntry(fileEntryId);
+            InputStream reportPrincipaleInputStream = new ByteArrayInputStream(documentoPrincipalefileEntry.getContentStream().readAllBytes());
+            JasperReport reportPrincipaleJasperReport = JasperCompileManager.compileReport(reportPrincipaleInputStream);
+
+            // Sottoreport, se presenti
+            if (templatesPdfFigli != null && !templatesPdfFigli.isEmpty()) {
+                for (TemplatePdf templatePdfFiglio : templatesPdfFigli) {
+                    FileEntry documentoFiglioEntry = dlAppService.getFileEntry(templatePdfFiglio.getFileEntryId());
+                    InputStream subReportInputStream = new ByteArrayInputStream(documentoFiglioEntry.getContentStream().readAllBytes());
+                    JasperReport subJasperReport = JasperCompileManager.compileReport(subReportInputStream);
+                    String subreportKey = documentoFiglioEntry.getFileName();
+                    param.put(subreportKey, subJasperReport);
+                    log.debug("Compilato subreport con chiave: '" + subreportKey + "'");
+                }
+            } else {
+                log.debug("Nessun subreport figlio trovato per questo bando");
+            }
+
+            addParametriAggiuntivi(param);
+
+            LayoutSet layout = layoutSetLocalService.getLayoutSet(groupId, false);
+            Image image = imageLocalService.getCompanyLogo(layout.getLogoId());
+
+            if (Validator.isNotNull(image)) {
+                ByteArrayInputStream logoComune = new ByteArrayInputStream(image.getTextObj());
+                param.put(JR_PARAMETER_LOGO_COMUNE, logoComune);
+            }
+
+            param.put(JR_PARAMETER_COMUNE, organization.getName());
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(reportPrincipaleJasperReport, param, jsonDataSource);
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, out);
+            return out.toByteArray();
+        }
+        catch (Exception e) {
+            log.error("generaPDFDisciplinareForm :: " + e.getMessage(), e);
+            throw new PDFServiceException("Errore durante il processo di generazione del PDF disciplinare :: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public byte[] generaPDFAnnullamento(String codiceFiscaleRichiedente, AlpacaJsonStructure alpacaStructure,
+                                        DomandaBando domandaBando, String dettagliRichiesta) throws PDFServiceException {
+
+        // Configura SSL per accettare tutti i certificati (necessario per caricare immagini da URL HTTPS)
+        configureTrustAllCertificates();
+
+        Gson gson = new Gson();
+
+        try {
+            long bandoId = domandaBando.getBandoId();
+            Bando bando = bandoLocalService.getBando(bandoId);
+            long groupId = bando.getGroupId();
+            long organizationId = organizationUtility.getSiteOrganization(groupId).getOrganizationId();
+
+            List<TemplatePdf> templatesPdf = templatePdfLocalService.getTemplatePdfByBandoIdAndTipoAndCodice(
+                    bando.getBandoId(),
+                    TipoTemplate.JASPER_REPORT.name(),
+                    CodiceTemplatePdf.ISTANZA_ANNULLAMENTO.name());
+            jasperTemplateEnteConfiguration = configurationProvider.getGroupConfiguration(JasperTemplateEnteConfiguration.class, groupId);
+            long overrideFileEntryId = 0L;
+            if (jasperTemplateEnteConfiguration != null) {
+                overrideFileEntryId = jasperTemplateEnteConfiguration.annullamentoDomandaTemplate();
+            }
+            TemplatePdf templatePdfPrincipale = getTemplatePdfPrincipale(templatesPdf);
+            List<TemplatePdf> templatesPdfFigli = getTemplatesPdfFigli(templatesPdf);
+            if (overrideFileEntryId <= 0 && templatePdfPrincipale == null) {
+                throw new PDFServiceException("Report JRXML annullamento non presente.");
+            }
+
+            Map<String, Object> param = new HashMap<>();
+            Object data = alpacaStructure.getData();
+            InputStream stream = new ByteArrayInputStream(gson.toJson(data).getBytes(StandardCharsets.UTF_8));
+            Organization organization = organizationLocalService.getOrganization(organizationId);
+            JRDataSource jsonDataSource = new JsonDataSource(stream);
+
+            long fileEntryId = overrideFileEntryId > 0 ? overrideFileEntryId : templatePdfPrincipale.getFileEntryId();
+            FileEntry documentoPrincipalefileEntry = dlAppService.getFileEntry(fileEntryId);
+            InputStream reportPrincipaleInputStream = new ByteArrayInputStream(documentoPrincipalefileEntry.getContentStream().readAllBytes());
+            JasperReport reportPrincipaleJasperReport = JasperCompileManager.compileReport(reportPrincipaleInputStream);
+
+            // Sottoreport, se presenti
+            if (templatesPdfFigli != null && !templatesPdfFigli.isEmpty()) {
+                for (TemplatePdf templatePdfFiglio : templatesPdfFigli) {
+                    FileEntry documentoFiglioEntry = dlAppService.getFileEntry(templatePdfFiglio.getFileEntryId());
+                    InputStream subReportInputStream = new ByteArrayInputStream(documentoFiglioEntry.getContentStream().readAllBytes());
+                    JasperReport subJasperReport = JasperCompileManager.compileReport(subReportInputStream);
+                    String subreportKey = documentoFiglioEntry.getFileName();
+                    param.put(subreportKey, subJasperReport);
+                    log.debug("Compilato subreport con chiave: '" + subreportKey + "'");
+                }
+            } else {
+                log.debug("Nessun subreport figlio trovato per questo bando");
+            }
+
+            addParametriAggiuntivi(param);
+
+            LayoutSet layout = layoutSetLocalService.getLayoutSet(groupId, false);
+            Image image = imageLocalService.getCompanyLogo(layout.getLogoId());
+
+            if (Validator.isNotNull(image)) {
+                ByteArrayInputStream logoComune = new ByteArrayInputStream(image.getTextObj());
+                param.put(JR_PARAMETER_LOGO_COMUNE, logoComune);
+            }
+
+            param.put(JR_PARAMETER_COMUNE, organization.getName());
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(reportPrincipaleJasperReport, param, jsonDataSource);
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, out);
+            return out.toByteArray();
+        }
+        catch (Exception e) {
+            log.error("generaPDFAnnullamento :: " + e.getMessage(), e);
+            throw new PDFServiceException("Errore durante il processo di generazione del PDF annullamento :: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public byte[] generaPDFIntegrazioni(String codiceFiscaleRichiedente, AlpacaJsonStructure alpacaStructure,
+                                        DomandaBando domandaBando, String dettagliRichiesta, long istanzaDomandaBandoId) throws PDFServiceException {
+
+        // Imposta headless mode per evitare errori Swing in ambiente server
+        System.setProperty("java.awt.headless", "true");
+
+        // Configura SSL per accettare tutti i certificati (necessario per caricare immagini da URL HTTPS)
+        configureTrustAllCertificates();
+
+        Gson gson = new Gson();
+
+        try {
+            long bandoId = domandaBando.getBandoId();
+            Bando bando = bandoLocalService.getBando(bandoId);
+            long groupId = bando.getGroupId();
+            long organizationId = organizationUtility.getSiteOrganization(groupId).getOrganizationId();
+            jasperTemplateEnteConfiguration = configurationProvider.getGroupConfiguration(JasperTemplateEnteConfiguration.class, groupId);
+
+            Map<String, Object> param = new HashMap<>();
+            Organization organization = organizationLocalService.getOrganization(organizationId);
+
+            // Prepara JsonDataSource dai dati del form Alpaca
+            Object data = alpacaStructure.getData();
+            InputStream stream = new ByteArrayInputStream(gson.toJson(data).getBytes(StandardCharsets.UTF_8));
+            JRDataSource jsonDataSource = new JsonDataSource(stream);
+
+            // Get template file from configuration
+            long overrideFileEntryId = 0L;
+            if (jasperTemplateEnteConfiguration != null) {
+                overrideFileEntryId = jasperTemplateEnteConfiguration.integrazioniTemplate();
+            }
+
+            List<TemplatePdf> templatesPdfSoccorso = templatePdfLocalService.getTemplatePdfByBandoIdAndTipoAndCodice(
+                    bando.getBandoId(),
+                    TipoTemplate.JASPER_REPORT.name(),
+                    CodiceTemplatePdf.ISTANZA_SOCCORSO_ISTRUTTORIO.name());
+
+            TemplatePdf templatePdfPrincipale = getTemplatePdfPrincipale(templatesPdfSoccorso);
+
+            if(Validator.isNotNull(templatePdfPrincipale)){
+                overrideFileEntryId = templatePdfPrincipale.getFileEntryId();
+            }
+
+            FileEntry documentoPrincipalefileEntry = dlAppService.getFileEntry(overrideFileEntryId);
+            InputStream reportPrincipaleInputStream = new ByteArrayInputStream(documentoPrincipalefileEntry.getContentStream().readAllBytes());
+            JasperReport reportPrincipaleJasperReport = JasperCompileManager.compileReport(reportPrincipaleInputStream);
+
+            // Carica subreport allegati dal template ISTANZA_SOCCORSO_ISTRUTTORIO (se configurato)
+
+            List<TemplatePdf> templatesPdfFigli = getTemplatesPdfFigli(templatesPdfSoccorso);
+
+            if (templatesPdfFigli != null && !templatesPdfFigli.isEmpty()) {
+                for (TemplatePdf templatePdfFiglio : templatesPdfFigli) {
+                    FileEntry documentoFiglioEntry = dlAppService.getFileEntry(templatePdfFiglio.getFileEntryId());
+                    InputStream subReportInputStream = new ByteArrayInputStream(documentoFiglioEntry.getContentStream().readAllBytes());
+                    JasperReport subJasperReport = JasperCompileManager.compileReport(subReportInputStream);
+                    param.put(documentoFiglioEntry.getFileName(), subJasperReport);
+                    log.debug("generaPDFIntegrazioni :: Caricato subreport: " + documentoFiglioEntry.getFileName());
+                }
+            } else {
+                log.warn("generaPDFIntegrazioni :: Nessun subreport allegati trovato per il bando " + bando.getBandoId() +
+                        ". Assicurarsi che il template ISTANZA_SOCCORSO_ISTRUTTORIO abbia il subreport allegati_subreport.jrxml configurato come figlio.");
+            }
+
+            LayoutSet layout = layoutSetLocalService.getLayoutSet(groupId, false);
+            Image image = imageLocalService.getCompanyLogo(layout.getLogoId());
+
+            if (Validator.isNotNull(image)) {
+                ByteArrayInputStream logoComune = new ByteArrayInputStream(image.getTextObj());
+                param.put(JR_PARAMETER_LOGO_COMUNE, logoComune);
+            }
+
+            param.put(JR_PARAMETER_COMUNE, organization.getName());
+            param.put(JR_PARAMETER_NOME_BANDO, bando.getNome());
+
+            // URL del portale per caricare risorse dalla Document Library
+            try {
+                Company company = companyLocalService.getCompany(organization.getCompanyId());
+                String portalURL = company.getPortalURL(groupId);
+                param.put(JR_PARAMETER_URL_PORTALE, portalURL);
+            } catch (Exception e) {
+                log.warn("Impossibile ottenere URL portale: " + e.getMessage());
+            }
+
+            // Nome e cognome dell'utente che genera il documento
+            if (Validator.isNotNull(codiceFiscaleRichiedente)) {
+                User user = userLocalService.fetchUserByScreenName(organization.getCompanyId(), codiceFiscaleRichiedente);
+                if (user != null) {
+                    String nomeCognome = user.getFirstName() + " " + user.getLastName();
+                    param.put(JR_PARAMETER_NOME_COGNOME_UTENTE, nomeCognome);
+                }
+            }
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            Date currentDate = new Date();
+
+            IstanzaDomandaBando istanzaDomandaBando = null;
+            if (istanzaDomandaBandoId > 0) {
+                istanzaDomandaBando = istanzaDomandaBandoLocalService.fetchIstanzaDomandaBando(istanzaDomandaBandoId);
+            }
+
+            long commentoDomandaBandoId = 0L;
+            if (istanzaDomandaBando != null) {
+                commentoDomandaBandoId = istanzaDomandaBando.getCommentoDomandaBandoId();
+            }
+
+            AnnotazioneOperatore notaOperatore = getCommentoText(commentoDomandaBandoId);
+
+            param.put("denominazioneBando", bando.getNome());
+            param.put("idPratica", String.valueOf(domandaBando.getDomandaBandoId()));
+            param.put("dataArrivo", domandaBando.getCreateDate() != null ? dateFormat.format(domandaBando.getCreateDate()) : "");
+            param.put("numeroProtocollo", domandaBando.getNumeroProtocollo() != null ? domandaBando.getNumeroProtocollo() : "N/A");
+            param.put("oggettoNotaOperatore", notaOperatore.getOggetto());
+            param.put("notaOperatore", notaOperatore.getTesto());
+            param.put("dataOraRichiesta", dateTimeFormat.format(currentDate));
+
+            // Note: testoAntipazione, numeroProtocolloAntipazione, dataProtocolloAntipazione
+            // are handled in generaPDFRichiestaSoccorsoIstruttoria method via anticipazioneInfo map
+            param.put("testoAntipazione", "");
+            param.put("numeroProtocolloAntipazione", "");
+            param.put("dataProtocolloAntipazione", "");
+
+            String nomeCognomeOperatore = "";
+            String titoloRuoloOperatore = "";
+
+            if (istanzaDomandaBando != null && istanzaDomandaBando.getUserId() > 0) {
+                nomeCognomeOperatore = getOperatorName(istanzaDomandaBando.getUserId());
+                titoloRuoloOperatore = getOperatorRoleTitle(istanzaDomandaBando.getUserId(), organizationId);
+            }
+
+            param.put("nomeCognomeOperatore", nomeCognomeOperatore);
+            param.put("titoloRuoloOperatore", titoloRuoloOperatore);
+            param.put("mostraFirma", titoloRuoloOperatore != null && !titoloRuoloOperatore.isEmpty());
+
+            // Costruisce lista allegati DTO dagli allegati caricati per questa istanza di integrazione
+            List<AllegatoReportDTO> listaAllegati = new ArrayList<>();
+
+            List<AllegatoDomandaBando> allegatiDomanda = new ArrayList<AllegatoDomandaBando>();
+            if (istanzaDomandaBandoId > 0) {
+                // Per le integrazioni, recupera solo gli allegati di questa specifica istanza
+                allegatiDomanda = allegatoDomandaBandoLocalService
+                        .getListaAllegatiByIstanzaDomandaBandoIdAndInterno(istanzaDomandaBandoId, false);
+            }
+
+            for (AllegatoDomandaBando allegato : allegatiDomanda) {
+                // Recupera denominazione dalla DefinizioneAllegato o usa descrizione/titolo
+                String denominazione = "";
+                if (allegato.getDefinizioneAllegatoId() > 0) {
+                    DefinizioneAllegato defAllegato = definizioneAllegatoLocalService.fetchDefinizioneAllegato(allegato.getDefinizioneAllegatoId());
+                    if (defAllegato != null) {
+                        denominazione = defAllegato.getDenominazione() != null ? defAllegato.getDenominazione() : "";
+                    }
+                }
+                if (Validator.isNull(denominazione)) {
+                    denominazione = allegato.getDescrizione() != null ? allegato.getDescrizione() :
+                            (allegato.getTitolo() != null ? allegato.getTitolo() : "Allegato");
+                }
+
+                String nomeFile = allegato.getNome() != null ? allegato.getNome() : "";
+                String impronta;
+                boolean firmato;
+
+                if (EsitoVerificaFirma.ERRORE.name().equals(allegato.getEsitoVerificaFirma())) {
+                    impronta = "Non disponibile";
+                    firmato = false;
+                } else {
+                    impronta = allegato.getImpronta() != null ? allegato.getImpronta() : "";
+                    firmato = allegato.isFirmatoDigitalmente();
+                }
+
+                String firmatario = allegato.getFirmatario() != null ? allegato.getFirmatario() : "";
+                listaAllegati.add(new AllegatoReportDTO(denominazione, nomeFile, impronta, firmato, firmatario));
+            }
+
+            param.put(JR_PARAMETER_LISTA_ALLEGATI, new JRBeanCollectionDataSource(listaAllegati));
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(reportPrincipaleJasperReport, param, jsonDataSource);
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, out);
+            return out.toByteArray();
+        }
+        catch (Exception e) {
+            log.error("generaPDFIntegrazioni :: " + e.getMessage(), e);
+            throw new PDFServiceException("Errore durante il processo di generazione del PDF integrazioni :: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Configura SSL per accettare tutti i certificati.
+     * Necessario quando il server deve fare richieste HTTPS a se stesso.
+     */
+    private void configureTrustAllCertificates() {
+        try {
+            TrustManager[] trustAllCerts = new TrustManager[] {
+                    new X509TrustManager() {
+                        public X509Certificate[] getAcceptedIssuers() { return null; }
+                        public void checkClientTrusted(X509Certificate[] certs, String authType) { }
+                        public void checkServerTrusted(X509Certificate[] certs, String authType) { }
+                    }
+            };
+
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+
+            HostnameVerifier allHostsValid = (hostname, session) -> true;
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+
+            log.debug("SSL TrustAll configurato correttamente");
+        } catch (Exception e) {
+            log.warn("Impossibile configurare SSL TrustAll: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Adds additional parameters to the JasperReport
+     * @param param the parameter map to populate
+     */
+    private void addParametriAggiuntivi(Map<String, Object> param) {
+
+        List<StatoEstero> allStati = statoEsteroLocalService.getStatoEsteros(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+        Map<String, String> stati = allStati.stream().collect(Collectors.toMap(stato -> Integer.toString(stato.getCodiceMIN()), StatoEstero::getDenominazioneIt));
+        param.put(JR_PARAMETER_STATI, stati);
+
+        List<Provincia> allProvince = provinciaLocalService.getProvincias(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+        Map<String, String> province = allProvince.stream().collect(Collectors.toMap(Provincia::getSigla, Provincia::getDenominazioneProvincia));
+        param.put(JR_PARAMETER_PROVINCE, province);
+
+        List<Comune> allComuni = comuneLocalService.getComunes(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+        Map<String, String> comuni = new HashMap<>();
+        for (Comune comune : allComuni) {
+            comuni.put(String.valueOf(comune.getComuneId()), comune.getDenominazione());
+        }
+        param.put(JR_PARAMETER_COMUNI, comuni);
+
+//		List<ComuneEstero> allComuniEsteri = comuneEsteroLocalService.getComuneEsteros(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+//		Map<String, String> comuniEsteri = allComuniEsteri.stream().collect(Collectors.toMap(comune -> Long.toString(comune.getComuneEsteroId()), ComuneEstero::getDenominazione));
+//		param.put(JR_PARAMETER_COMUNI_ESTERI, comuniEsteri);
+
+        Map<String, String> titoliStudio = Arrays.stream(TitoloStudio.values()).collect(Collectors.toMap(TitoloStudio::getCodice, TitoloStudio::getDescrizione));
+        param.put(JR_PARAMETER_TITOLI_STUDIO, titoliStudio);
+
+        Map<String, String> statiCivili = Arrays.stream(StatoCivile.values()).collect(Collectors.toMap(titoloStudio -> Integer.toString(titoloStudio.getCodice()), StatoCivile::getDescrizione));
+        param.put(JR_PARAMETER_STATI_CIVILI, statiCivili);
+
+        Map<String, String> relazioniParentela = Arrays.stream(RelazioneParentela.values())
+                .collect(Collectors.toMap(relazioneParentele -> Integer.toString(relazioneParentele.getCodice()), RelazioneParentela::getDescrizione));
+        param.put(JR_PARAMETER_RELAZIONI_PARENTELA, relazioniParentela);
+
+    }
+
+    /**
+     * Gets child templates from the list of templates
+     * @param templatesPdf the list of templates to filter
+     * @return list of child templates
+     */
+    private List<TemplatePdf> getTemplatesPdfFigli(List<TemplatePdf> templatesPdf) {
+        if (templatesPdf == null) {
+            return null;
+        }
+
+       return templatesPdf.stream()
+               .filter(templatePdf -> templatePdf.getTemplatePdfParentId() != 0)
+               .sorted(Comparator.comparing(TemplatePdf::getOrdine))
+               .collect(Collectors.toList());
+    }
+
+    private TemplatePdf getTemplatePdfPrincipale(List<TemplatePdf> templatesPdf) {
+        if (templatesPdf == null) {
+            return null;
+        }
+
+        return templatesPdf.stream()
+                .filter(templatePdf -> templatePdf.getTemplatePdfParentId() == 0)
+                .findFirst()
+                .orElse(null);
+    }
+
+    @Override
+    public byte[] generaPDFRichiestaSoccorsoIstruttoria(DomandaBando domandaBando, String codiceTipoTemplate, String portalURL, long commentoDomandaBandoId, long userId, Map<String, String> anticipazioneInfo, List<AllegatoDomandaBando> allegatiEsterni) throws PDFServiceException {
+
+        // Configura SSL per accettare tutti i certificati (necessario per caricare immagini da URL HTTPS)
+        configureTrustAllCertificates();
+
+        try {
+            long bandoId = domandaBando.getBandoId();
+            Bando bando = bandoLocalService.getBando(bandoId);
+            long groupId = bando.getGroupId();
+            long organizationId = organizationUtility.getSiteOrganization(groupId).getOrganizationId();
+
+            // Get configuration for this group
+            jasperTemplateEnteConfiguration = configurationProvider.getGroupConfiguration(JasperTemplateEnteConfiguration.class, groupId);
+
+            List<TemplatePdf> templatesPdf = templatePdfLocalService.getTemplatePdfByBandoIdAndTipoAndCodice(
+                    bando.getBandoId(),
+                    TipoTemplate.JASPER_REPORT.name(),
+                    CodiceTemplatePdf.RICHIESTA_SOCCORSO_ISTRUTTORIO.name());
+
+            long overrideFileEntryId = 0L;
+            if (jasperTemplateEnteConfiguration != null) {
+                overrideFileEntryId = jasperTemplateEnteConfiguration.richiestaSoccorsoIstruttorioTemplate();
+            }
+
+            TemplatePdf templatePdfPrincipale = getTemplatePdfPrincipale(templatesPdf);
+            List<TemplatePdf> templatesPdfFigli = getTemplatesPdfFigli(templatesPdf);
+
+            if (overrideFileEntryId <= 0 && templatePdfPrincipale == null) {
+                throw new PDFServiceException("Report JRXML richiesta soccorso istruttorio non presente.");
+            }
+
+            Map<String, Object> param = new HashMap<>();
+            Organization organization = organizationLocalService.getOrganization(organizationId);
+
+            long fileEntryId = overrideFileEntryId > 0 ? overrideFileEntryId : templatePdfPrincipale.getFileEntryId();
+            FileEntry documentoPrincipalefileEntry = dlAppService.getFileEntry(fileEntryId);
+
+            InputStream reportPrincipaleInputStream = new ByteArrayInputStream(documentoPrincipalefileEntry.getContentStream().readAllBytes());
+            JasperReport reportPrincipaleJasperReport = JasperCompileManager.compileReport(reportPrincipaleInputStream);
+
+            // Sottoreport, se presenti
+            if (templatesPdfFigli != null && !templatesPdfFigli.isEmpty()) {
+                for (TemplatePdf templatePdfFiglio : templatesPdfFigli) {
+                    FileEntry documentoFiglioEntry = dlAppService.getFileEntry(templatePdfFiglio.getFileEntryId());
+                    InputStream subReportInputStream = new ByteArrayInputStream(documentoFiglioEntry.getContentStream().readAllBytes());
+                    JasperReport subJasperReport = JasperCompileManager.compileReport(subReportInputStream);
+                    String subreportKey = documentoFiglioEntry.getFileName();
+                    param.put(subreportKey, subJasperReport);
+                    registraSubreportAllegati(param, templatePdfFiglio, subJasperReport);
+                    log.debug("Compilato subreport con chiave: '" + subreportKey + "'");
+                }
+            } else {
+                log.debug("Nessun subreport figlio trovato per questo bando");
+            }
+
+            param.put(JR_PARAMETER_LISTA_ALLEGATI, new JRBeanCollectionDataSource(costruisciAllegatiReportDTO(allegatiEsterni)));
+
+            addParametriAggiuntivi(param);
+
+            LayoutSet layout = layoutSetLocalService.getLayoutSet(groupId, false);
+            Image image = imageLocalService.getCompanyLogo(layout.getLogoId());
+
+            if (Validator.isNotNull(image)) {
+                ByteArrayInputStream logoComune = new ByteArrayInputStream(image.getTextObj());
+                param.put(JR_PARAMETER_LOGO_COMUNE, logoComune);
+            }
+
+            param.put(JR_PARAMETER_COMUNE, organization.getName());
+
+            AnnotazioneOperatore notaOperatore = getCommentoText(commentoDomandaBandoId);
+
+            String nomeCognomeOperatore = getOperatorName(userId);
+            String titoloRuoloOperatore = getOperatorRoleTitle(userId, organizationId);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            Date currentDate = new Date();
+
+            param.put("denominazioneBando", bando.getNome());
+            param.put("descrizioneBreve", bando.getDescrizioneBreve());
+            param.put("idPratica", String.valueOf(domandaBando.getDomandaBandoId()));
+            param.put("dataArrivo", domandaBando.getCreateDate() != null ? dateFormat.format(domandaBando.getCreateDate()) : "");
+            param.put("numeroProtocollo", domandaBando.getNumeroProtocollo() != null ? domandaBando.getNumeroProtocollo() : "N/A");
+            param.put("oggettoNotaOperatore", notaOperatore.getOggetto());
+            param.put("notaOperatore", notaOperatore.getTesto());
+            param.put("dataOraRichiesta", dateTimeFormat.format(currentDate));
+            param.put("nomeCognomeOperatore", nomeCognomeOperatore);
+            param.put("titoloRuoloOperatore", titoloRuoloOperatore);
+            param.put("mostraFirma", titoloRuoloOperatore != null && !titoloRuoloOperatore.isEmpty());
+            param.put("urlPortale", portalURL);
+
+            String testoAntipazione = anticipazioneInfo != null ? anticipazioneInfo.getOrDefault("testoAntipazione", "") : "";
+            String numeroProtocolloAntipazione = anticipazioneInfo != null ? anticipazioneInfo.getOrDefault("numeroProtocollo", "") : "";
+            String dataProtocolloAntipazione = anticipazioneInfo != null ? anticipazioneInfo.getOrDefault("dataProtocollo", "") : "";
+
+            param.put("testoAntipazione", testoAntipazione);
+            param.put("numeroProtocolloAntipazione", numeroProtocolloAntipazione);
+            param.put("dataProtocolloAntipazione", dataProtocolloAntipazione);
+
+            param.put("denominazioneRichiedente", domandaBando.getUserName());
+            param.put("dataCorrente", dateFormat.format(currentDate));
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(reportPrincipaleJasperReport, param, new JREmptyDataSource());
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, out);
+            return out.toByteArray();
+        }
+        catch (Exception e) {
+            log.error("generaPDFRichiestaSoccorsoIstruttoria :: " + e.getMessage(), e);
+            throw new PDFServiceException("Errore durante il processo di generazione del PDF richiesta soccorso istruttoria :: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public byte[] generaPDFPrimaDomandaAnticipo(DomandaBando domandaBando, long istanzaDomandaBandoId, String codiceTipoTemplate, String portalURL, long commentoDomandaBandoId, long userId, Map<String, String> anticipazioneInfo) throws PDFServiceException {
+
+        // Configura SSL per accettare tutti i certificati (necessario per caricare immagini da URL HTTPS)
+        configureTrustAllCertificates();
+
+        try {
+            long bandoId = domandaBando.getBandoId();
+            Bando bando = bandoLocalService.getBando(bandoId);
+            long groupId = bando.getGroupId();
+            long organizationId = organizationUtility.getSiteOrganization(groupId).getOrganizationId();
+
+            // Get configuration for this group
+            jasperTemplateEnteConfiguration = configurationProvider.getGroupConfiguration(JasperTemplateEnteConfiguration.class, groupId);
+
+            List<TemplatePdf> templatesPdf = templatePdfLocalService.getTemplatePdfByBandoIdAndTipoAndCodice(
+                    bando.getBandoId(),
+                    TipoTemplate.JASPER_REPORT.name(),
+                    CodiceTemplatePdf.PRIMA_DOMANDA_ANTICIPO.name());
+
+            long overrideFileEntryId = 0L;
+            if (jasperTemplateEnteConfiguration != null) {
+                overrideFileEntryId = jasperTemplateEnteConfiguration.primaDomandaAnticipoTemplate();
+            }
+
+            TemplatePdf templatePdfPrincipale = getTemplatePdfPrincipale(templatesPdf);
+            List<TemplatePdf> templatesPdfFigli = getTemplatesPdfFigli(templatesPdf);
+
+            if (overrideFileEntryId <= 0 && templatePdfPrincipale == null) {
+                throw new PDFServiceException("Report JRXML richiesta soccorso istruttorio non presente.");
+            }
+
+            Map<String, Object> param = new HashMap<>();
+            Organization organization = organizationLocalService.getOrganization(organizationId);
+
+            long fileEntryId = overrideFileEntryId > 0 ? overrideFileEntryId : templatePdfPrincipale.getFileEntryId();
+            FileEntry documentoPrincipalefileEntry = dlAppService.getFileEntry(fileEntryId);
+
+            InputStream reportPrincipaleInputStream = new ByteArrayInputStream(documentoPrincipalefileEntry.getContentStream().readAllBytes());
+            JasperReport reportPrincipaleJasperReport = JasperCompileManager.compileReport(reportPrincipaleInputStream);
+
+            // Sottoreport, se presenti
+            if (templatesPdfFigli != null && !templatesPdfFigli.isEmpty()) {
+                for (TemplatePdf templatePdfFiglio : templatesPdfFigli) {
+                    FileEntry documentoFiglioEntry = dlAppService.getFileEntry(templatePdfFiglio.getFileEntryId());
+                    InputStream subReportInputStream = new ByteArrayInputStream(documentoFiglioEntry.getContentStream().readAllBytes());
+                    JasperReport subJasperReport = JasperCompileManager.compileReport(subReportInputStream);
+                    param.put(documentoFiglioEntry.getFileName(), subJasperReport);
+                }
+            }
+
+            LayoutSet layout = layoutSetLocalService.getLayoutSet(groupId, false);
+            Image image = imageLocalService.getCompanyLogo(layout.getLogoId());
+
+            if (Validator.isNotNull(image)) {
+                ByteArrayInputStream logoComune = new ByteArrayInputStream(image.getTextObj());
+                param.put(JR_PARAMETER_LOGO_COMUNE, logoComune);
+            }
+
+            param.put(JR_PARAMETER_COMUNE, organization.getName());
+
+            AnnotazioneOperatore notaOperatore = getCommentoText(commentoDomandaBandoId);
+
+            String nomeCognomeOperatore = getOperatorName(userId);
+            String titoloRuoloOperatore = getOperatorRoleTitle(userId, organizationId);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            Date currentDate = new Date();
+
+            param.put("denominazioneBando", bando.getNome());
+            param.put("descrizioneBreve", bando.getDescrizioneBreve());
+            param.put("idPratica", String.valueOf(domandaBando.getDomandaBandoId()));
+            param.put("dataArrivo", domandaBando.getCreateDate() != null ? dateFormat.format(domandaBando.getCreateDate()) : "");
+
+            if(istanzaDomandaBandoId > 0){
+                DomandaBandoIntegrazione domandaBandoIntegrazione = domandaBandoIntegrazioneLocalService.fetchDomandaBandoIntegrazione(istanzaDomandaBandoId);
+                if(Validator.isNotNull(domandaBandoIntegrazione) && Validator.isNotNull(domandaBandoIntegrazione.getNumeroProtocollo())){
+                    param.put("numeroProtocollo", domandaBandoIntegrazione.getNumeroProtocollo() != null ? domandaBandoIntegrazione.getNumeroProtocollo() : "N/A");
+                }
+            }
+            String testoAntipazione = anticipazioneInfo != null ? anticipazioneInfo.getOrDefault("testoAntipazione", "") : "";
+            String numeroProtocolloAntipazione = anticipazioneInfo != null ? anticipazioneInfo.getOrDefault("numeroProtocollo", "") : "";
+            String dataProtocolloAntipazione = anticipazioneInfo != null ? anticipazioneInfo.getOrDefault("dataProtocollo", "") : "";
+
+            param.put("testoAntipazione", testoAntipazione);
+            param.put("numeroProtocolloAntipazione", numeroProtocolloAntipazione);
+            param.put("dataProtocolloAntipazione", dataProtocolloAntipazione);
+            // param.put("oggettoNotaOperatore", notaOperatore.getOggetto());
+            param.put("notaOperatore", notaOperatore.getTesto());
+            param.put("dataOraRichiesta", dateTimeFormat.format(currentDate));
+            param.put("nomeCognomeOperatore", nomeCognomeOperatore);
+            param.put("titoloRuoloOperatore", titoloRuoloOperatore);
+            param.put("mostraFirma", titoloRuoloOperatore != null && !titoloRuoloOperatore.isEmpty());
+
+            param.put("denominazioneRichiedente", domandaBando.getUserName());
+            param.put("dataCorrente", dateFormat.format(currentDate));
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(reportPrincipaleJasperReport, param, new JREmptyDataSource());
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, out);
+            return out.toByteArray();
+        }
+        catch (Exception e) {
+            log.error("generaPDFRichiestaSoccorsoIstruttoria :: " + e.getMessage(), e);
+            throw new PDFServiceException("Errore durante il processo di generazione del PDF richiesta soccorso istruttoria :: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public byte[] generaPDFSecondaDomandaAnticipo(DomandaBando domandaBando, long istanzaDomandaBandoId, String codiceTipoTemplate, String portalURL, long commentoDomandaBandoId, long userId, Map<String, String> anticipazioneInfo) throws PDFServiceException {
+
+        // Configura SSL per accettare tutti i certificati (necessario per caricare immagini da URL HTTPS)
+        configureTrustAllCertificates();
+
+        try {
+            long bandoId = domandaBando.getBandoId();
+            Bando bando = bandoLocalService.getBando(bandoId);
+            long groupId = bando.getGroupId();
+            long organizationId = organizationUtility.getSiteOrganization(groupId).getOrganizationId();
+
+            // Get configuration for this group
+            jasperTemplateEnteConfiguration = configurationProvider.getGroupConfiguration(JasperTemplateEnteConfiguration.class, groupId);
+
+            List<TemplatePdf> templatesPdf = templatePdfLocalService.getTemplatePdfByBandoIdAndTipoAndCodice(
+                    bando.getBandoId(),
+                    TipoTemplate.JASPER_REPORT.name(),
+                    CodiceTemplatePdf.SECONDA_DOMANDA_ANTICIPO.name());
+
+            long overrideFileEntryId = 0L;
+            if (jasperTemplateEnteConfiguration != null) {
+                overrideFileEntryId = jasperTemplateEnteConfiguration.secondaDomandaAnticipoTemplate();
+            }
+
+            TemplatePdf templatePdfPrincipale = getTemplatePdfPrincipale(templatesPdf);
+            List<TemplatePdf> templatesPdfFigli = getTemplatesPdfFigli(templatesPdf);
+
+            if (overrideFileEntryId <= 0 && templatePdfPrincipale == null) {
+                throw new PDFServiceException("Report JRXML richiesta soccorso istruttorio non presente.");
+            }
+
+            Map<String, Object> param = new HashMap<>();
+            Organization organization = organizationLocalService.getOrganization(organizationId);
+
+            long fileEntryId = overrideFileEntryId > 0 ? overrideFileEntryId : templatePdfPrincipale.getFileEntryId();
+            FileEntry documentoPrincipalefileEntry = dlAppService.getFileEntry(fileEntryId);
+
+            InputStream reportPrincipaleInputStream = new ByteArrayInputStream(documentoPrincipalefileEntry.getContentStream().readAllBytes());
+            JasperReport reportPrincipaleJasperReport = JasperCompileManager.compileReport(reportPrincipaleInputStream);
+
+            // Sottoreport, se presenti
+            if (templatesPdfFigli != null && !templatesPdfFigli.isEmpty()) {
+                for (TemplatePdf templatePdfFiglio : templatesPdfFigli) {
+                    FileEntry documentoFiglioEntry = dlAppService.getFileEntry(templatePdfFiglio.getFileEntryId());
+                    InputStream subReportInputStream = new ByteArrayInputStream(documentoFiglioEntry.getContentStream().readAllBytes());
+                    JasperReport subJasperReport = JasperCompileManager.compileReport(subReportInputStream);
+                    param.put(documentoFiglioEntry.getFileName(), subJasperReport);
+                }
+            }
+
+            LayoutSet layout = layoutSetLocalService.getLayoutSet(groupId, false);
+            Image image = imageLocalService.getCompanyLogo(layout.getLogoId());
+
+            if (Validator.isNotNull(image)) {
+                ByteArrayInputStream logoComune = new ByteArrayInputStream(image.getTextObj());
+                param.put(JR_PARAMETER_LOGO_COMUNE, logoComune);
+            }
+
+            param.put(JR_PARAMETER_COMUNE, organization.getName());
+
+            AnnotazioneOperatore notaOperatore = getCommentoText(commentoDomandaBandoId);
+
+            String nomeCognomeOperatore = getOperatorName(userId);
+            String titoloRuoloOperatore = getOperatorRoleTitle(userId, organizationId);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            Date currentDate = new Date();
+
+            param.put("denominazioneBando", bando.getNome());
+            param.put("descrizioneBreve", bando.getDescrizioneBreve());
+            param.put("idPratica", String.valueOf(domandaBando.getDomandaBandoId()));
+            param.put("dataArrivo", domandaBando.getCreateDate() != null ? dateFormat.format(domandaBando.getCreateDate()) : "");
+
+            if(istanzaDomandaBandoId > 0){
+                DomandaBandoIntegrazione domandaBandoIntegrazione = domandaBandoIntegrazioneLocalService.fetchDomandaBandoIntegrazione(istanzaDomandaBandoId);
+                if(Validator.isNotNull(domandaBandoIntegrazione) && Validator.isNotNull(domandaBandoIntegrazione.getNumeroProtocollo())){
+                    param.put("numeroProtocollo", domandaBandoIntegrazione.getNumeroProtocollo() != null ? domandaBandoIntegrazione.getNumeroProtocollo() : "N/A");
+                }
+            }
+
+            String testoAntipazione = anticipazioneInfo != null ? anticipazioneInfo.getOrDefault("testoAntipazione", "") : "";
+            String numeroProtocolloAntipazione = anticipazioneInfo != null ? anticipazioneInfo.getOrDefault("numeroProtocollo", "") : "";
+            String dataProtocolloAntipazione = anticipazioneInfo != null ? anticipazioneInfo.getOrDefault("dataProtocollo", "") : "";
+
+            param.put("testoAntipazione", testoAntipazione);
+            param.put("numeroProtocolloAntipazione", numeroProtocolloAntipazione);
+            param.put("dataProtocolloAntipazione", dataProtocolloAntipazione);
+
+            // param.put("oggettoNotaOperatore", notaOperatore.getOggetto());
+            param.put("notaOperatore", notaOperatore.getTesto());
+            param.put("dataOraRichiesta", dateTimeFormat.format(currentDate));
+            param.put("nomeCognomeOperatore", nomeCognomeOperatore);
+            param.put("titoloRuoloOperatore", titoloRuoloOperatore);
+            param.put("mostraFirma", titoloRuoloOperatore != null && !titoloRuoloOperatore.isEmpty());
+
+            param.put("denominazioneRichiedente", domandaBando.getUserName());
+            param.put("dataCorrente", dateFormat.format(currentDate));
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(reportPrincipaleJasperReport, param, new JREmptyDataSource());
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, out);
+            return out.toByteArray();
+        }
+        catch (Exception e) {
+            log.error("generaPDFRichiestaSoccorsoIstruttoria :: " + e.getMessage(), e);
+            throw new PDFServiceException("Errore durante il processo di generazione del PDF richiesta soccorso istruttoria :: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public byte[] generaPDFEsitoDomanda(DomandaBando domandaBando, String codiceTipoTemplate, String portalURL, long commentoDomandaBandoId, long userId, StatoDomandaBandoEnum statoDomandaBando, List<AllegatoDomandaBando> allegatiEsterni) throws PDFServiceException {
+
+        // Configura SSL per accettare tutti i certificati (necessario per caricare immagini da URL HTTPS)
+        configureTrustAllCertificates();
+
+        try {
+            long bandoId = domandaBando.getBandoId();
+            Bando bando = bandoLocalService.getBando(bandoId);
+            long groupId = bando.getGroupId();
+            long organizationId = organizationUtility.getSiteOrganization(groupId).getOrganizationId();
+
+            // Get configuration for this group
+            jasperTemplateEnteConfiguration = configurationProvider.getGroupConfiguration(JasperTemplateEnteConfiguration.class, groupId);
+
+            List<TemplatePdf> templatesPdf = templatePdfLocalService.getTemplatePdfByBandoIdAndTipoAndCodice(
+                    bando.getBandoId(),
+                    TipoTemplate.JASPER_REPORT.name(),
+                    CodiceTemplatePdf.ESITO_DOMANDA.name());
+
+            long overrideFileEntryId = 0L;
+            if (jasperTemplateEnteConfiguration != null) {
+                overrideFileEntryId = jasperTemplateEnteConfiguration.esitoDomandaTemplate();
+            }
+
+            TemplatePdf templatePdfPrincipale = getTemplatePdfPrincipale(templatesPdf);
+            List<TemplatePdf> templatesPdfFigli = getTemplatesPdfFigli(templatesPdf);
+
+            if (overrideFileEntryId <= 0 && templatePdfPrincipale == null) {
+                throw new PDFServiceException("Report JRXML esito domanda non presente.");
+            }
+
+            Map<String, Object> param = new HashMap<>();
+            Organization organization = organizationLocalService.getOrganization(organizationId);
+
+            long fileEntryId = overrideFileEntryId > 0 ? overrideFileEntryId : templatePdfPrincipale.getFileEntryId();
+            FileEntry documentoPrincipalefileEntry = dlAppService.getFileEntry(fileEntryId);
+
+            InputStream reportPrincipaleInputStream = new ByteArrayInputStream(documentoPrincipalefileEntry.getContentStream().readAllBytes());
+            JasperReport reportPrincipaleJasperReport = JasperCompileManager.compileReport(reportPrincipaleInputStream);
+
+            // Sottoreport, se presenti
+            if (templatesPdfFigli != null && !templatesPdfFigli.isEmpty()) {
+                for (TemplatePdf templatePdfFiglio : templatesPdfFigli) {
+                    FileEntry documentoFiglioEntry = dlAppService.getFileEntry(templatePdfFiglio.getFileEntryId());
+                    InputStream subReportInputStream = new ByteArrayInputStream(documentoFiglioEntry.getContentStream().readAllBytes());
+                    JasperReport subJasperReport = JasperCompileManager.compileReport(subReportInputStream);
+                    param.put(documentoFiglioEntry.getFileName(), subJasperReport);
+                    registraSubreportAllegati(param, templatePdfFiglio, subJasperReport);
+                }
+            }
+
+            param.put(JR_PARAMETER_LISTA_ALLEGATI, new JRBeanCollectionDataSource(costruisciAllegatiReportDTO(allegatiEsterni)));
+
+            LayoutSet layout = layoutSetLocalService.getLayoutSet(groupId, false);
+            Image image = imageLocalService.getCompanyLogo(layout.getLogoId());
+
+            if (Validator.isNotNull(image)) {
+                ByteArrayInputStream logoComune = new ByteArrayInputStream(image.getTextObj());
+                param.put(JR_PARAMETER_LOGO_COMUNE, logoComune);
+            }
+
+            param.put(JR_PARAMETER_COMUNE, organization.getName());
+
+            AnnotazioneOperatore notaOperatore = getCommentoText(commentoDomandaBandoId);
+
+            String nomeCognomeOperatore = getOperatorName(userId);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            Date currentDate = new Date();
+            String titoloRuoloOperatore = getOperatorRoleTitle(userId, organizationId);
+
+            param.put("denominazioneBando", bando.getNome());
+            param.put("descrizioneBreve", bando.getDescrizioneBreve());
+            param.put("idPratica", String.valueOf(domandaBando.getDomandaBandoId()));
+            param.put("dataArrivo", domandaBando.getCreateDate() != null ? dateFormat.format(domandaBando.getCreateDate()) : "");
+            param.put("numeroProtocollo", domandaBando.getNumeroProtocollo() != null ? domandaBando.getNumeroProtocollo() : "N/A");
+            param.put("oggettoNotaOperatore", notaOperatore.getOggetto());
+            param.put("notaOperatore", notaOperatore.getTesto());
+            param.put("dataOraRichiesta", dateTimeFormat.format(currentDate));
+            param.put("nomeCognomeOperatore", nomeCognomeOperatore);
+            param.put("stato_chiusura", statoDomandaBando.getName());
+
+            String esitoChiusura = "";
+
+            if(statoDomandaBando.equals(StatoDomandaBandoEnum.CHIUSA_NEGATIVAMENTE)){
+                esitoChiusura = "negativo";
+            }else{
+                esitoChiusura = "positivo";
+            }
+
+            param.put("esito_chiusura", esitoChiusura);
+
+            param.put("denominazioneRichiedente", domandaBando.getUserName());
+            param.put("dataCorrente", dateFormat.format(currentDate));
+
+            param.put("nomeCognomeOperatore", nomeCognomeOperatore);
+            param.put("titoloRuoloOperatore", titoloRuoloOperatore);
+            param.put("mostraFirma", titoloRuoloOperatore != null && !titoloRuoloOperatore.isEmpty());
+            param.put("urlPortale", portalURL);
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(reportPrincipaleJasperReport, param, new JREmptyDataSource());
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, out);
+            return out.toByteArray();
+        }
+        catch (Exception e) {
+            log.error("generaPDFEsitoDomanda :: " + e.getMessage(), e);
+            throw new PDFServiceException("Errore durante il processo di generazione del PDF esito domanda :: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Helper method to get comment text from CommentoDomandaBando
+     */
+    private void registraSubreportAllegati(Map<String, Object> param, TemplatePdf templatePdfFiglio, JasperReport subJasperReport) {
+        if (templatePdfFiglio.getOrdine() == ORDINE_SUBREPORT_ALLEGATI) {
+            param.put(JR_PARAMETER_SUBREPORT_ALLEGATI, subJasperReport);
+        }
+    }
+
+    private List<AllegatoReportDTO> costruisciAllegatiReportDTO(List<AllegatoDomandaBando> allegatiEsterni) {
+        if (allegatiEsterni == null || allegatiEsterni.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return allegatiEsterni.stream()
+                .map(this::mappaAllegatoInReportDTO)
+                .collect(Collectors.toList());
+    }
+
+    private AllegatoReportDTO mappaAllegatoInReportDTO(AllegatoDomandaBando allegato) {
+        String denominazione = allegato.getTitolo() != null && !allegato.getTitolo().isEmpty()
+                ? allegato.getTitolo()
+                : (allegato.getDescrizione() != null ? allegato.getDescrizione() : "");
+        String nomeFile = allegato.getNome() != null ? allegato.getNome() : "";
+
+        String impronta;
+        boolean firmato;
+        if (EsitoVerificaFirma.ERRORE.name().equals(allegato.getEsitoVerificaFirma())) {
+            impronta = "Non disponibile";
+            firmato = false;
+        } else {
+            impronta = allegato.getImpronta() != null ? allegato.getImpronta() : "";
+            firmato = allegato.isFirmatoDigitalmente();
+        }
+
+        String firmatario = allegato.getFirmatario() != null ? allegato.getFirmatario() : "";
+        return new AllegatoReportDTO(denominazione, nomeFile, impronta, firmato, firmatario);
+    }
+
+    private AnnotazioneOperatore getCommentoText(long commentoDomandaBandoId) {
+        AnnotazioneOperatore result = new AnnotazioneOperatore();
+        if (commentoDomandaBandoId <= 0) {
+            return result;
+        }
+
+        try {
+            CommentoDomandaBando commento = commentoDomandaBandoLocalService.getCommentoDomandaBando(commentoDomandaBandoId);
+            result.setOggetto(commento.getOggetto())
+                  .setTesto(commento.getTesto());
+        } catch (Exception e) {
+            log.warn("Impossibile recuperare il commento con ID: " + commentoDomandaBandoId, e);
+        }
+
+        return result;
+    }
+    /**
+     * Helper method to get operator name
+     */
+    private String getOperatorName(long userId) {
+        if (userId > 0) {
+            try {
+                User operatore = userLocalService.getUser(userId);
+                return operatore.getFullName();
+            } catch (Exception e) {
+                log.warn("Impossibile recuperare l'utente con ID: " + userId, e);
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Estrae dinamicamente gli array dal JSON del form Alpaca e li aggiunge come parametri.
+     * Usa il mapping definito in JSON_ARRAY_MAPPINGS per determinare quali array estrarre.
+     *
+     * @param param la mappa dei parametri a cui aggiungere gli array
+     * @param data l'oggetto dati del form Alpaca
+     * @param gson l'istanza Gson per la conversione
+     */
+    private void addDynamicArrayParameters(Map<String, Object> param, Object data, Gson gson) {
+        if (data == null) {
+            return;
+        }
+
+        try {
+            // Converti l'oggetto data in JsonObject per la navigazione
+            String jsonString = gson.toJson(data);
+            JsonObject jsonData = gson.fromJson(jsonString, JsonObject.class);
+
+            for (JasperArrayMappingEnum mapping : JasperArrayMappingEnum.values()) {
+                String jsonPath = mapping.getJsonPath();
+                String paramName = mapping.getJrParameterName();
+
+                JsonArray jsonArray = extractJsonArray(jsonData, jsonPath);
+                if (jsonArray != null && jsonArray.size() > 0) {
+                    // Converti JsonArray in List<Map> per JRBeanCollectionDataSource
+                    // (più affidabile di JsonDataSource per array estratti dal JSON)
+                    List<Map> list = new ArrayList<>();
+                    for (int i = 0; i < jsonArray.size(); i++) {
+                        JsonElement element = jsonArray.get(i);
+                        if (element.isJsonObject()) {
+                            Map map = gson.fromJson(element, Map.class);
+                            list.add(map);
+                        }
+                    }
+
+                    if (!list.isEmpty()) {
+                        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(list);
+                        param.put(paramName, dataSource);
+                        log.debug("addDynamicArrayParameters :: Aggiunto parametro " + paramName + " con " + list.size() + " elementi");
+                    }
+                } else {
+                    log.debug("addDynamicArrayParameters :: Array non trovato o vuoto per path '" + jsonPath + "'");
+                }
+            }
+        } catch (Exception e) {
+            log.warn("addDynamicArrayParameters :: Errore nell'estrazione degli array dinamici: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Estrae un array JSON da un path nested.
+     *
+     * @param jsonData l'oggetto JSON radice
+     * @param path il path all'array (es. "parent.child.array")
+     * @return il JsonArray se trovato, null altrimenti
+     */
+    private JsonArray extractJsonArray(JsonObject jsonData, String path) {
+        if (jsonData == null || path == null || path.isEmpty()) {
+            return null;
+        }
+
+        String[] parts = path.split("\\.");
+        JsonElement current = jsonData;
+
+        for (int i = 0; i < parts.length; i++) {
+            if (current == null || !current.isJsonObject()) {
+                return null;
+            }
+
+            JsonObject currentObj = current.getAsJsonObject();
+            String part = parts[i];
+
+            if (!currentObj.has(part)) {
+                return null;
+            }
+
+            current = currentObj.get(part);
+
+            // Se è l'ultima parte, deve essere un array
+            if (i == parts.length - 1) {
+                if (current.isJsonArray()) {
+                    return current.getAsJsonArray();
+                }
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Estrae dinamicamente valori scalari dal JSON del form Alpaca e li aggiunge come parametri String.
+     * Usa il mapping definito in JasperScalarMappingEnum per determinare quali valori estrarre.
+     *
+     * @param param la mappa dei parametri a cui aggiungere i valori
+     * @param data l'oggetto dati del form Alpaca
+     * @param gson l'istanza Gson per la conversione
+     */
+    private void addDynamicScalarParameters(Map<String, Object> param, Object data, Gson gson) {
+        if (data == null) {
+            return;
+        }
+
+        try {
+            String jsonString = gson.toJson(data);
+            JsonObject jsonData = gson.fromJson(jsonString, JsonObject.class);
+
+            for (JasperScalarMappingEnum mapping : JasperScalarMappingEnum.values()) {
+                String jsonPath = mapping.getJsonPath();
+                String paramName = mapping.getJrParameterName();
+
+                String value = extractJsonScalar(jsonData, jsonPath);
+                if (value != null) {
+                    param.put(paramName, value);
+                    log.debug("addDynamicScalarParameters :: Aggiunto parametro " + paramName + " = " + value);
+                } else {
+                    log.debug("addDynamicScalarParameters :: Valore non trovato per path '" + jsonPath + "'");
+                }
+            }
+        } catch (Exception e) {
+            log.warn("addDynamicScalarParameters :: Errore nell'estrazione dei valori scalari: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Processa oggetti flat dal JSON del form Alpaca e li aggiunge come parametri individuali.
+     * Usa il mapping definito in JasperObjectMappingEnum per determinare quali oggetti estrarre.
+     *
+     * @param param la mappa dei parametri a cui aggiungere i valori
+     * @param data l'oggetto dati del form Alpaca
+     * @param gson l'istanza Gson per la conversione
+     */
+    private void addDynamicObjectParameters(Map<String, Object> param, Object data, Gson gson) {
+        if (data == null) {
+            return;
+        }
+
+        try {
+            String jsonString = gson.toJson(data);
+            JsonObject jsonData = gson.fromJson(jsonString, JsonObject.class);
+
+            for (JasperObjectMappingEnum mapping : JasperObjectMappingEnum.values()) {
+                String jsonPath = mapping.getJsonPath();
+                JsonElement element = jsonData.get(jsonPath);
+
+                if (element != null && element.isJsonObject()) {
+                    JsonObject objectNode = element.getAsJsonObject();
+                    for (Map.Entry<String, JsonElement> field : objectNode.entrySet()) {
+                        String value = field.getValue().isJsonPrimitive() ? field.getValue().getAsString() : field.getValue().toString();
+                        param.put(field.getKey(), value);
+                        log.debug("addDynamicObjectParameters :: Aggiunto parametro " + field.getKey() + " = " + value);
+                    }
+                } else {
+                    log.debug("addDynamicObjectParameters :: Oggetto non trovato per path '" + jsonPath + "'");
+                }
+            }
+        } catch (Exception e) {
+            log.warn("addDynamicObjectParameters :: Errore nell'estrazione degli oggetti: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Costruisce un JRBeanCollectionDataSource flat per il subreport unificato dei costi.
+     * Viene invocato solo se il JSON contiene i dati del form agricoltura.
+     * Delega la costruzione a {@link CostiUnificatoDataSourceBuilder}.
+     */
+    private void addCostiUnificatoDataSource(Map<String, Object> param, Object data, Gson gson) {
+        if (data == null) {
+            return;
+        }
+
+        try {
+            String jsonString = gson.toJson(data);
+            JsonObject jsonData = gson.fromJson(jsonString, JsonObject.class);
+
+            if (!CostiUnificatoDataSourceBuilder.canHandle(jsonData)) {
+                return;
+            }
+
+            CostiUnificatoDataSourceBuilder builder = new CostiUnificatoDataSourceBuilder(jsonData);
+            param.put("elencoCostiUnificato", builder.build());
+            log.debug("addCostiUnificatoDataSource :: Creato datasource unificato con " + builder.getRowCount() + " righe");
+
+        } catch (Exception e) {
+            log.warn("addCostiUnificatoDataSource :: Errore nella costruzione del datasource unificato: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Estrae un valore scalare (stringa) da un path nested nel JSON.
+     *
+     * @param jsonData l'oggetto JSON radice
+     * @param path il path al valore (es. "contributoSpesa.contributoSpesaPersonaleAImponibile")
+     * @return il valore come stringa se trovato, null altrimenti
+     */
+    private String extractJsonScalar(JsonObject jsonData, String path) {
+        if (jsonData == null || path == null || path.isEmpty()) {
+            return null;
+        }
+
+        String[] parts = path.split("\\.");
+        JsonElement current = jsonData;
+
+        for (int i = 0; i < parts.length; i++) {
+            if (current == null || !current.isJsonObject()) {
+                return null;
+            }
+
+            JsonObject currentObj = current.getAsJsonObject();
+            String part = parts[i];
+
+            if (!currentObj.has(part)) {
+                return null;
+            }
+
+            current = currentObj.get(part);
+        }
+
+        if (current != null && current.isJsonPrimitive()) {
+            return current.getAsString();
+        }
+
+        return null;
+    }
+
+    /**
+     * Helper method to get operator role title
+     * Returns the role title for specific roles that should sign documents
+     */
+    private String getOperatorRoleTitle(long userId, long organizationId) {
+        if (userId > 0 && organizationId > 0) {
+            try {
+
+                // Approccio 1: tramite organizzazioni
+                List<Organization> userOrganizations = organizationLocalService.getUserOrganizations(userId);
+                List<Role> allOrganizationRoles = new ArrayList<>();
+                for (Organization organization : userOrganizations) {
+                    List<Role> organizationRoles = roleLocalService.getUserGroupRoles(
+                            userId,
+                            organization.getGroupId()
+                    );
+                    allOrganizationRoles.addAll(organizationRoles);
+                }
+
+                for (Role role : allOrganizationRoles) {
+
+                    String roleName = role.getName();
+                    OrganizationRoleEnum roleEnum = OrganizationRoleEnum.findByCode(roleName);
+
+                    if (roleEnum != null) {
+                        List<OrganizationRoleEnum> ruoliMostraFirma = List.of(
+                                OrganizationRoleEnum.FUNZIONARIO_ISTRUTTORE,
+                                OrganizationRoleEnum.FUNZIONARIO_TITOLARE_EQ,
+                                OrganizationRoleEnum.DIRIGENTE_SERVIZIO_GESTIONE_OPERE_PUBBLICHE,
+                                OrganizationRoleEnum.RESPONSABILE_PROCEDIMENTO,
+                                OrganizationRoleEnum.RESPONSABILE_AZIONE_PR_PUGLIA,
+                                OrganizationRoleEnum.ISTRUTTORE,
+                                OrganizationRoleEnum.DIRIGENTE,
+                                OrganizationRoleEnum.RESPONSABILE_PROCEDIMENTO_1,
+                                OrganizationRoleEnum.RUP,
+                                OrganizationRoleEnum.COMMISSIONE,
+                                OrganizationRoleEnum.DELEGATO_DEL_RUP
+                        );
+                        if (ruoliMostraFirma.contains(roleEnum)) {
+                            return roleEnum.getDescrizione();
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("Impossibile recuperare i ruoli per l'utente con ID: " + userId, e);
+            }
+        }
+        return "";
+    }
+
+}

@@ -1,0 +1,39 @@
+package org.tasktelemetry.example;
+
+import org.tasktelemetry.TaskTelemetry;
+import org.tasktelemetry.event.TaskEvent;
+
+/**
+ * Example client (consumer): it subscribes a listener and receives the live
+ * messages emitted by {@link TaskTry}, then runs the task.
+ */
+public final class TaskTryClient {
+
+    private TaskTryClient() {
+    }
+
+    public static void main(String[] args) {
+        try (TaskTelemetry telemetry = TaskTelemetry.defaults()) {
+            telemetry.listen()
+                    .taskName(TaskTry.TASK_NAME)
+                    .onEvent(TaskTryClient::onMessage)
+                    .start();
+
+            new TaskTry(telemetry).run();
+        }
+    }
+
+    private static void onMessage(TaskEvent event) {
+        StringBuilder line = new StringBuilder();
+        line.append("[").append(event.type()).append("] #").append(event.sequenceNumber());
+
+        if (event.progress() != null) {
+            line.append(" ").append(event.progress()).append("%");
+        }
+        if (event.message() != null) {
+            line.append(" - ").append(event.message());
+        }
+
+        System.out.println(line);
+    }
+}

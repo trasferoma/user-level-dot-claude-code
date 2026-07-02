@@ -1,0 +1,1363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="disciplinareEsecuzioneNegoziale"
+              pageWidth="595" pageHeight="842" columnWidth="485"
+              leftMargin="55" rightMargin="55" topMargin="50" bottomMargin="40">
+
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="JsonDataAdapter"/>
+    <property name="net.sf.jasperreports.print.create.bookmarks" value="false"/>
+
+    <!-- ============================== Stili ============================== -->
+    <style name="font_standard" isDefault="true" fontName="DejaVu Sans" fontSize="10"/>
+    <style name="Body" fontName="DejaVu Sans" fontSize="10">
+        <box bottomPadding="6"/>
+        <paragraph lineSpacing="Single"/>
+    </style>
+    <style name="BodyHtml" fontName="DejaVu Sans" fontSize="10" markup="html">
+        <box bottomPadding="6"/>
+        <paragraph lineSpacing="Single"/>
+    </style>
+    <style name="Bullet" fontName="DejaVu Sans" fontSize="10"/>
+    <style name="BodyList" fontName="DejaVu Sans" fontSize="10">
+        <box bottomPadding="6"/>
+        <paragraph lineSpacing="Single" leftIndent="12" firstLineIndent="-12"/>
+    </style>
+    <style name="BodyListHtml" fontName="DejaVu Sans" fontSize="10" markup="html">
+        <box bottomPadding="6"/>
+        <paragraph lineSpacing="Single" leftIndent="12" firstLineIndent="-12"/>
+    </style>
+    <style name="BodyBold" fontName="DejaVu Sans" fontSize="10" isBold="true">
+        <box topPadding="4" bottomPadding="4"/>
+    </style>
+    <style name="Heading" fontName="DejaVu Sans" fontSize="11" isBold="true">
+        <box topPadding="4" bottomPadding="4"/>
+        <paragraph lineSpacing="Single"/>
+    </style>
+    <style name="TitleBlock" fontName="DejaVu Sans" fontSize="11" isBold="true">
+        <box bottomPadding="10"/>
+        <paragraph lineSpacing="1_1_2"/>
+    </style>
+    <style name="ArticleTitle" fontName="DejaVu Sans" fontSize="11" isBold="true">
+        <box topPadding="10" bottomPadding="6"/>
+        <paragraph lineSpacing="Single"/>
+    </style>
+    <style name="SmallCenter" fontName="DejaVu Sans" fontSize="9" isItalic="true"/>
+
+    <!-- ============================== Parametri ============================== -->
+    <parameter name="nomeCognomeUtente" class="java.lang.String"/>
+    <!-- Formattatore valuta italiana: gli importi arrivano come stringhe non formattate     -->
+    <!-- (es. "1023.23") e vengono resi nel formato "1.023,23".                              -->
+    <parameter name="formatoImporto" class="java.text.DecimalFormat" isForPrompting="false">
+        <defaultValueExpression><![CDATA[new java.text.DecimalFormat("#,##0.00", new java.text.DecimalFormatSymbols(java.util.Locale.ITALY))]]></defaultValueExpression>
+    </parameter>
+
+    <!-- ============================== Campi dinamici (JSON) ============================== -->
+    <!-- I valori dinamici sono campi piatti del JSON (nessun oggetto annidato).           -->
+    <!-- Il path JSON di ogni campo è dichiarato nella fieldDescription, così le           -->
+    <!-- espressioni $F{...} nei band restano invariate.                                   -->
+
+    <!-- Ente beneficiario -->
+    <field name="denominazioneEnte" class="java.lang.String">
+        <fieldDescription><![CDATA[denominazioneEnte]]></fieldDescription>
+    </field>
+    <field name="indirizzoSedeLegale" class="java.lang.String">
+        <fieldDescription><![CDATA[indirizzoSedeLegale]]></fieldDescription>
+    </field>
+    <field name="capSedeLegale" class="java.lang.String">
+        <fieldDescription><![CDATA[capSedeLegale]]></fieldDescription>
+    </field>
+    <field name="cittaSedeLegale" class="java.lang.String">
+        <fieldDescription><![CDATA[cittaSedeLegale]]></fieldDescription>
+    </field>
+    <field name="provinciaSedeLegale" class="java.lang.String">
+        <fieldDescription><![CDATA[provinciaSedeLegale]]></fieldDescription>
+    </field>
+    <field name="codiceFiscaleEnte" class="java.lang.String">
+        <fieldDescription><![CDATA[codiceFiscaleEnte]]></fieldDescription>
+    </field>
+    <field name="pIvaEnte" class="java.lang.String">
+        <fieldDescription><![CDATA[pIvaEnte]]></fieldDescription>
+    </field>
+    <field name="nomeCognomeLegaleRappresentante" class="java.lang.String">
+        <fieldDescription><![CDATA[nomeCognomeLegaleRappresentante]]></fieldDescription>
+    </field>
+
+    <!-- Titoli progetto / programmazione -->
+    <field name="titoloProgetto2026" class="java.lang.String">
+        <fieldDescription><![CDATA[titoloProgetto2026]]></fieldDescription>
+    </field>
+    <field name="titoloProgetto2025" class="java.lang.String">
+        <fieldDescription><![CDATA[titoloProgetto2025]]></fieldDescription>
+    </field>
+    <field name="titoloProgrammazioneTriennale" class="java.lang.String">
+        <fieldDescription><![CDATA[titoloProgrammazioneTriennale]]></fieldDescription>
+    </field>
+
+    <!-- Istanza principale -->
+    <field name="idIstanzaPrincipale" class="java.lang.String">
+        <fieldDescription><![CDATA[idIstanzaPrincipale]]></fieldDescription>
+    </field>
+    <field name="numeroProtocolloIstanzaPrincipale" class="java.lang.String">
+        <fieldDescription><![CDATA[numeroProtocolloIstanzaPrincipale]]></fieldDescription>
+    </field>
+    <field name="dataProtocolloIstanzaPrincipale" class="java.lang.String">
+        <fieldDescription><![CDATA[dataProtocolloIstanzaPrincipale]]></fieldDescription>
+    </field>
+
+    <!-- Verbale esiti procedura -->
+    <field name="dataVerbaleEsitiProcedura" class="java.lang.String">
+        <fieldDescription><![CDATA[dataVerbaleEsitiProcedura]]></fieldDescription>
+    </field>
+    <field name="numeroProtocolloVerbaleEsitiProcedura" class="java.lang.String">
+        <fieldDescription><![CDATA[numeroProtocolloVerbaleEsitiProcedura]]></fieldDescription>
+    </field>
+    <field name="dataProtocolloVerbaleEsitiProcedura" class="java.lang.String">
+        <fieldDescription><![CDATA[dataProtocolloVerbaleEsitiProcedura]]></fieldDescription>
+    </field>
+
+    <!-- Determina dirigenziale 2025 -->
+    <field name="codiceCifraDeterminaApprovazione2025" class="java.lang.String">
+        <fieldDescription><![CDATA[codiceCifraDeterminaApprovazione2025]]></fieldDescription>
+    </field>
+    <field name="dataDeterminaApprovazione2025" class="java.lang.String">
+        <fieldDescription><![CDATA[dataDeterminaApprovazione2025]]></fieldDescription>
+    </field>
+    <field name="importoAssegnato2025" class="java.lang.String">
+        <fieldDescription><![CDATA[importoAssegnato2025]]></fieldDescription>
+    </field>
+    <field name="numeroCapitoloRegionale2025" class="java.lang.String">
+        <fieldDescription><![CDATA[numeroCapitoloRegionale2025]]></fieldDescription>
+    </field>
+    <field name="dataSottoscrizioneDisciplinare2025" class="java.lang.String">
+        <fieldDescription><![CDATA[dataSottoscrizioneDisciplinare2025]]></fieldDescription>
+    </field>
+
+    <!-- Provvedimento di approvazione 2026 -->
+    <field name="codiceCifraProvvedimentoApprovazione2026" class="java.lang.String">
+        <fieldDescription><![CDATA[codiceCifraProvvedimentoApprovazione2026]]></fieldDescription>
+    </field>
+    <field name="dataProvvedimentoApprovazione2026" class="java.lang.String">
+        <fieldDescription><![CDATA[dataProvvedimentoApprovazione2026]]></fieldDescription>
+    </field>
+    <field name="dataInvioDomandaProgetto2026" class="java.lang.String">
+        <fieldDescription><![CDATA[dataInvioDomandaProgetto2026]]></fieldDescription>
+    </field>
+    <field name="numeroProtocolloDomandaProgetto2026" class="java.lang.String">
+        <fieldDescription><![CDATA[numeroProtocolloDomandaProgetto2026]]></fieldDescription>
+    </field>
+    <field name="importoAssegnato2026" class="java.lang.String">
+        <fieldDescription><![CDATA[importoAssegnato2026]]></fieldDescription>
+    </field>
+    <field name="numeroCapitoloSpesa2026" class="java.lang.String">
+        <fieldDescription><![CDATA[numeroCapitoloSpesa2026]]></fieldDescription>
+    </field>
+    <field name="denominazioneCapitoloSpesa2026" class="java.lang.String">
+        <fieldDescription><![CDATA[denominazioneCapitoloSpesa2026]]></fieldDescription>
+    </field>
+
+    <!-- Atto di ammissione a finanziamento 2026 (Art. 2) -->
+    <field name="importoAssegnato" class="java.lang.String">
+        <fieldDescription><![CDATA[importoAssegnato]]></fieldDescription>
+    </field>
+    <field name="numeroAttoDirigenzialeAmmissione2026" class="java.lang.String">
+        <fieldDescription><![CDATA[numeroAttoDirigenzialeAmmissione2026]]></fieldDescription>
+    </field>
+    <field name="dataAttoDirigenzialeAmmissione2026" class="java.lang.String">
+        <fieldDescription><![CDATA[dataAttoDirigenzialeAmmissione2026]]></fieldDescription>
+    </field>
+
+    <!-- Cronoprogramma (Art. 5) -->
+    <field name="dataInizioAttivita2026" class="java.lang.String">
+        <fieldDescription><![CDATA[dataInizioAttivita2026]]></fieldDescription>
+    </field>
+    <field name="dataFineAttivita2026" class="java.lang.String">
+        <fieldDescription><![CDATA[dataFineAttivita2026]]></fieldDescription>
+    </field>
+
+    <detail>
+
+        <!-- ====================================================================== -->
+        <!-- PAGINA 1 - COPERTINA                                                    -->
+        <!-- ====================================================================== -->
+        <band height="130" splitType="Stretch">
+            <image scaleImage="RetainShape" onErrorType="Blank" hAlign="Center" vAlign="Middle">
+                <reportElement x="70" y="5" width="90" height="85"/>
+                <imageExpression><![CDATA["https://sistema-coll.regione.puglia.it/documents/67813/0/LogoRegionePuglia.jpg/ef05fb84-e64e-d952-a6f3-8bf3752df83f?t=1728632258117"]]></imageExpression>
+            </image>
+            <image scaleImage="RetainShape" onErrorType="Blank" hAlign="Center" vAlign="Middle">
+                <reportElement x="285" y="5" width="170" height="85"/>
+                <imageExpression><![CDATA["https://sistema-coll.regione.puglia.it/documents/67813/151235/logoPact.png/e737de15-0cd3-8195-3449-33377def7bc7?version=1.0&t=1781623408825"]]></imageExpression>
+            </image>
+        </band>
+
+        <band height="80" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="TitleBlock" x="0" y="0" width="485" height="60"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["DIPARTIMENTO TURISMO, ECONOMIA DELLA\nCULTURA E VALORIZZAZIONE DEL TERRITORIO\nSEZIONE SVILUPPO, INNOVAZIONE, RETI"]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <band height="55" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="BodyBold" x="0" y="10" width="485" height="40"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Procedura negoziale di acquisizione della proposta di programmazione triennale 2025/2027 in materia di attività Culturali e di Spettacolo dal Vivo, adottata con atto dirigenziale n. 43/2025 e ss.mm.ii"]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <band height="34" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Heading" x="0" y="10" width="485" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["DISCIPLINARE REGOLANTE I RAPPORTI"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="30" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Heading" x="0" y="6" width="485" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["TRA"]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <band height="80" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="BodyHtml" x="0" y="0" width="485" height="70"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["<b>REGIONE PUGLIA</b> – Assessorato alla Cultura, Tutela e sviluppo delle imprese culturali, Politiche Migratorie, Legalità e Antimafia sociale - Dipartimento Turismo, Economia della Cultura e Valorizzazione del Territorio - Sezione Sviluppo, Innovazione, Reti, con sede in Bari - Fiera del Levante - Padiglione 107, Lungomare Starita, 4 (C.F.: 80017210727), di seguito denominata Regione, in persona del Dirigente della Sezione Sviluppo, Innovazione, Reti, dott. Mauro Paolo Bruno"]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <band height="26" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Heading" x="0" y="4" width="485" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["E"]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <band height="85" splitType="Stretch">
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="BodyHtml" x="0" y="0" width="485" height="70"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["<b>L’ENTE</b> " + ($F{denominazioneEnte}==null?"":$F{denominazioneEnte}) + " (denominazione) con sede legale in Via/Piazza " + ($F{indirizzoSedeLegale}==null?"":$F{indirizzoSedeLegale}) + " cap " + ($F{capSedeLegale}==null?"":$F{capSedeLegale}) + " città " + ($F{cittaSedeLegale}==null?"":$F{cittaSedeLegale}) + " (PR " + ($F{provinciaSedeLegale}==null?"":$F{provinciaSedeLegale}) + ") C.F. " + ($F{codiceFiscaleEnte}==null?"":$F{codiceFiscaleEnte}) + " - P.IVA: " + ($F{pIvaEnte}==null?"":$F{pIvaEnte}) + " di seguito denominata Ente beneficiario, in persona del Legale Rappresentante " + ($F{nomeCognomeLegaleRappresentante}==null?"":$F{nomeCognomeLegaleRappresentante}) + "."]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <band height="30" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Heading" x="0" y="8" width="485" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["PER LA REALIZZAZIONE del PROGETTO annuale 2026"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="BodyHtml" x="0" y="0" width="485" height="16"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["“" + "<b>" + ($F{titoloProgetto2026}==null?"":$F{titoloProgetto2026}) + "</b>" + "”"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="18" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="SmallCenter" x="0" y="0" width="485" height="13"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["(denominazione progetto)"]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <band height="30" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Heading" x="0" y="8" width="485" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["inserito nell’ambito del Programma artistico triennale 2025/2027"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="BodyHtml" x="0" y="0" width="485" height="16"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["“" + "<b>" + ($F{titoloProgrammazioneTriennale}==null?"":$F{titoloProgrammazioneTriennale}) + "</b>" + "”"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="18" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="SmallCenter" x="0" y="0" width="485" height="13"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["(denominazione programma)"]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <!-- Salto pagina: la copertina occupa la pagina 1
+        <band height="1">
+            <break>
+                <reportElement x="0" y="0" width="485" height="1"/>
+            </break>
+        </band>
+-->
+
+        <!-- Spazio dopo la copertina per distanziare le premesse -->
+        <band height="40" splitType="Stretch"/>
+
+        <!-- ====================================================================== -->
+        <!-- PREMESSE                                                                -->
+        <!-- ====================================================================== -->
+        <band height="18" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="BodyBold" x="0" y="0" width="485" height="14"/>
+                <textFieldExpression><![CDATA["Premesso che:"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="0" y="0" width="14" height="14"/>
+                <text><![CDATA[-]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["la Regione Puglia, ai sensi dell’articolo 12 del proprio Statuto, promuove e sostiene la cultura, l’arte, la musica e lo sport, tutela i beni culturali e archeologici, assicurandone la fruibilità, e riconosce nello spettacolo una componente essenziale della cultura e dell’identità regionale e ne promuove iniziative di produzione e divulgazione;"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="0" y="0" width="14" height="14"/>
+                <text><![CDATA[-]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["in virtù del combinato disposto della Legge regionale n. 34/80 avente ad oggetto: “Norme per l’organizzazione e partecipazione a convegni, congressi ed altre manifestazioni e per l’adesione ad Enti ed associazioni” e della Legge regionale n. 6/2004 avente ad oggetto: “Norme organiche in materia di spettacolo e norme di disciplina transitoria delle attività culturali”, la Regione ha aderito e/o partecipato alla costituzione di associazioni o fondazioni senza scopi di lucro, finalizzate allo sviluppo culturale, scientifico, artistico, turistico e sociale della comunità regionale. Tale adesione ha contribuito a consolidare alcune manifestazioni di interesse artistico e di notevole richiamo, con evidenti riscontri in termini di visibilità dell’attività regionale;"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="0" y="0" width="14" height="14"/>
+                <text><![CDATA[-]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["l’ art. 11 della richiamata Legge Regionale n. 6/2004, al comma 2 espressamente recita: “Gli enti, le fondazioni, i consorzi e gli altri organismi operanti nell’ambito dello spettacolo cui la Regione partecipa in qualità di socio e il cui statuto prevede la partecipazione di almeno un rappresentante nominato dalla Regione negli organi statutari sono di diritto riconosciuti di interesse regionale”;"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="0" y="0" width="14" height="14"/>
+                <text><![CDATA[-]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["la Regione Puglia, nel corso degli anni, ha promosso attraverso il proprio diretto intervento, la costituzione di una rete di Enti di Interesse regionale volta alla valorizzazione e promozione del patrimonio materiale e immateriale del territorio, nonché della sua identità, al fine di sviluppare un’offerta culturale integrata e più ampia;"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="0" y="0" width="14" height="14"/>
+                <text><![CDATA[-]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="BodyHtml" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["tra gli Enti di interesse regionale le cui attività sono state, nel tempo, oggetto di finanziamento in ambito culturale, si annovera L’Ente " + ($F{denominazioneEnte}==null?"":$F{denominazioneEnte}) + ";"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="0" y="0" width="14" height="14"/>
+                <text><![CDATA[-]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="BodyHtml" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["in virtù di quanto previsto dall’ art. 11 della Legge Regionale n. 6/2004 che, al comma 2 espressamente recita: “Gli enti, le fondazioni, i consorzi e gli altri organismi operanti nell’ambito dello spettacolo cui la Regione partecipa in qualità di socio e il cui statuto prevede la partecipazione di almeno un rappresentante nominato dalla Regione negli organi statutari sono di diritto riconosciuti di interesse regionale”, l’Ente " + ($F{denominazioneEnte}==null?"":$F{denominazioneEnte}) + " è <u>Organismo di Interesse regionale</u>."]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <band height="18" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="BodyBold" x="0" y="0" width="485" height="14"/>
+                <textFieldExpression><![CDATA["Richiamati:"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="0" y="0" width="14" height="14"/>
+                <text><![CDATA[-]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["l’ Atto dirigenziale n. 43 del 20/05/2025 con cui è stata approvata la procedura negoziale per l’acquisizione della proposta di programmazione triennale 2025/2027 e del progetto annuale 2025 in materia di attività Culturali e di Spettacolo dal Vivo. Il medesimo provvedimento ha esteso la valutazione artistica ed economica all’intera programmazione triennale 2025/2027, limitando il sostegno finanziario alla sola annualità 2025;"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="0" y="0" width="14" height="14"/>
+                <text><![CDATA[-]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["l’ atto dirigenziale n. 58 del 09/07/2025 di proroga dei termini di presentazione delle istanze al giorno 21/07/2025."]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <band height="18" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="BodyBold" x="0" y="0" width="485" height="14"/>
+                <textFieldExpression><![CDATA["Dato atto che:"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="0" y="0" width="14" height="14"/>
+                <text><![CDATA[-]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="BodyHtml" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["la domanda ID N. " + ($F{idIstanzaPrincipale}==null?"":$F{idIstanzaPrincipale}) + " - Prot. N. " + ($F{numeroProtocolloIstanzaPrincipale}==null?"":$F{numeroProtocolloIstanzaPrincipale}) + " del " + ($F{dataProtocolloIstanzaPrincipale}==null?"":$F{dataProtocolloIstanzaPrincipale}) + ", presentata dall’Ente " + ($F{denominazioneEnte}==null?"":$F{denominazioneEnte}) + " con sede legale in " + (($F{indirizzoSedeLegale}==null?"":$F{indirizzoSedeLegale}) + ", " + ($F{capSedeLegale}==null?"":$F{capSedeLegale}) + " " + ($F{cittaSedeLegale}==null?"":$F{cittaSedeLegale}) + " (" + ($F{provinciaSedeLegale}==null?"":$F{provinciaSedeLegale}) + ")") + ", risulta regolarmente inserita nella piattaforma “Servizi Digitali della Regione Puglia”, dedicata alla procedura in questione;"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="0" y="0" width="14" height="14"/>
+                <text><![CDATA[-]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["la suddetta domanda è risultata rispondente ai requisiti di ammissibilità formale previsti dalla procedura negoziale approvata con Atto dirigenziale n. 43/2025;"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="0" y="0" width="14" height="14"/>
+                <text><![CDATA[-]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="BodyHtml" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["la valutazione del programma triennale “" + ($F{titoloProgrammazioneTriennale}==null?"":$F{titoloProgrammazioneTriennale}) + "” e del progetto 2025 ““" + ($F{titoloProgetto2025}==null?"":$F{titoloProgetto2025}) + "”, si è svolta tramite un confronto negoziale con la Fondazione de quo, invitata in modalità telematica (link: <u>meet.google.com/ipq-xdho-zxo</u>);"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="0" y="0" width="14" height="14"/>
+                <text><![CDATA[-]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="BodyHtml" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["gli esiti della procedura sono riportati nel verbale del " + ($F{dataVerbaleEsitiProcedura}==null?"":$F{dataVerbaleEsitiProcedura}) + ", prot.n. " + ($F{numeroProtocolloVerbaleEsitiProcedura}==null?"":$F{numeroProtocolloVerbaleEsitiProcedura}) + " del " + ($F{dataProtocolloVerbaleEsitiProcedura}==null?"":$F{dataProtocolloVerbaleEsitiProcedura}) + ", rilevabile nel sistema informatico;"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="0" y="0" width="14" height="14"/>
+                <text><![CDATA[-]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="BodyHtml" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["con determinazione dirigenziale Codice CIFRA " + ($F{codiceCifraDeterminaApprovazione2025}==null?"":$F{codiceCifraDeterminaApprovazione2025}) + " del " + ($F{dataDeterminaApprovazione2025}==null?"":$F{dataDeterminaApprovazione2025}) + ", è stata approvata la programmazione artistica triennale 2025/2027 “" + ($F{titoloProgrammazioneTriennale}==null?"":$F{titoloProgrammazioneTriennale}) + "” e il progetto annuale 2025 “" + ($F{titoloProgetto2025}==null?"":$F{titoloProgetto2025}) + "”, con contestuale impegno di spesa pari a € " + ($F{importoAssegnato2025}==null||$F{importoAssegnato2025}.trim().isEmpty()?"":$P{formatoImporto}.format(new java.math.BigDecimal($F{importoAssegnato2025}.trim()))) + " limitatamente a tale annualità, a valere sul capitolo regionale n. " + ($F{numeroCapitoloRegionale2025}==null?"":$F{numeroCapitoloRegionale2025}) + ";"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="0" y="0" width="14" height="14"/>
+                <text><![CDATA[-]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="BodyHtml" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["Il Disciplinare relativo al 2025 è stato sottoscritto in data " + ($F{dataSottoscrizioneDisciplinare2025}==null?"":$F{dataSottoscrizioneDisciplinare2025}) + ";"]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <band height="18" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="BodyBold" x="0" y="0" width="485" height="14"/>
+                <textFieldExpression><![CDATA["Considerato che:"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="0" y="0" width="14" height="14"/>
+                <text><![CDATA[-]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["le attività progettuali relative all’annualità 2025 sono state completate e che sono attualmente in corso le procedure di rendicontazione e di chiusura finanziaria."]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <band height="18" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="BodyBold" x="0" y="0" width="485" height="14"/>
+                <textFieldExpression><![CDATA["Tenuto conto che:"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="0" y="0" width="14" height="14"/>
+                <text><![CDATA[-]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="Body" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["con provvedimento Codice CIFRA " + ($F{codiceCifraProvvedimentoApprovazione2026}==null?"":$F{codiceCifraProvvedimentoApprovazione2026}) + " del " + ($F{dataProvvedimentoApprovazione2026}==null?"":$F{dataProvvedimentoApprovazione2026}) + ", preso atto della sussistenza della disponibilità di bilancio per l’esercizio corrente e della valutazione positiva del progetto di attività 2026, presentato in piattaforma in data " + ($F{dataInvioDomandaProgetto2026}==null?"":$F{dataInvioDomandaProgetto2026}) + " prot, n. " + ($F{numeroProtocolloDomandaProgetto2026}==null?"":$F{numeroProtocolloDomandaProgetto2026}) + ", si è provveduto ad:"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="34" y="0" width="14" height="14"/>
+                <text><![CDATA[○]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="Body" x="48" y="0" width="437" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["approvare il progetto annuale 2026 dal titolo “" + ($F{titoloProgetto2026}==null?"":$F{titoloProgetto2026}) + "”, Allegato “A” parte integrante,"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="34" y="0" width="14" height="14"/>
+                <text><![CDATA[○]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="48" y="0" width="437" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["approvare il Disciplinare da adottare, Allegato “B”, parte integrante;"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="34" y="0" width="14" height="14"/>
+                <text><![CDATA[○]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="Body" x="48" y="0" width="437" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["impegnare la spesa, pari ad € " + ($F{importoAssegnato2026}==null||$F{importoAssegnato2026}.trim().isEmpty()?"":$P{formatoImporto}.format(new java.math.BigDecimal($F{importoAssegnato2026}.trim()))) + " per la realizzazione delle attività di progetto 2026 sul capitolo di spesa n. " + ($F{numeroCapitoloSpesa2026}==null?"":$F{numeroCapitoloSpesa2026}) + " “" + ($F{denominazioneCapitoloSpesa2026}==null?"":$F{denominazioneCapitoloSpesa2026}) + "” a favore dell’Ente " + ($F{denominazioneEnte}==null?"":$F{denominazioneEnte}) + " con sede legale a " + (($F{indirizzoSedeLegale}==null?"":$F{indirizzoSedeLegale}) + ", " + ($F{capSedeLegale}==null?"":$F{capSedeLegale}) + " " + ($F{cittaSedeLegale}==null?"":$F{cittaSedeLegale}) + " (" + ($F{provinciaSedeLegale}==null?"":$F{provinciaSedeLegale}) + ")") + "."]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <!-- ====================================================================== -->
+        <!-- ART. 1                                                                  -->
+        <!-- ====================================================================== -->
+        <band height="30" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="ArticleTitle" x="14" y="0" width="471" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Art. 1 - Premesse e generalità"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="14" y="0" width="18" height="14"/>
+                <text><![CDATA[1.]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="Body" x="32" y="0" width="453" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["Le premesse, la corrispondenza intrattenuta tra le Parti e il progetto 2026 presentato dall’Ente " + ($F{denominazioneEnte}==null?"":$F{denominazioneEnte}) + " e approvato dalla Regione, costituiscono parte integrante del presente Disciplinare;"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="14" y="0" width="18" height="14"/>
+                <text><![CDATA[2.]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="32" y="0" width="453" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["I rapporti tra la Regione e l’Ente beneficiario del contributo sono regolamentati secondo quanto riportato nei successivi articoli."]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <!-- ====================================================================== -->
+        <!-- ART. 2                                                                  -->
+        <!-- ====================================================================== -->
+        <band height="30" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="ArticleTitle" x="14" y="0" width="471" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Art. 2 - Oggetto"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="14" y="0" width="18" height="14"/>
+                <text><![CDATA[1.]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="Body" x="32" y="0" width="453" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["L’Ente beneficiario è responsabile della realizzazione del progetto 2026 “" + ($F{titoloProgetto2026}==null?"":$F{titoloProgetto2026}) + "”, ammesso a finanziamento per € " + ($F{importoAssegnato}==null||$F{importoAssegnato}.trim().isEmpty()?"":$P{formatoImporto}.format(new java.math.BigDecimal($F{importoAssegnato}.trim()))) + ", giusto atto dirigenziale n. " + ($F{numeroAttoDirigenzialeAmmissione2026}==null?"":$F{numeroAttoDirigenzialeAmmissione2026}) + " del " + ($F{dataAttoDirigenzialeAmmissione2026}==null?"":$F{dataAttoDirigenzialeAmmissione2026}) + "."]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="14" y="0" width="18" height="14"/>
+                <text><![CDATA[2.]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="32" y="0" width="453" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["Il contributo è assegnato nell’importo massimo determinato sulla base del progetto presentato e del disavanzo di attività."]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="14" y="0" width="18" height="14"/>
+                <text><![CDATA[3.]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="32" y="0" width="453" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["In caso di ammissione a finanziamento del progetto relativo all’annualità 2027, di cui alla programmazione triennale presentata, l’individuazione delle attività da realizzare e la quantificazione del contributo spettante saranno disposte con Atto Integrativo al presente Disciplinare, subordinatamente all’effettiva disponibilità di risorse finanziarie sul bilancio regionale e/o su altre fonti di finanziamento nazionali o comunitarie."]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <!-- ====================================================================== -->
+        <!-- ART. 3                                                                  -->
+        <!-- ====================================================================== -->
+        <band height="30" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="ArticleTitle" x="14" y="0" width="471" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Art. 3 – Efficacia del Disciplinare"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="14" y="0" width="18" height="14"/>
+                <text><![CDATA[1.]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="32" y="0" width="453" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["Il presente Disciplinare è efficace a seguito della sottoscrizione da parte del Legale rappresentante o suo delegato, che dovrà avvenire entro il termine di 15 (quindici) giorni dalla data di ricezione. Allo scadere del termine di cui sopra, il beneficiario si dichiara automaticamente rinunciatario del contributo finanziario assegnato."]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="14" y="0" width="18" height="14"/>
+                <text><![CDATA[2.]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="32" y="0" width="453" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["Unitamente al Disciplinare il beneficiario deve presentare:"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="32" y="0" width="18" height="14"/>
+                <text><![CDATA[a.]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="50" y="0" width="435" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["eventuale delega di conferimento del potere di rappresentanza alla sottoscrizione del disciplinare;"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="32" y="0" width="18" height="14"/>
+                <text><![CDATA[b.]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="50" y="0" width="435" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["il provvedimento di nomina del Responsabile delegato all’inserimento degli eventi, promossi dall’Ente e oggetto del presente disciplinare, nell’ambito del portale puglia DMS (Digital Management System, sistema digitale dedicato alla gestione e alla promozione del turismo e della cultura in Puglia)."]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="14" y="0" width="18" height="14"/>
+                <text><![CDATA[3.]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="32" y="0" width="453" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["Il presente Disciplinare potrà essere oggetto di integrazione con apposito Atto Integrativo. Scade con l’approvazione della rendicontazione consuntiva delle attività oggetto di finanziamento."]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <!-- ====================================================================== -->
+        <!-- ART. 4                                                                  -->
+        <!-- ====================================================================== -->
+        <band height="30" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="ArticleTitle" x="14" y="0" width="471" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Art. 4 - Obblighi dell’Ente beneficiario"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement style="Bullet" x="14" y="0" width="18" height="14"/>
+                <text><![CDATA[1.]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="32" y="0" width="453" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["L’Ente beneficiario provvede a dare attuazione alla progettazione annuale 2026. A tal fine, si obbliga a:"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[a.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["effettuare ogni comunicazione e/o integrazione attraverso la piattaforma <font color=\"#0563C1\"><u>https://sistema.regione.puglia.it</u></font>, secondo la procedura prevista nel manuale utente;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[b.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["attenersi a quanto stabilito nel progetto artistico annuale 2026, salvo eventuali motivate variazioni concordate;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[c.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["attenersi ai target qualitativi e quantitativi definiti nel bilancio previsionale e nel Piano degli indicatori e dei risultati attesi di cui all’Allegato 3 (foglio digitale);"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[d.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["dare immediata comunicazione alla Regione della rinuncia al contributo assegnato, sempre attraverso la piattaforma;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[e.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["dare tempestiva comunicazione alla Regione di ogni intervenuta variazione statutaria e di forma giuridica, nonché dei dati anagrafici e legali indicati nella domanda del contributo;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[f.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["garantire la copertura finanziaria della parte dei costi non ammissibili e comunque non coperti dal contributo regionale, attraverso il ricorso a risorse proprie, ad altre fonti di finanziamento pubblico e/o privato, a incassi derivanti dalla vendita di biglietti, abbonamenti o da proventi generati dalla propria attività;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[g.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["consegnare alla Regione, ove richiesto, dati di natura quantitativa e qualitativa riguardanti le attività finanziate che, oltre ad essere utilizzati ai fini delle attività di monitoraggio e valutazione, potranno costituire informazioni utili all’elaborazione di studi settoriali e analisi di impatto;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[h.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["comunicare alla Regione Puglia gli estremi del conto corrente dedicato sul quale far transitare tutti i movimenti finanziari relativi al contributo con indicazione delle generalità e del codice fiscale delle persone delegate ad operare su di esso (L. n. 136/2010);"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[i.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["rispettare, nelle diverse fasi di attuazione dell’intervento, le linee di indirizzo comunicate con nota della Sezione Sviluppo, Innovazione, Reti, <b>Protocollo n. 0151110/2024 del 25/03/2024</b> relative all’applicazione del D.Lgs n. 36 del 31/03/2023 e ss.mm, in materia di contratti e appalti pubblici (procedure ad evidenza pubblica);"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[j.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["rispettare le normative riguardanti gli obblighi in materia di informazione e pubblicità, quelli in materia di contratti di lavoro e di sicurezza dei luoghi di lavoro, d’impatto ambientale, di pari opportunità e di inclusione delle categorie sociali disabili;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[k.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["rispettare le disposizioni comunitarie e nazionali vigenti in materia di contabilità separata nella gestione delle somme trasferite dalla Regione a titolo di finanziamento;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[l.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["rispettare le prescrizioni di legge regionale e nazionale in materia fiscale;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[m.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["applicare e rispettare, in quanto pertinenti, le disposizioni di cui alla L.R. 20 giugno 2008 n. 15 in materia di trasparenza dell’azione amministrativa;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[n.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["anticipare, ad avvenuto completamento dell’intervento, la quota del 5% del contributo finanziario definitivo, corrispondente alla quota di saldo che la Regione erogherà a seguito di avvenuta realizzazione dell’attività proposta, valutazione delle performance ed omologazione della spesa complessiva sostenuta per l’intervento;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[o.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["conservare e rendere disponibile tutta la documentazione relativa alle attività realizzate, ivi compresi tutti i giustificativi di spesa, per almeno 3 (tre anni) successivi alla data di pagamento del saldo."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[2.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["L’Ente beneficiario si obbliga, altresì, a:"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[a.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["adempiere, <u>entro il 30 giugno di ogni anno</u> (ovvero diversa data stabilita dalla normativa nazionale), agli obblighi di pubblicità e trasparenza di cui alla legge n. 124/2017 e ss.mm. in base alla quale le Associazioni, le Onlus e le Fondazioni che ricevono contributi, sovvenzioni e vantaggi economici di qualunque genere, sono tenuti a pubblicare sui propri siti internet o analoghi portali digitali gli importi erogati dalle pubbliche Amministrazioni, nell’esercizio finanziario precedente, consultabile al corrispondente link del proprio sito ufficiale;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[b.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["dare visibilità del sostegno ricevuto dall’amministrazione regionale per l’attività oggetto di finanziamento, attraverso ogni strumento pubblicitario e di comunicazione (sito internet, manifesti, locandine, depliants, flyers, ecc..) con i loghi della Regione Puglia;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[c.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["inserire, attraverso il servizio “Promuovi Evento” disponibile nella propria area riservata al DMS (Digital Management System), il sistema digitale dedicato alla gestione e alla promozione del turismo e della cultura in Puglia, all’indirizzo <u>www.dms.puglia.it</u>, le informazioni richieste dal modulo di creazione dell’evento, autorizzandone l’uso sui canali istituzionali: nella sezione “Cosa fare” di <u>viaggiareinpuglia.it</u>, nell’app weareinPUGLIA;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[d.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["trasmettere alla Redazione della Puglia Digital Library regionale, all’indirizzo email: <u>redazione@pugliadigitallibrary.it</u>, il materiale audio, video e fotografico relativo all’attività realizzata e finanziata, secondo le modalità e le caratteristiche tecniche di cui al link <u>https://drive.google.com/drive/u/0/folders/1h__WjDo9zWwZqTKbpzu_5CevfcmggCB4</u> ai fini della valutazione e del possibile inserimento dello stesso sulla piattaforma <u>www.pugliadigitallibrary.it</u>. Il suddetto materiale deve essere accompagnato dalla licenza Creative Commons - Attribution-Share Alike (in sigla CC-BY-SA) ITA 4.0 sottoscritta digitalmente, consultabile e scaricabile accedendo al medesimo link."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[e.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["comunicare ogni variazione della nomina del Responsabile delegato all’inserimento degli eventi, entro i successivi 10 giorni dalla stessa variazione."]]></textFieldExpression></textField>
+        </band>
+
+        <!-- ====================================================================== -->
+        <!-- ART. 5                                                                  -->
+        <!-- ====================================================================== -->
+        <band height="30" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="ArticleTitle" x="14" y="0" width="471" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Art. 5 - Cronoprogramma dell’intervento"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[1.]]></text></staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Il cronoprogramma delle attività di progetto annuale 2026 (Allegato 2), riporta quale data di inizio il " + ($F{dataInizioAttivita2026}==null?"":$F{dataInizioAttivita2026}) + " data fine il " + ($F{dataFineAttivita2026}==null?"":$F{dataFineAttivita2026}) + "."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[2.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Nel caso di mancato rispetto dei termini temporali indicati nel cronoprogramma, ovvero nel caso in cui non sia assicurata l’operatività dello stesso nei tempi programmati, salvo motivata richiesta di proroga, la Regione si riserva la facoltà di revocare in parte o in toto il contributo finanziario concesso, previa comunicazione."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[3.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Nel caso in cui il ritardo dipenda da cause di comprovata forza maggiore, la Regione potrà consentire una proroga dei termini stabiliti, ove possa ragionevolmente ritenersi che l’intervento sia comunque destinato a buon fine."]]></textFieldExpression></textField>
+        </band>
+
+        <!-- ====================================================================== -->
+        <!-- ART. 6                                                                  -->
+        <!-- ====================================================================== -->
+        <band height="30" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="ArticleTitle" x="14" y="0" width="471" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Art. 6 – Modifiche progettuali"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[1.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Eventuali modifiche sostanziali al progetto annuale 2026, sia in termini finanziari che di contenuto, dovranno essere motivate e preventivamente approvate dalla Regione. In mancanza, tali variazioni non saranno ritenute ammissibili e le spese resteranno a carico dell’Ente beneficiario."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[2.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Per modifiche sostanziali si intendono quelle apportate all’attività, tali da alterare significativamente i contenuti e gli obiettivi del progetto, così come da documentazione presentata in sede di istanza."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[3.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Le modifiche non sostanziali saranno comunque oggetto di apposita comunicazione preventiva da parte dell’Ente beneficiario e s’intendono approvate tacitamente dalla Regione allo scadere del termine di 30 giorni dalla presentazione."]]></textFieldExpression></textField>
+        </band>
+
+        <!-- ====================================================================== -->
+        <!-- ART. 7                                                                  -->
+        <!-- ====================================================================== -->
+        <band height="30" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="ArticleTitle" x="14" y="0" width="471" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Art. 7 – Determinazione del contributo finanziario definitivo"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[1.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Il contributo annuale di cui all’art. 2, si intende definitivamente assegnato entro il limite massimo di quanto previsto dallo stesso articolo e non oltre il disavanzo dell’attività (differenza fra il “totale dei costi ammissibili di progetto” rendicontati e le entrate rendicontate)."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[2.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Al fine della determinazione del “totale dei costi ammissibili di progetto”, sono ritenute ammissibili le categorie di spese già riportate nel quadro economico di progetto, di cui all’Allegato 3 (foglio digitale) all’istanza di finanziamento, secondo i limiti massimi stabiliti xxxxxx."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[3.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["La Regione, fermo restando quanto previsto dall’art. 8 del presente Disciplinare, dispone con proprio atto da notificare all’Ente beneficiario, una riduzione del contributo assegnato entro il disavanzo di cui al punto precedente, purché:"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["non siano modificati i contenuti artistico-culturali dell’attività finanziata;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["non siano ridotte per una percentuale superiore al 50% le spese ammissibili totali indicate nell’istanza presentata a preventivo."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[4.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["La Regione disporrà la revoca del finanziamento concesso qualora il progetto non rispetti i limiti di cui al punto precedente."]]></textFieldExpression></textField>
+        </band>
+
+        <!-- ====================================================================== -->
+        <!-- ART. 8                                                                  -->
+        <!-- ====================================================================== -->
+        <band height="30" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="ArticleTitle" x="14" y="0" width="471" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Art. 8 - Spese ammissibili"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[1.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Per spese ammissibili del progetto si intendono quelle:"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["pertinenti ed imputabili con certezza all’intervento finanziato;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["temporalmente assunte nel periodo di validità dell’intervento di cui al cronoprogramma di attività annuale;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["derivanti da atti giuridicamente vincolanti (contratti, convenzioni, lettere d’incarico, ecc.), da cui risultino chiaramente l’oggetto della prestazione o fornitura, il suo importo, i termini di consegna, le modalità di pagamento;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["effettivamente sostenute e giustificate da fatture o da documenti contabili e fiscali di valore probatorio equivalente;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["assunte con procedure coerenti con le norme comunitarie, nazionali, regionali applicabili, anche in materia fiscale e contabili."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[2.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Sono ritenute ammissibili le seguenti tipologie di costo nel rispetto dei relativi valori massimi:"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[a.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["spese generali. L’ammontare verrà riconosciuto fino al valore massimo pari al 20% degli altri costi complessivi ammissibili di progetto al netto dei costi di cui al punto b);"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[b.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["pubblicità e promozione. L’ammontare verrà riconosciuto fino al valore massimo pari al 20% degli altri costi complessivi ammissibili di progetto al netto dei costi di cui al punto a);"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[c.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["gestione spazi. Esclusivamente quelle effettivamente necessarie per le attività;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[d.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["costi per il personale e compensi professionali direttamente imputabili alla realizzazione del progetto. Il personale amministrativo rientra nei limiti di cui al punto a);"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[e.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["costi di produzione e di ospitalità (i rimborsi spese per viaggio, vitto e alloggio, sono imputati nei limiti degli importi previsti per il personale dirigenziale in missione, di cui alla DGR n. 746/2011 e DPGR 631/2011);"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[f.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["<u>L’IVA costituisce spesa ammissibile soltanto se il costo relativo viene realmente e definitivamente sostenuto dall’Ente beneficiario in maniera non recuperabile</u>. L’imposta recuperabile, anche se non ancora materialmente recuperata, non è ammissibile."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[3.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Non sono ammissibili spese che risultino finanziate attraverso altre fonti finanziarie, salvo che lo specifico progetto presentato non preveda espressamente che l’intervento sia assicurato con una pluralità di fonti di finanziamento;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[4.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Nel caso in cui il progetto e/o le attività previste siano cofinanziate da altri Avvisi del Dipartimento Turismo ed Economia della Cultura o da altri Dipartimenti o da qualsiasi altro Ente pubblico o privato, il rendiconto dovrà espressamente riportare il totale delle entrate ricevute e le spese complessivamente sostenute."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[5.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["<b>Non sono ammissibili, altresì:</b>"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[a.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["le spese notarili e <b>quelle relative a imposte e tasse</b>, fatta eccezione per le spese diritti di affissione;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[b.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["le spese relative all’acquisto di scorte;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[c.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["le spese di acquisto di beni immobili e mobili registrati;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[d.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["le spese di manutenzione straordinaria degli immobili;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[e.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["spese per il riscatto dei beni;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[f.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["ammende, sanzioni, penali ed interessi;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[g.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["oneri e interessi finanziari;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[h.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["le spese relative all’IVA salvo nei casi in cui non sia recuperabile a norma della normativa nazionale;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[i.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["le spese relative a beni e servizi non direttamente funzionali al progetto per il quale si richiede il contributo;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[j.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["le spese relative a compensi per lavoratori assunti con CCNL differenti da quelli previsti per il settore di riferimento;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[k.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["le spese relative alle diarie fatta eccezione per quelle previste dai CCNL di riferimento;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[l.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["le spese relative a prestazioni professionali effettuate dal titolare, dai soci, dall’amministratore e da coloro che ricoprono cariche sociali nell’Ente beneficiario o Partner, ad esclusione dei profili artistici;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[m.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["le spese relative a prestazioni e forniture di beni e servizi da parte di terzi finanziatori o, in generale, di terzi che si trovino in situazioni di cointeressenza con l’Ente beneficiario dell’agevolazione;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[n.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["le spese relative a pedaggi autostradali;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[o.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["spese di rappresentanza (es. omaggi, pranzi) e liberalità;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[p.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["spese per ammende, penali e controversie legali, nonché i maggiori oneri derivanti dalla risoluzione delle controversie sorte con l’impresa appaltatrice, compresi gli accordi bonari e gli interessi per ritardati pagamenti."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[6.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Non saranno considerate in ogni caso ammissibili:"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["quelle relative ad impegni assunti senza rispettare le normative comunitarie in materia di trasparenza e di concorrenza (appalti/bandi pubblici) per l’affidamento dei servizi e delle forniture nonché la normativa nazionale in materia di appalti pubblici (dal D.Lgs n. 36/2023 e ss.ms.ii.)."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[7.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Le spese considerate non ammissibili rimangono a totale esclusivo carico dell’Ente beneficiario."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[8.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["La rendicontazione della spesa dovrà avvenire nel rispetto dei principi e degli strumenti di semplificazione, ottimizzazione ed accelerazione procedurale di cui alla DGR n. 1531 del 02/08/2019 mediante la presentazione della modulistica messa a disposizione dall’Amministrazione, sottoscritta in forma digitale dal legale rappresentante o dal soggetto delegato, quale autocertificazione ai sensi del DPR 445/2000, pena la revoca del contributo concesso."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[9.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["La documentazione di spesa, da conservare e da rendere disponibile per le verifiche desk e/o in loco, comprende tutta quella relativa al ciclo di vita del progetto finanziato. La stessa, comprensiva dei giustificativi fiscalmente validi, dovrà riportare esplicito riferimento all’attività finanziata, oggetto del presente Disciplinare."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[10.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["La documentazione di avvenuta spesa deve riferirsi a titolo definitivo alla prestazione liquidata e non saranno considerati ammissibili pagamenti avvenuti sulla base di titoli di spesa non validi ai fini fiscali."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[11.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["I pagamenti delle spese ammissibili dovranno essere effettuati esclusivamente mediante bonifici bancari o postali, ovvero con altri strumenti di pagamento idonei a consentire la piena tracciabilità delle operazioni."]]></textFieldExpression></textField>
+        </band>
+
+        <!-- ====================================================================== -->
+        <!-- ART. 9                                                                  -->
+        <!-- ====================================================================== -->
+        <band height="30" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="ArticleTitle" x="14" y="0" width="471" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Art. 9 - Modalità di erogazione del contributo finanziario"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[1.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["L’erogazione del contributo finanziario per l’annualità di riferimento avverrà secondo le seguenti modalità:"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[a.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["<b>anticipazione pari all’80% del contributo annuale assegnato ai sensi dell’art. 2 del presente atto. L’erogazione è subordinata al caricamento sulla piattaforma, nella sezione della fase di “Esecuzione”, la seguente documentazione in formato PDF, sottoscritta digitalmente:</b>"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="50" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="68" y="0" width="417" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["<b>domanda di erogazione dell’anticipazione</b>, redatta secondo l’Allegato 6, (disponibile sulla piattaforma) e inclusiva dell’attestazione di concreto avvio delle attività progettuali;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="50" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true"><reportElement style="BodyHtml" x="68" y="0" width="417" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["<b>Atto di approvazione del bilancio di previsione dell’Ente </b>" + ($F{denominazioneEnte}==null?"":$F{denominazioneEnte}) + " relativo all’annualità di riferimento."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="50" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="68" y="0" width="417" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["La liquidazione dell’anticipazione è subordinata alla presentazione della richiesta di acconto relativo all’attività finanziata nell’esercizio precedente."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[b.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["<b>acconto pari al 15% del contributo annuale assegnato o, nel caso non sia stata richiesta l’anticipazione, pari al 95% del medesimo contributo a seguito dei seguenti adempimenti:</b>"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="50" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="68" y="0" width="417" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["<b>domanda di erogazione dell’acconto</b> redatta secondo l’Allegato 7 (disponibile sulla piattaforma fase Esecuzione) e allegati ivi richiesti, ovvero:"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="68" y="0" width="18" height="14"/><text><![CDATA[a.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="86" y="0" width="399" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["<b>Allegato 1.</b> Progetto annuale 2026 e descrizione artistica a consuntivo;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="68" y="0" width="18" height="14"/><text><![CDATA[b.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="86" y="0" width="399" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["<b>Allegato 2.</b> Cronoprogramma delle attività a consuntivo;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="68" y="0" width="18" height="14"/><text><![CDATA[c.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="86" y="0" width="399" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["<b>Allegato 3.</b> Bilancio consuntivo del progetto. Compilare il documento online, scaricarlo in PDF e apporvi la firma digitale del Legale Rappresentante (o del delegato, allegando l’atto di delega). Il file definitivo dovrà essere allegato alla domanda sulla piattaforma dedicata;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="68" y="0" width="18" height="14"/><text><![CDATA[d.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="86" y="0" width="399" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["<b>Allegato 4.</b> Dichiarazione regime fiscale (qualora modificato rispetto a quello presentato in sede di istanza);"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="68" y="0" width="18" height="14"/><text><![CDATA[e.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="86" y="0" width="399" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["<b>Dichiarazione di tracciabilità dei flussi finanziari</b> L. 13 agosto 2010, n. 136 e s.m.i."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[c.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["<b>saldo, pari al 5% del contributo annuale assegnato ai sensi dell’art. 2 del presente disciplinare, subordinatamente all’adempimento di quanto segue:</b>"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="50" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="68" y="0" width="417" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["<b>domanda di erogazione del saldo</b>, redatta secondo l’Allegato 8 (disponibile sulla piattaforma) e allegati ivi richiesti."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Si precisa che l’Allegato 1. “Progetto annuale e descrizione artistica a consuntivo”; l’Allegato 2. “Cronoprogramma delle attività” e la dichiarazione di tracciabilità dei flussi finanziari sono da presentare solo nel caso di modifiche rispetto a quelli già trasmessi in sede di acconto e agli atti della Sezione regionale."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["La richiesta di saldo deve essere presentata entro sei mesi dalla data di conclusione delle attività, come indicate nel cronoprogramma."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[2.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["E’ fatta salva la possibilità di presentare direttamente la richiesta di saldo la cui erogazione è subordinata alla trasmissione, in forma di autocertificazione, della rendicontazione relativa al totale delle spese dichiarate ammissibili, nonché al rispetto degli adempimenti previsti dal comma precedente e dall’articolo successivo."]]></textFieldExpression></textField>
+        </band>
+
+        <!-- ====================================================================== -->
+        <!-- ART. 10                                                                 -->
+        <!-- ====================================================================== -->
+        <band height="30" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="ArticleTitle" x="14" y="0" width="471" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Art. 10 – Rendicontazione e controlli"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[1.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["La rendicontazione delle spese ammissibili deve essere redatta mediante l’utilizzo del modello di bilancio annuale, che sarà reso disponibile all’interno di una cartella condivisa in Google Drive, accessibile previa autorizzazione rilasciata dal competente Ufficio. L’Ente beneficiario è tenuto a compilare il modello in formato Excel, a generare la versione formato PDF e a sottoscriverla con firma digitalmente del Legale Rappresentante o suo delegato (allegare atto di delega). Il documento così formato dovrà essere caricato sulla piattaforma informatica secondo le modalità indicate nella sezione “Allegati richiesti”."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[2.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Nel caso di documentazione incompleta, la Regione provvede a richiedere le necessarie integrazioni, che dovranno essere fornite nei 30 giorni successivi alla richiesta."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[3.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["La Regione procederà all’erogazione del saldo, previo campionamento delle spese e delle entrate dichiarate a consuntivo dal Legale Rappresentante dell’Ente beneficiario che si assume ogni responsabilità relativa alle eventuali dichiarazioni mendaci."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[4.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["La Regione si riserva il diritto di effettuare, in ogni tempo e con le modalità che riterrà opportune, le verifiche desk e/o in loco, su un campionamento di almeno il 5% del costo totale del progetto. Il campionamento ha per oggetto la spesa dichiarata nell’Allegato 3 - Bilancio consuntivo - e la corrispondenza degli obiettivi di performance (indicatori) dichiarati in sede di presentazione del progetto."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[5.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["La Regione si riserva, in ogni caso, il diritto di sottoporre a verifica integrale (pari al 100%) i costi complessivi dichiarati e imputati al progetto."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[6.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Qualora in sede di controllo emerga il mancato o parziale rispetto delle disposizioni normative unionali, nazionali o regionali, ancorché prive di rilevanza penale, la Regione potrà disporre, in misura proporzionale all’impatto finanziario dell’irregolarità accertata, la revoca parziale o totale del finanziamento concesso, nonché il recupero delle somme eventualmente già erogate."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[7.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Gli esiti della verifica effettuata saranno comunicati all’Ente beneficiario con apposito verbale."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[8.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["La verifica effettuata non esonera, in ogni caso, l’Ente beneficiario dalla piena ed esclusiva responsabilità in merito alla regolare esecuzione delle attività."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[9.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["La Regione rimane estranea ad ogni rapporto comunque nascente con terzi in dipendenza della realizzazione dell’attività di progetto."]]></textFieldExpression></textField>
+        </band>
+
+        <!-- ====================================================================== -->
+        <!-- ART. 11                                                                 -->
+        <!-- ====================================================================== -->
+        <band height="30" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="ArticleTitle" x="14" y="0" width="471" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Art. 11 – Monitoraggio"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[1.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["L’Ente beneficiario provvede a fornire alla Regione dati e documentazione relativi alle varie fasi di realizzazione dell’intervento, su supporto elettronico, salvo diverse, successive e specifiche disposizioni dettate dall’Amministrazione regionale."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[2.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["In assenza di avanzamento della spesa, l’Ente beneficiario ha l’obbligo di comunicare la circostanza, illustrandone le motivazioni."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[3.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["La trasmissione dei dati e della documentazione relativi al monitoraggio, costituiscono condizione necessaria per l’erogazione, da parte della Regione, delle tranche del contributo finanziario, così come definite al precedente art. 9 del presente Disciplinare."]]></textFieldExpression></textField>
+        </band>
+
+        <!-- ====================================================================== -->
+        <!-- ART. 12                                                                 -->
+        <!-- ====================================================================== -->
+        <band height="30" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="ArticleTitle" x="14" y="0" width="471" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Art. 12 – Disponibilità e trattamento dei dati"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[1.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["I dati generali relativi all’attuazione del progetto ammesso a finanziamento e al relativo stato di avanzamento saranno resi disponibili al pubblico."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[2.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Ai sensi del D. Lgs. n. 196/2003 (Codice Privacy) e del Regolamento UE 2016/679 (RGDP) i dati forniti e richiesti relativi al progetto ammesso a finanziamento, saranno utilizzati esclusivamente per le finalità di cui al presente procedimento. Le informazioni raccolte saranno utilizzate con strumenti informatici e non, secondo le modalità inerenti le finalità suddette. Per dare corso a quanto dichiarato, i dati potranno essere utilizzati dai dipendenti della Regione in qualità di responsabili o incaricati del trattamento e comunicati ad altri enti terzi che prendono parte ai processi operativi o in ottemperanza a specifici obblighi di legge."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[3.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Le informazioni riferite all’Ente, relative al progetto ammesso a finanziamento, potranno essere pubblicate sul sito internet www.sistema.puglia.it, in ottemperanza agli obblighi di pubblicità prescritti dalla legge Regionale del 20 giugno 2008, n. 15 “Principi e linee guida in materia di trasparenza dell’attività amministrativa nella Regione Puglia”, dalla normativa comunitaria, nonché dalla normativa sulla trasparenza amministrativa (Decreto legislativo n. 33/2013)."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[4.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Il titolare del trattamento dei dati personali è la Regione Puglia, con sede in Bari al Lungomare Nazario Sauro n. 33."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[5.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="BodyHtml" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Designato al trattamento dei dati: Mauro Paolo Bruno, Dirigente della Sezione Sviluppo Innovazione Reti – Regione Puglia: <font color=\"#0563C1\"><u>mp.bruno@regione.puglia.it</u></font>"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[6.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Responsabile della protezione dei dati: Punto di contatto Regione Puglia: rpd@regione.puglia.it."]]></textFieldExpression></textField>
+        </band>
+
+        <!-- ====================================================================== -->
+        <!-- ART. 13                                                                 -->
+        <!-- ====================================================================== -->
+        <band height="30" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="ArticleTitle" x="14" y="0" width="471" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Art. 13 – Condizioni di revoca/riduzione del finanziamento"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[1.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Il contributo assegnato è oggetto di revoca o decadenza, con provvedimento del Dirigente responsabile, nei seguenti casi:"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["rinuncia da parte dell’Ente beneficiario;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["per imperizia o altro comportamento, l’Ente beneficiario comprometta la tempestiva esecuzione e/o buona riuscita dell’attività di progetto;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["assegnazione del contributo sulla base di dati, notizie o dichiarazioni false, inesatte o reticenti;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["mancato svolgimento dell’attività finanziata, ovvero realizzazione della stessa in maniera difforme rispetto al progetto approvato, tale da risultare non coerente con gli obiettivi e le priorità indicate;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["mancata o incompleta trasmissione della documentazione prevista dai vari allegati all’istanza di contributo, ovvero della rendicontazione consuntiva entro i termini prescritti;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["nel caso in cui il Bilancio consuntivo annuale evidenzia una diminuzione del costo complessivo dell’attività, riferito ai costi ammissibili, superiore al 50% rispetto al Bilancio preventivo presentato;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["mancato rispetto anche di una parte degli obblighi previsti all’art. 4 del presente Disciplinare;"]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="32" y="0" width="18" height="14"/><text><![CDATA[-]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="50" y="0" width="435" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["riscontro, in sede di verifica o controllo, di irregolarità amministrative nella realizzazione del progetto."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[2.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["La rinuncia al contributo assegnato comporta l’obbligo, in capo all’Ente beneficiario, di restituire le somme già percepite per l’annualità di riferimento. Tale rinuncia produce effetti anche per le annualità successive, determinando la possibile decadenza dal finanziamento per le relative attività."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[3.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["In caso di revoca parziale riferita alla parte di finanziamento di cui alle spese accertate come “non ammissibili”, le stesse saranno a totale carico dell’Ente beneficiario."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[4.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Con l’atto di revoca sono altresì definite le modalità di restituzione delle somme. L’atto di revoca costituisce in capo alla Regione il diritto ad esigere immediatamente la somma ivi determinata."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[5.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Ai sensi dell’articolo 9 del decreto legislativo n. 123 del 31 marzo 1998, in caso di revoca o indebita percezione, l’Ente beneficiario deve restituire le somme ricevute maggiorate del tasso ufficiale di riferimento (TUR) vigente alla data di stipula del presente disciplinare incrementato di 5 punti percentuali per il periodo intercorrente tra la data di corresponsione dei contributi e quella di restituzione degli stessi. Restano a totale carico del medesimo Ente beneficiario tutti gli oneri relativi all’intervento."]]></textFieldExpression></textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <staticText><reportElement style="Bullet" x="14" y="0" width="18" height="14"/><text><![CDATA[6.]]></text></staticText>
+            <textField textAdjust="StretchHeight"><reportElement style="Body" x="32" y="0" width="453" height="14"/><textElement textAlignment="Justified"/><textFieldExpression><![CDATA["Se la restituzione deriva da fatti non imputabili all’Ente beneficiario, il rimborso avverrà con la sola maggiorazione degli interessi calcolati al tasso ufficiale di riferimento (TUR)."]]></textFieldExpression></textField>
+        </band>
+
+        <!-- ====================================================================== -->
+        <!-- ART. 14                                                                 -->
+        <!-- ====================================================================== -->
+        <band height="40" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="ArticleTitle" x="14" y="0" width="471" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Art. 14 - Prevenzione e repressione della criminalità organizzata e dei tentativi di infiltrazione mafiosa"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["L’Ente Beneficiario è obbligato al rispetto della normativa sulla tracciabilità finanziaria prevista dalla legge 13 agosto 2010, n. 136 e s.m.i."]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <!-- ====================================================================== -->
+        <!-- ART. 15                                                                 -->
+        <!-- ====================================================================== -->
+        <band height="30" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="ArticleTitle" x="14" y="0" width="471" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Art. 15 – Richiamo generale alle norme vigenti e alle disposizioni comunitarie"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="14" y="0" width="471" height="14"/>
+                <textElement textAlignment="Justified"/>
+                <textFieldExpression><![CDATA["Per quanto non espressamente previsto, si richiamano tutte le norme di legge regionali, nazionali e comunitarie vigenti in materia, in quanto applicabili."]]></textFieldExpression>
+            </textField>
+        </band>
+
+        <!-- ====================================================================== -->
+        <!-- FIRMA                                                                   -->
+        <!-- ====================================================================== -->
+        <band height="80" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Body" x="245" y="30" width="240" height="30"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Il Legale Rappresentante o suo delegato alla firma del presente disciplinare"]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="SmallCenter" x="245" y="62" width="240" height="14"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA[$P{nomeCognomeUtente}]]></textFieldExpression>
+            </textField>
+        </band>
+
+    </detail>
+
+    <!-- ============================== Page footer: numero pagina ============================== -->
+    <pageFooter>
+        <band height="20">
+            <textField>
+                <reportElement style="font_standard" x="445" y="5" width="40" height="13"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA[String.valueOf($V{PAGE_NUMBER})]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+
+</jasperReport>

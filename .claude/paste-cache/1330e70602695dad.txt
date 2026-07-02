@@ -1,0 +1,1103 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="it"><head>
+        <meta charset="utf-8">
+        <title>Sportello Polifunzionale - Area Metropolitana</title>
+        <meta name="description" content="Sportello Polifunzionale - Area Metropolitana">
+        <meta name="author" content="Sportello Polifunzionale - Area Metropolitana">
+
+        <!-- js -->
+        <script src="https://web44.linksmt.it/o/it.servizidigitali.presentatoreforms.bandi.frontend/libs/handlebars/handlebars.min.js"> </script>
+                <script src="https://web44.linksmt.it/o/it.servizidigitali.presentatoreforms.bandi.frontend/scripts/jquery-3.6.1.min.js"> </script>
+        <script type="text/javascript" src="https://web44.linksmt.it/o/it.servizidigitali.presentatoreforms.bandi.frontend/libs/alpaca-custom/alpaca.min.js"></script>
+        <script type="text/javascript" src="https://web44.linksmt.it/o/it.servizidigitali.presentatoreforms.bandi.frontend/libs/jquery.priceformat.js"></script>
+        <!-- alpaca custom fileds -->
+            <script type="text/javascript" src="https://web44.linksmt.it/o/it.servizidigitali.presentatoreforms.bandi.frontend/dist/custom-fields.js"></script>
+        
+        <!-- css -->
+        
+        <link rel="stylesheet" href="https://web44.linksmt.it/o/portale-istituzionale-theme/css/project/google_fonts.css">
+        
+        <link rel="stylesheet" href="https://web44.linksmt.it/o/portale-istituzionale-theme/css/project/bootstrap-custom.css">
+                
+        <link rel="stylesheet" href="https://web44.linksmt.it/o/it.servizidigitali.presentatoreforms.bandi.frontend/libs/alpaca-custom/alpaca.css">
+                
+        <link rel="stylesheet" href="https://web44.linksmt.it/o/portale-istituzionale-theme/css/project/generazione-automatica-pdf.css">
+        
+    </head>
+
+    <body class="generazione-automatica-pdf">
+    
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div id="pdf-header">
+                        <img src="https://web44.linksmt.it/documents/67813/0/Regione_Puglia-Stemma.png/3b3d145c-00f8-715e-1449-b80f1f0ad2f5?t=1673943500676" id="header-logo- comune" alt="Logo Regione Puglia" width="50" class="logo-comune">
+                        <h2 id="intestazione-comune">Regione Puglia</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-12">
+                    <div id="pdf-content">
+                        <div id="form" class=""><div class="alpaca-field alpaca-field-object alpaca-optional alpaca-edit alpaca-top" data-alpaca-field-id="alpaca1" data-alpaca-field-path="/" data-alpaca-field-name="">
+
+
+
+        <div class="alpaca-container alpaca-vertical alpaca-container-has-items" data-alpaca-container-item-count="15">
+
+
+            <div class="alpaca-container-item alpaca-container-item-first" data-alpaca-container-item-index="0" data-alpaca-container-item-name="bloccoStep" data-alpaca-container-item-parent-field-id="alpaca1">
+
+        <div data-custom-field="true" data-custom-field-height="250" class="alpaca-field alpaca-field-customBloccaStep alpaca-optional hideInExcelExport" data-alpaca-field-id="alpaca2" data-alpaca-field-path="/bloccoStep" data-alpaca-field-name="bloccoStep">         <div data-disable-interaction-custom-field="true" class="alpaca-container alpaca-vertical">         <div class="row">             <div class="col-md-12"><div class="alpaca-marker-control-field-item" data-alpaca-container-field-item-key="undefined"></div></div>         </div>         <div class="row">             <div class="col-md-6"><div class="alpaca-marker-control-field-item" data-alpaca-container-field-item-key="undefined"></div></div>             <div class="col-md-6"><div class="alpaca-marker-control-field-item" data-alpaca-container-field-item-key="undefined"></div></div>         </div>         <div class="row">             <div class="col-md-12"><div class="alpaca-marker-control-field-item" data-alpaca-container-field-item-key="undefined"></div></div>         </div>         <div class="row">             <div class="col-md-12"><div class="alpaca-marker-control-field-item" data-alpaca-container-field-item-key="undefined"></div></div>         </div>     </div>     </div>
+
+    </div>
+
+
+            <div class="alpaca-container-item" data-alpaca-container-item-index="1" data-alpaca-container-item-name="titoloForm" data-alpaca-container-item-parent-field-id="alpaca1">
+
+        <div class="form-group alpaca-field alpaca-field-label alpaca-optional text-center alpaca-autocomplete" data-alpaca-field-id="alpaca3" data-alpaca-field-path="/titoloForm" data-alpaca-field-name="titoloForm">
+
+        <label class="control-label alpaca-control-label" for="alpaca3">ISTANZA di VARIAZIONE, RIMODULAZIONE O RINUNCIA<br> (Erogazione di Contributi per Marketing Territoriale- Criteri anno 2027)</label>
+
+        
+
+
+
+    </div>
+
+    </div>
+
+
+            <div class="alpaca-container-item" data-alpaca-container-item-index="2" data-alpaca-container-item-name="sottoscrittoLabel" data-alpaca-container-item-parent-field-id="alpaca1">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca4" data-alpaca-field-path="/sottoscrittoLabel" data-alpaca-field-name="sottoscrittoLabel">
+
+
+        <div class="alpaca-control" name="sottoscrittoLabel" autocomplete="off">Il/la sottoscritto/a</div>
+
+
+    </div>
+
+    </div>
+
+
+            <div class="alpaca-container-item" data-alpaca-container-item-index="3" data-alpaca-container-item-name="datiAnagrafici" data-alpaca-container-item-parent-field-id="alpaca1">
+
+        <div data-custom-field="true" data-custom-field-height="250" class="alpaca-field alpaca-field-datiAngraficiCustomTwoColOther alpaca-optional" data-alpaca-field-id="alpaca5" data-alpaca-field-path="/datiAnagrafici" data-alpaca-field-name="datiAnagrafici">         <div data-disable-interaction-custom-field="true" class="alpaca-container alpaca-vertical alpaca-container-has-items" data-alpaca-container-item-count="18">         <div class="row">             <div class="col-md-6"><div class="alpaca-container-item alpaca-container-item-first" data-alpaca-container-item-index="0" data-alpaca-container-item-name="datiAnagrafici_nome" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-disabled alpaca-autocomplete" data-alpaca-field-id="alpaca6" data-alpaca-field-path="/datiAnagrafici/nome" data-alpaca-field-name="datiAnagrafici_nome">
+
+        <label class="control-label alpaca-control-label" for="alpaca6">Nome</label>
+
+        <span class="intpuModificato alpaca-control form-control">Alfredo</span>
+
+
+
+    </div>
+
+    </div></div>             <div class="col-md-6"><div class="alpaca-container-item" data-alpaca-container-item-index="1" data-alpaca-container-item-name="datiAnagrafici_cognome" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-disabled alpaca-autocomplete" data-alpaca-field-id="alpaca7" data-alpaca-field-path="/datiAnagrafici/cognome" data-alpaca-field-name="datiAnagrafici_cognome">
+
+        <label class="control-label alpaca-control-label" for="alpaca7">Cognome</label>
+
+        <span class="intpuModificato alpaca-control form-control">Serafini</span>
+
+
+
+    </div>
+
+    </div></div>         </div>         <div class="row">             <div class="col-md-12"><div class="alpaca-container-item" data-alpaca-container-item-index="2" data-alpaca-container-item-name="datiAnagrafici_codiceFiscale" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-disabled alpaca-autocomplete" data-alpaca-field-id="alpaca8" data-alpaca-field-path="/datiAnagrafici/codiceFiscale" data-alpaca-field-name="datiAnagrafici_codiceFiscale">
+
+        <label class="control-label alpaca-control-label" for="alpaca8">Cod.Fiscale</label>
+
+        <span class="intpuModificato alpaca-control form-control">SRFLRD80E19L049V</span>
+
+
+
+    </div>
+
+    </div></div>         </div>         <div class="row">             <div class="col-md-6"><div class="alpaca-container-item" data-alpaca-container-item-index="3" data-alpaca-container-item-name="datiAnagrafici_dataNascita" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-date alpaca-required alpaca-autocomplete" data-alpaca-field-id="alpaca9" data-alpaca-field-path="/datiAnagrafici/dataNascita" data-alpaca-field-name="datiAnagrafici_dataNascita" style="position: relative;">
+
+        <label class="control-label alpaca-control-label" for="alpaca9">Data di nascita<span class="alpaca-icon-required glyphicon glyphicon-asterisk"></span></label>
+
+        <span class="intpuModificato alpaca-control form-control">01/01/1980</span>
+
+
+
+    </div>
+
+    </div></div>             <div class="col-md-6"><div class="alpaca-container-item" data-alpaca-container-item-index="4" data-alpaca-container-item-name="datiAnagrafici_luogoNascita" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-required alpaca-disabled alpaca-autocomplete" data-alpaca-field-id="alpaca10" data-alpaca-field-path="/datiAnagrafici/luogoNascita" data-alpaca-field-name="datiAnagrafici_luogoNascita">
+
+        <label class="control-label alpaca-control-label" for="alpaca10">Luogo di nascita<span class="alpaca-icon-required glyphicon glyphicon-asterisk"></span></label>
+
+        <span class="intpuModificato alpaca-control form-control">Bari (BA)</span>
+
+
+
+    </div>
+
+    </div></div>         </div>         <div class="row">             <div class="col-md-12"><div class="alpaca-container-item" data-alpaca-container-item-index="5" data-alpaca-container-item-name="datiAnagrafici_indirizzoResidenza" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-required alpaca-disabled alpaca-autocomplete" data-alpaca-field-id="alpaca11" data-alpaca-field-path="/datiAnagrafici/indirizzoResidenza" data-alpaca-field-name="datiAnagrafici_indirizzoResidenza">
+
+        <label class="control-label alpaca-control-label" for="alpaca11">Indirizzo di residenza<span class="alpaca-icon-required glyphicon glyphicon-asterisk"></span></label>
+
+        <span class="intpuModificato alpaca-control form-control">via Listz 21 00144 Roma</span>
+
+
+
+    </div>
+
+    </div></div>         </div>             <div><div class="alpaca-container-item" data-alpaca-container-item-index="6" data-alpaca-container-item-name="datiAnagrafici_viaHidden" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-hidden alpaca-optional" data-alpaca-field-id="alpaca12" data-alpaca-field-path="/datiAnagrafici/viaHidden" data-alpaca-field-name="datiAnagrafici_viaHidden">
+
+        <label class="control-label alpaca-control-label" for="alpaca12">New hidden</label>
+
+        <input type="hidden" id="alpaca12" name="datiAnagrafici_viaHidden" class="alpaca-control form-control" value="">
+
+
+
+    </div>
+
+    </div></div>             <div><div class="alpaca-container-item" data-alpaca-container-item-index="7" data-alpaca-container-item-name="datiAnagrafici_civicoHidden" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-hidden alpaca-optional" data-alpaca-field-id="alpaca13" data-alpaca-field-path="/datiAnagrafici/civicoHidden" data-alpaca-field-name="datiAnagrafici_civicoHidden">
+
+        <label class="control-label alpaca-control-label" for="alpaca13">New hidden</label>
+
+        <input type="hidden" id="alpaca13" name="datiAnagrafici_civicoHidden" class="alpaca-control form-control" value="">
+
+
+
+    </div>
+
+    </div></div>             <div><div class="alpaca-container-item" data-alpaca-container-item-index="8" data-alpaca-container-item-name="datiAnagrafici_esponenteHidden" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-hidden alpaca-optional" data-alpaca-field-id="alpaca14" data-alpaca-field-path="/datiAnagrafici/esponenteHidden" data-alpaca-field-name="datiAnagrafici_esponenteHidden">
+
+        <label class="control-label alpaca-control-label" for="alpaca14">New hidden</label>
+
+        <input type="hidden" id="alpaca14" name="datiAnagrafici_esponenteHidden" class="alpaca-control form-control" value="">
+
+
+
+    </div>
+
+    </div></div>             <div><div class="alpaca-container-item" data-alpaca-container-item-index="9" data-alpaca-container-item-name="datiAnagrafici_scalaHidden" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-hidden alpaca-optional" data-alpaca-field-id="alpaca15" data-alpaca-field-path="/datiAnagrafici/scalaHidden" data-alpaca-field-name="datiAnagrafici_scalaHidden">
+
+        <label class="control-label alpaca-control-label" for="alpaca15">New hidden</label>
+
+        <input type="hidden" id="alpaca15" name="datiAnagrafici_scalaHidden" class="alpaca-control form-control" value="">
+
+
+
+    </div>
+
+    </div></div>             <div><div class="alpaca-container-item" data-alpaca-container-item-index="10" data-alpaca-container-item-name="datiAnagrafici_pianoHidden" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-hidden alpaca-optional" data-alpaca-field-id="alpaca16" data-alpaca-field-path="/datiAnagrafici/pianoHidden" data-alpaca-field-name="datiAnagrafici_pianoHidden">
+
+        <label class="control-label alpaca-control-label" for="alpaca16">New hidden</label>
+
+        <input type="hidden" id="alpaca16" name="datiAnagrafici_pianoHidden" class="alpaca-control form-control" value="">
+
+
+
+    </div>
+
+    </div></div>             <div><div class="alpaca-container-item" data-alpaca-container-item-index="11" data-alpaca-container-item-name="datiAnagrafici_internoHidden" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-hidden alpaca-optional" data-alpaca-field-id="alpaca17" data-alpaca-field-path="/datiAnagrafici/internoHidden" data-alpaca-field-name="datiAnagrafici_internoHidden">
+
+        <label class="control-label alpaca-control-label" for="alpaca17">New hidden</label>
+
+        <input type="hidden" id="alpaca17" name="datiAnagrafici_internoHidden" class="alpaca-control form-control" value="">
+
+
+
+    </div>
+
+    </div></div>             <div><div class="alpaca-container-item" data-alpaca-container-item-index="12" data-alpaca-container-item-name="datiAnagrafici_capHidden" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-hidden alpaca-optional" data-alpaca-field-id="alpaca18" data-alpaca-field-path="/datiAnagrafici/capHidden" data-alpaca-field-name="datiAnagrafici_capHidden">
+
+        <label class="control-label alpaca-control-label" for="alpaca18">New hidden</label>
+
+        <input type="hidden" id="alpaca18" name="datiAnagrafici_capHidden" class="alpaca-control form-control" value="">
+
+
+
+    </div>
+
+    </div></div>             <div><div class="alpaca-container-item" data-alpaca-container-item-index="13" data-alpaca-container-item-name="datiAnagrafici_provinciaResHidden" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-hidden alpaca-optional" data-alpaca-field-id="alpaca19" data-alpaca-field-path="/datiAnagrafici/provinciaResHidden" data-alpaca-field-name="datiAnagrafici_provinciaResHidden">
+
+        <label class="control-label alpaca-control-label" for="alpaca19">New hidden</label>
+
+        <input type="hidden" id="alpaca19" name="datiAnagrafici_provinciaResHidden" class="alpaca-control form-control" value="">
+
+
+
+    </div>
+
+    </div></div>             <div><div class="alpaca-container-item" data-alpaca-container-item-index="14" data-alpaca-container-item-name="datiAnagrafici_comuneResHidden" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-hidden alpaca-optional" data-alpaca-field-id="alpaca20" data-alpaca-field-path="/datiAnagrafici/comuneResHidden" data-alpaca-field-name="datiAnagrafici_comuneResHidden">
+
+        <label class="control-label alpaca-control-label" for="alpaca20">New hidden</label>
+
+        <input type="hidden" id="alpaca20" name="datiAnagrafici_comuneResHidden" class="alpaca-control form-control" value="">
+
+
+
+    </div>
+
+    </div></div>             <div><div class="alpaca-container-item" data-alpaca-container-item-index="15" data-alpaca-container-item-name="datiAnagrafici_identificativo" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-hidden alpaca-optional" data-alpaca-field-id="alpaca21" data-alpaca-field-path="/datiAnagrafici/identificativo" data-alpaca-field-name="datiAnagrafici_identificativo">
+
+        <label class="control-label alpaca-control-label" for="alpaca21">Identificativo</label>
+
+        <input type="hidden" id="alpaca21" name="datiAnagrafici_identificativo" class="alpaca-control form-control" value="">
+
+
+
+    </div>
+
+    </div></div>             <div><div class="alpaca-container-item" data-alpaca-container-item-index="16" data-alpaca-container-item-name="datiAnagrafici_identificativoFamiglia" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-hidden alpaca-optional" data-alpaca-field-id="alpaca22" data-alpaca-field-path="/datiAnagrafici/identificativoFamiglia" data-alpaca-field-name="datiAnagrafici_identificativoFamiglia">
+
+        <label class="control-label alpaca-control-label" for="alpaca22">Identificativo</label>
+
+        <input type="hidden" id="alpaca22" name="datiAnagrafici_identificativoFamiglia" class="alpaca-control form-control" value="">
+
+
+
+    </div>
+
+    </div></div>             <div><div class="alpaca-container-item alpaca-container-item-last" data-alpaca-container-item-index="17" data-alpaca-container-item-name="datiAnagrafici_isDelegato" data-alpaca-container-item-parent-field-id="alpaca5">
+
+        <div class="form-group alpaca-field alpaca-field-hidden alpaca-optional" data-alpaca-field-id="alpaca23" data-alpaca-field-path="/datiAnagrafici/isDelegato" data-alpaca-field-name="datiAnagrafici_isDelegato">
+
+        <label class="control-label alpaca-control-label" for="alpaca23">delegato</label>
+
+        <input type="hidden" id="alpaca23" name="datiAnagrafici_isDelegato" class="alpaca-control form-control" value="false">
+
+
+
+    </div>
+
+    </div></div>     </div>     </div>
+
+    </div>
+
+
+            <div class="alpaca-container-item" data-alpaca-container-item-index="4" data-alpaca-container-item-name="inQualitaDi" data-alpaca-container-item-parent-field-id="alpaca1">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-required alpaca-autocomplete" data-alpaca-field-id="alpaca24" data-alpaca-field-path="/inQualitaDi" data-alpaca-field-name="inQualitaDi">
+
+        <label class="control-label alpaca-control-label" for="alpaca24">in qualità di<span class="alpaca-icon-required glyphicon glyphicon-asterisk"></span></label>
+
+        <span class="intpuModificato alpaca-control form-control">1111</span>
+
+
+
+    </div>
+
+    </div>
+
+
+            <div class="alpaca-container-item" data-alpaca-container-item-index="5" data-alpaca-container-item-name="nomeEnte" data-alpaca-container-item-parent-field-id="alpaca1">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-required alpaca-autocomplete" data-alpaca-field-id="alpaca25" data-alpaca-field-path="/nomeEnte" data-alpaca-field-name="nomeEnte">
+
+        <label class="control-label alpaca-control-label" for="alpaca25">Denominazione dell’Ente Organizzatore dell’iniziativa: <span class="alpaca-icon-required glyphicon glyphicon-asterisk"></span></label>
+
+        <span class="intpuModificato alpaca-control form-control">111</span>
+
+
+
+    </div>
+
+    </div>
+
+
+            <div class="alpaca-container-item" data-alpaca-container-item-index="6" data-alpaca-container-item-name="sedeLegaleLabel" data-alpaca-container-item-parent-field-id="alpaca1">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca26" data-alpaca-field-path="/sedeLegaleLabel" data-alpaca-field-name="sedeLegaleLabel">
+
+
+        <div class="alpaca-control" name="sedeLegaleLabel" autocomplete="off">Sede legale:</div>
+
+
+    </div>
+
+    </div>
+
+
+            <div class="alpaca-container-item" data-alpaca-container-item-index="7" data-alpaca-container-item-name="sedeLegale" data-alpaca-container-item-parent-field-id="alpaca1">
+
+        <div class="border-0 p-0 alpaca-field alpaca-field-object alpaca-optional" data-alpaca-field-id="alpaca27" data-alpaca-field-path="/sedeLegale" data-alpaca-field-name="sedeLegale"><div class="alpaca-container alpaca-vertical alpaca-container-has-items" data-alpaca-container-item-count="2"><div class="row"><div class="col-md-6"><div class="alpaca-container-item alpaca-container-item-first" data-alpaca-container-item-index="0" data-alpaca-container-item-name="sedeLegale_provincia" data-alpaca-container-item-parent-field-id="alpaca27">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-required alpaca-autocomplete" data-alpaca-field-id="alpaca28" data-alpaca-field-path="/sedeLegale/provincia" data-alpaca-field-name="sedeLegale_provincia">
+
+        <label class="control-label alpaca-control-label" for="alpaca28">Provincia<span class="alpaca-icon-required glyphicon glyphicon-asterisk"></span></label>
+
+        <span class="intpuModificato alpaca-control form-control">RM</span>
+
+
+
+    </div>
+
+    </div></div><div class="col-md-6"><div class="alpaca-container-item alpaca-container-item-last" data-alpaca-container-item-index="1" data-alpaca-container-item-name="sedeLegale_comune" data-alpaca-container-item-parent-field-id="alpaca27">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-required alpaca-autocomplete" data-alpaca-field-id="alpaca29" data-alpaca-field-path="/sedeLegale/comune" data-alpaca-field-name="sedeLegale_comune">
+
+        <label class="control-label alpaca-control-label" for="alpaca29">Comune<span class="alpaca-icon-required glyphicon glyphicon-asterisk"></span></label>
+
+        <span class="intpuModificato alpaca-control form-control">1111</span>
+
+
+
+    </div>
+
+    </div></div></div></div></div>
+
+    </div>
+
+
+            <div class="alpaca-container-item" data-alpaca-container-item-index="8" data-alpaca-container-item-name="datiEnte" data-alpaca-container-item-parent-field-id="alpaca1">
+
+        <div class="border-0 p-0 alpaca-field alpaca-field-object alpaca-optional" data-alpaca-field-id="alpaca30" data-alpaca-field-path="/datiEnte" data-alpaca-field-name="datiEnte"><div class="alpaca-container alpaca-vertical alpaca-container-has-items" data-alpaca-container-item-count="4"><div class="row"><div class="col-md-10"><div class="alpaca-container-item alpaca-container-item-first" data-alpaca-container-item-index="0" data-alpaca-container-item-name="datiEnte_viaSedeLegale" data-alpaca-container-item-parent-field-id="alpaca30">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca31" data-alpaca-field-path="/datiEnte/viaSedeLegale" data-alpaca-field-name="datiEnte_viaSedeLegale">
+
+        <label class="control-label alpaca-control-label" for="alpaca31">via</label>
+
+        <span class="intpuModificato alpaca-control form-control"></span>
+
+
+
+    </div>
+
+    </div></div><div class="col-md-2"><div class="alpaca-container-item" data-alpaca-container-item-index="1" data-alpaca-container-item-name="datiEnte_numeroCivico" data-alpaca-container-item-parent-field-id="alpaca30">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca32" data-alpaca-field-path="/datiEnte/numeroCivico" data-alpaca-field-name="datiEnte_numeroCivico">
+
+        <label class="control-label alpaca-control-label" for="alpaca32">n.</label>
+
+        <span class="intpuModificato alpaca-control form-control"></span>
+
+
+
+    </div>
+
+    </div></div></div><div class="row"><div class="col-md-6"><div class="alpaca-container-item" data-alpaca-container-item-index="2" data-alpaca-container-item-name="datiEnte_cf" data-alpaca-container-item-parent-field-id="alpaca30">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-required alpaca-autocomplete" data-alpaca-field-id="alpaca33" data-alpaca-field-path="/datiEnte/cf" data-alpaca-field-name="datiEnte_cf">
+
+        <label class="control-label alpaca-control-label" for="alpaca33">Codice Fiscale <span class="alpaca-icon-required glyphicon glyphicon-asterisk"></span></label>
+
+        <span class="intpuModificato alpaca-control form-control">drcfba76m27h501k</span>
+
+
+
+    </div>
+
+    </div></div><div class="col-md-6"><div class="alpaca-container-item alpaca-container-item-last" data-alpaca-container-item-index="3" data-alpaca-container-item-name="datiEnte_partitaIva" data-alpaca-container-item-parent-field-id="alpaca30">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-required alpaca-autocomplete" data-alpaca-field-id="alpaca34" data-alpaca-field-path="/datiEnte/partitaIva" data-alpaca-field-name="datiEnte_partitaIva">
+
+        <label class="control-label alpaca-control-label" for="alpaca34">Partita IVA<span class="alpaca-icon-required glyphicon glyphicon-asterisk"></span></label>
+
+        <span class="intpuModificato alpaca-control form-control">11111111111</span>
+
+
+
+    </div>
+
+    </div></div></div></div></div>
+
+    </div>
+
+
+            <div class="alpaca-container-item" data-alpaca-container-item-index="9" data-alpaca-container-item-name="nomeIniziativa" data-alpaca-container-item-parent-field-id="alpaca1">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-required text-left alpaca-autocomplete" data-alpaca-field-id="alpaca35" data-alpaca-field-path="/nomeIniziativa" data-alpaca-field-name="nomeIniziativa">
+
+        <label class="control-label alpaca-control-label" for="alpaca35">per l’iniziativa denominata<span class="alpaca-icon-required glyphicon glyphicon-asterisk"></span></label>
+
+        <span class="intpuModificato alpaca-control form-control">1111</span>
+
+
+
+    </div>
+
+    </div>
+
+
+            <div class="alpaca-container-item" data-alpaca-container-item-index="10" data-alpaca-container-item-name="nomeIniziativaLabel" data-alpaca-container-item-parent-field-id="alpaca1">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca36" data-alpaca-field-path="/nomeIniziativaLabel" data-alpaca-field-name="nomeIniziativaLabel">
+
+
+        <div class="alpaca-control" name="nomeIniziativaLabel" autocomplete="off">relativamente al contributo previsto per <b>Avviso 2027 per Erogazione di Contributi per Marketing Territoriale</b> </div>
+
+
+    </div>
+
+    </div>
+
+
+            <div class="alpaca-container-item" data-alpaca-container-item-index="11" data-alpaca-container-item-name="comunicaLabel" data-alpaca-container-item-parent-field-id="alpaca1">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca37" data-alpaca-field-path="/comunicaLabel" data-alpaca-field-name="comunicaLabel">
+
+        <label class="control-label alpaca-control-label" for="alpaca37"><p>Consapevole della responsabilità penale cui può andare incontro in caso di dichiarazioni mendaci, ai sensi e per gli effetti dell’art. 76 del D.P.R. 28 dicembre 2000, n. 445,</p><br><p class="text-center">COMUNICA</p></label>
+
+        <div class="alpaca-control" name="comunicaLabel" autocomplete="off"></div>
+
+
+    </div>
+
+    </div>
+
+
+            <div class="alpaca-container-item" data-alpaca-container-item-index="12" data-alpaca-container-item-name="tipoIstanza" data-alpaca-container-item-parent-field-id="alpaca1">
+
+        <div class="form-group alpaca-field alpaca-field-radio alpaca-required" data-alpaca-field-id="alpaca38" data-alpaca-field-path="/tipoIstanza" data-alpaca-field-name="tipoIstanza">
+
+
+        <div class="radio alpaca-control" name="tipoIstanza" style="display: block;">
+        <label>
+            <input type="radio" name="tipoIstanza" value="CRONOPROGRAMMA" checked="checked" class="">Di aggiornare il crono programma come di seguito riportato:
+        </label>
+    </div>
+    <div class="radio alpaca-control" name="tipoIstanza" style="display: block;">
+        <label>
+            <input type="radio" name="tipoIstanza" value="RIMODULAZIONE" class="">Di rimodulare il piano finanziario come indicato nella nuova Scheda Piano finanziario che si allega
+        </label>
+    </div>
+    <div class="radio alpaca-control" name="tipoIstanza" style="display: block;">
+        <label>
+            <input type="radio" name="tipoIstanza" value="RINUNCIA" class="">Di rinunciare al finanziamento
+        </label>
+    </div>
+
+
+
+    </div>
+
+    </div>
+
+
+            <div class="alpaca-container-item" data-alpaca-container-item-index="13" data-alpaca-container-item-name="stimaDeiCosti" data-alpaca-container-item-parent-field-id="alpaca1">
+
+        <div class="text-weight-normal alpaca-field alpaca-field-object alpaca-optional" style="border-style: none !important; display: none;" data-alpaca-field-id="alpaca39" data-alpaca-field-path="/stimaDeiCosti" data-alpaca-field-name="stimaDeiCosti"><div class="alpaca-container alpaca-vertical alpaca-container-has-items" data-alpaca-container-item-count="24"><div class="row"><div class="col-md-12"><div class="alpaca-container-item alpaca-container-item-first" data-alpaca-container-item-index="0" data-alpaca-container-item-name="stimaDeiCosti_titoloStimaCosti" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca40" data-alpaca-field-path="/stimaDeiCosti/titoloStimaCosti" data-alpaca-field-name="stimaDeiCosti_titoloStimaCosti">
+
+
+        <div class="alpaca-control" name="stimaDeiCosti_titoloStimaCosti" autocomplete="off"></div>
+
+
+    </div>
+
+    </div></div></div><div class="row text-weight-normal"><table class="table table-striped table-bordered text-weight-normal"><tbody><tr><td style="width: 20%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="1" data-alpaca-container-item-name="stimaDeiCosti_vociDiCostoLabel" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca41" data-alpaca-field-path="/stimaDeiCosti/vociDiCostoLabel" data-alpaca-field-name="stimaDeiCosti_vociDiCostoLabel">
+
+
+        <div class="alpaca-control" name="stimaDeiCosti_vociDiCostoLabel" autocomplete="off"></div>
+
+
+    </div>
+
+    </div></td><td style="width: 40%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="2" data-alpaca-container-item-name="stimaDeiCosti_speseLabel" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca42" data-alpaca-field-path="/stimaDeiCosti/speseLabel" data-alpaca-field-name="stimaDeiCosti_speseLabel">
+
+
+        <div class="alpaca-control" name="stimaDeiCosti_speseLabel" autocomplete="off"></div>
+
+
+    </div>
+
+    </div></td><td style="width: 20%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="3" data-alpaca-container-item-name="stimaDeiCosti_importiLabel" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca43" data-alpaca-field-path="/stimaDeiCosti/importiLabel" data-alpaca-field-name="stimaDeiCosti_importiLabel">
+
+
+        <div class="alpaca-control" name="stimaDeiCosti_importiLabel" autocomplete="off"></div>
+
+
+    </div>
+
+    </div></td><td style="width: 20%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="4" data-alpaca-container-item-name="stimaDeiCosti_percentualiLabel" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca44" data-alpaca-field-path="/stimaDeiCosti/percentualiLabel" data-alpaca-field-name="stimaDeiCosti_percentualiLabel">
+
+
+        <div class="alpaca-control" name="stimaDeiCosti_percentualiLabel" autocomplete="off"></div>
+
+
+    </div>
+
+    </div></td></tr><tr><td style="width: 20%;vertical-align: top"><b style="display:block; text-align:center; margin:0 auto;">A</b></td><td style="width: 40%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="5" data-alpaca-container-item-name="stimaDeiCosti_assistenzaTecnicaLabel" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca45" data-alpaca-field-path="/stimaDeiCosti/assistenzaTecnicaLabel" data-alpaca-field-name="stimaDeiCosti_assistenzaTecnicaLabel">
+
+        <label class="control-label alpaca-control-label" for="alpaca45">Assistenza tecnica per la gestione e la realizzazione delle attivita</label>
+
+        <div class="alpaca-control" name="stimaDeiCosti_assistenzaTecnicaLabel" autocomplete="off"></div>
+
+
+    </div>
+
+    </div></td><td style="width: 20%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="6" data-alpaca-container-item-name="stimaDeiCosti_assistenzaTecnicaImporto" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div data-custom-field="true" data-custom-field-height="250" class="alpaca-field alpaca-field-importo alpaca-optional" data-alpaca-field-id="alpaca46" data-alpaca-field-path="/stimaDeiCosti/assistenzaTecnicaImporto" data-alpaca-field-name="stimaDeiCosti_assistenzaTecnicaImporto">         <div data-disable-interaction-custom-field="true" class="alpaca-container alpaca-vertical alpaca-container-has-items" data-alpaca-container-item-count="1">         <div class="row">             <div class="col-md-12"><div class="alpaca-container-item alpaca-container-item-first alpaca-container-item-last" data-alpaca-container-item-index="0" data-alpaca-container-item-name="stimaDeiCosti_assistenzaTecnicaImporto_importo" data-alpaca-container-item-parent-field-id="alpaca46">
+
+        <div class="form-group alpaca-field alpaca-field-currency alpaca-required importoFieldRight alpaca-autocomplete" data-alpaca-field-id="alpaca47" data-alpaca-field-path="/stimaDeiCosti/assistenzaTecnicaImporto/importo" data-alpaca-field-name="stimaDeiCosti_assistenzaTecnicaImporto_importo">
+
+
+        <span class="intpuModificato alpaca-control form-control"></span>
+
+
+
+    </div>
+
+    </div></div>         </div>     </div>     </div>
+
+    </div></td><td style="width: 20%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="7" data-alpaca-container-item-name="stimaDeiCosti_assistenzaTecnicaPercentuale" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca48" data-alpaca-field-path="/stimaDeiCosti/assistenzaTecnicaPercentuale" data-alpaca-field-name="stimaDeiCosti_assistenzaTecnicaPercentuale">
+
+
+        <span class="intpuModificato alpaca-control form-control"></span>
+
+
+
+    </div>
+
+    </div></td></tr><tr><td style="width: 20%;vertical-align: top"><b style="display:block; text-align:center; margin:0 auto;">B</b></td><td style="width: 40%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="8" data-alpaca-container-item-name="stimaDeiCosti_consulenzeSpecificheLabel" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca49" data-alpaca-field-path="/stimaDeiCosti/consulenzeSpecificheLabel" data-alpaca-field-name="stimaDeiCosti_consulenzeSpecificheLabel">
+
+        <label class="control-label alpaca-control-label" for="alpaca49">consulenze specifiche per la predisposizione di progetti, studi di settore e di conoscenza e relazioni dei mercati esteri</label>
+
+        <div class="alpaca-control" name="stimaDeiCosti_consulenzeSpecificheLabel" autocomplete="off"></div>
+
+
+    </div>
+
+    </div></td><td style="width: 20%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="9" data-alpaca-container-item-name="stimaDeiCosti_consulenzeSpecificheImporto" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div data-custom-field="true" data-custom-field-height="250" class="alpaca-field alpaca-field-importo alpaca-optional" data-alpaca-field-id="alpaca50" data-alpaca-field-path="/stimaDeiCosti/consulenzeSpecificheImporto" data-alpaca-field-name="stimaDeiCosti_consulenzeSpecificheImporto">         <div data-disable-interaction-custom-field="true" class="alpaca-container alpaca-vertical alpaca-container-has-items" data-alpaca-container-item-count="1">         <div class="row">             <div class="col-md-12"><div class="alpaca-container-item alpaca-container-item-first alpaca-container-item-last" data-alpaca-container-item-index="0" data-alpaca-container-item-name="stimaDeiCosti_consulenzeSpecificheImporto_importo" data-alpaca-container-item-parent-field-id="alpaca50">
+
+        <div class="form-group alpaca-field alpaca-field-currency alpaca-required importoFieldRight alpaca-autocomplete" data-alpaca-field-id="alpaca51" data-alpaca-field-path="/stimaDeiCosti/consulenzeSpecificheImporto/importo" data-alpaca-field-name="stimaDeiCosti_consulenzeSpecificheImporto_importo">
+
+
+        <span class="intpuModificato alpaca-control form-control"></span>
+
+
+
+    </div>
+
+    </div></div>         </div>     </div>     </div>
+
+    </div></td><td style="width: 20%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="10" data-alpaca-container-item-name="stimaDeiCosti_consulenzeSpecifichePercentuale" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca52" data-alpaca-field-path="/stimaDeiCosti/consulenzeSpecifichePercentuale" data-alpaca-field-name="stimaDeiCosti_consulenzeSpecifichePercentuale">
+
+
+        <span class="intpuModificato alpaca-control form-control"></span>
+
+
+
+    </div>
+
+    </div></td></tr><tr><td style="width: 20%;vertical-align: top"><b style="display:block; text-align:center; margin:0 auto;">C</b></td><td style="width: 40%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="11" data-alpaca-container-item-name="stimaDeiCosti_softwareLabel" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca53" data-alpaca-field-path="/stimaDeiCosti/softwareLabel" data-alpaca-field-name="stimaDeiCosti_softwareLabel">
+
+        <label class="control-label alpaca-control-label" for="alpaca53">software e connettività alla rete internet</label>
+
+        <div class="alpaca-control" name="stimaDeiCosti_softwareLabel" autocomplete="off"></div>
+
+
+    </div>
+
+    </div></td><td style="width: 20%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="12" data-alpaca-container-item-name="stimaDeiCosti_softwareImporto" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div data-custom-field="true" data-custom-field-height="250" class="alpaca-field alpaca-field-importo alpaca-optional" data-alpaca-field-id="alpaca54" data-alpaca-field-path="/stimaDeiCosti/softwareImporto" data-alpaca-field-name="stimaDeiCosti_softwareImporto">         <div data-disable-interaction-custom-field="true" class="alpaca-container alpaca-vertical alpaca-container-has-items" data-alpaca-container-item-count="1">         <div class="row">             <div class="col-md-12"><div class="alpaca-container-item alpaca-container-item-first alpaca-container-item-last" data-alpaca-container-item-index="0" data-alpaca-container-item-name="stimaDeiCosti_softwareImporto_importo" data-alpaca-container-item-parent-field-id="alpaca54">
+
+        <div class="form-group alpaca-field alpaca-field-currency alpaca-required importoFieldRight alpaca-autocomplete" data-alpaca-field-id="alpaca55" data-alpaca-field-path="/stimaDeiCosti/softwareImporto/importo" data-alpaca-field-name="stimaDeiCosti_softwareImporto_importo">
+
+
+        <span class="intpuModificato alpaca-control form-control"></span>
+
+
+
+    </div>
+
+    </div></div>         </div>     </div>     </div>
+
+    </div></td><td style="width: 20%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="13" data-alpaca-container-item-name="stimaDeiCosti_softwarePercentuale" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca56" data-alpaca-field-path="/stimaDeiCosti/softwarePercentuale" data-alpaca-field-name="stimaDeiCosti_softwarePercentuale">
+
+
+        <span class="intpuModificato alpaca-control form-control"></span>
+
+
+
+    </div>
+
+    </div></td></tr><tr><td style="width: 20%;vertical-align: top"><b style="display:block; text-align:center; margin:0 auto;">D</b></td><td style="width: 40%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="14" data-alpaca-container-item-name="stimaDeiCosti_progettazioneLabel" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca57" data-alpaca-field-path="/stimaDeiCosti/progettazioneLabel" data-alpaca-field-name="stimaDeiCosti_progettazioneLabel">
+
+        <label class="control-label alpaca-control-label" for="alpaca57">progettazione e pubblicazione di stampa di cataloghi, opuscoli, libri, depliant, manifesti, multimediali e ogni altro materiale illustrativo delle attività produttive pugliesi</label>
+
+        <div class="alpaca-control" name="stimaDeiCosti_progettazioneLabel" autocomplete="off"></div>
+
+
+    </div>
+
+    </div></td><td style="width: 20%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="15" data-alpaca-container-item-name="stimaDeiCosti_progettazioneImporto" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div data-custom-field="true" data-custom-field-height="250" class="alpaca-field alpaca-field-importo alpaca-optional" data-alpaca-field-id="alpaca58" data-alpaca-field-path="/stimaDeiCosti/progettazioneImporto" data-alpaca-field-name="stimaDeiCosti_progettazioneImporto">         <div data-disable-interaction-custom-field="true" class="alpaca-container alpaca-vertical alpaca-container-has-items" data-alpaca-container-item-count="1">         <div class="row">             <div class="col-md-12"><div class="alpaca-container-item alpaca-container-item-first alpaca-container-item-last" data-alpaca-container-item-index="0" data-alpaca-container-item-name="stimaDeiCosti_progettazioneImporto_importo" data-alpaca-container-item-parent-field-id="alpaca58">
+
+        <div class="form-group alpaca-field alpaca-field-currency alpaca-required importoFieldRight alpaca-autocomplete" data-alpaca-field-id="alpaca59" data-alpaca-field-path="/stimaDeiCosti/progettazioneImporto/importo" data-alpaca-field-name="stimaDeiCosti_progettazioneImporto_importo">
+
+
+        <span class="intpuModificato alpaca-control form-control"></span>
+
+
+
+    </div>
+
+    </div></div>         </div>     </div>     </div>
+
+    </div></td><td style="width: 20%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="16" data-alpaca-container-item-name="stimaDeiCosti_progettazionePercentuale" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca60" data-alpaca-field-path="/stimaDeiCosti/progettazionePercentuale" data-alpaca-field-name="stimaDeiCosti_progettazionePercentuale">
+
+
+        <span class="intpuModificato alpaca-control form-control"></span>
+
+
+
+    </div>
+
+    </div></td></tr><tr><td style="width: 20%;vertical-align: top"><b style="display:block; text-align:center; margin:0 auto;">E</b></td><td style="width: 40%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="17" data-alpaca-container-item-name="stimaDeiCosti_viaggiLabel" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca61" data-alpaca-field-path="/stimaDeiCosti/viaggiLabel" data-alpaca-field-name="stimaDeiCosti_viaggiLabel">
+
+        <label class="control-label alpaca-control-label" for="alpaca61">viaggi e missioni, anche delle delegazioni ospitate</label>
+
+        <div class="alpaca-control" name="stimaDeiCosti_viaggiLabel" autocomplete="off"></div>
+
+
+    </div>
+
+    </div></td><td style="width: 20%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="18" data-alpaca-container-item-name="stimaDeiCosti_viaggiImporto" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div data-custom-field="true" data-custom-field-height="250" class="alpaca-field alpaca-field-importo alpaca-optional" data-alpaca-field-id="alpaca62" data-alpaca-field-path="/stimaDeiCosti/viaggiImporto" data-alpaca-field-name="stimaDeiCosti_viaggiImporto">         <div data-disable-interaction-custom-field="true" class="alpaca-container alpaca-vertical alpaca-container-has-items" data-alpaca-container-item-count="1">         <div class="row">             <div class="col-md-12"><div class="alpaca-container-item alpaca-container-item-first alpaca-container-item-last" data-alpaca-container-item-index="0" data-alpaca-container-item-name="stimaDeiCosti_viaggiImporto_importo" data-alpaca-container-item-parent-field-id="alpaca62">
+
+        <div class="form-group alpaca-field alpaca-field-currency alpaca-required importoFieldRight alpaca-autocomplete" data-alpaca-field-id="alpaca63" data-alpaca-field-path="/stimaDeiCosti/viaggiImporto/importo" data-alpaca-field-name="stimaDeiCosti_viaggiImporto_importo">
+
+
+        <span class="intpuModificato alpaca-control form-control"></span>
+
+
+
+    </div>
+
+    </div></div>         </div>     </div>     </div>
+
+    </div></td><td style="width: 20%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="19" data-alpaca-container-item-name="stimaDeiCosti_viaggiPercentuale" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca64" data-alpaca-field-path="/stimaDeiCosti/viaggiPercentuale" data-alpaca-field-name="stimaDeiCosti_viaggiPercentuale">
+
+
+        <span class="intpuModificato alpaca-control form-control"></span>
+
+
+
+    </div>
+
+    </div></td></tr><tr><td style="width: 20%;vertical-align: top"><b style="display:block; text-align:center; margin:0 auto;">F</b></td><td style="width: 40%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="20" data-alpaca-container-item-name="stimaDeiCosti_speseGeneraliLabel" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca65" data-alpaca-field-path="/stimaDeiCosti/speseGeneraliLabel" data-alpaca-field-name="stimaDeiCosti_speseGeneraliLabel">
+
+        <label class="control-label alpaca-control-label" for="alpaca65">spese generali da rendicontare nel limite massimo del 10 per cento del costo complessivo dell'intervento</label>
+
+        <div class="alpaca-control" name="stimaDeiCosti_speseGeneraliLabel" autocomplete="off"></div>
+
+
+    </div>
+
+    </div></td><td style="width: 20%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="21" data-alpaca-container-item-name="stimaDeiCosti_speseGeneraliImporto" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div data-custom-field="true" data-custom-field-height="250" class="alpaca-field alpaca-field-importo alpaca-optional" data-alpaca-field-id="alpaca66" data-alpaca-field-path="/stimaDeiCosti/speseGeneraliImporto" data-alpaca-field-name="stimaDeiCosti_speseGeneraliImporto">         <div data-disable-interaction-custom-field="true" class="alpaca-container alpaca-vertical alpaca-container-has-items" data-alpaca-container-item-count="1">         <div class="row">             <div class="col-md-12"><div class="alpaca-container-item alpaca-container-item-first alpaca-container-item-last" data-alpaca-container-item-index="0" data-alpaca-container-item-name="stimaDeiCosti_speseGeneraliImporto_importo" data-alpaca-container-item-parent-field-id="alpaca66">
+
+        <div class="form-group alpaca-field alpaca-field-currency alpaca-required importoFieldRight alpaca-autocomplete" data-alpaca-field-id="alpaca67" data-alpaca-field-path="/stimaDeiCosti/speseGeneraliImporto/importo" data-alpaca-field-name="stimaDeiCosti_speseGeneraliImporto_importo">
+
+
+        <span class="intpuModificato alpaca-control form-control"></span>
+
+
+
+    </div>
+
+    </div></div>         </div>     </div>     </div>
+
+    </div></td><td style="width: 20%;vertical-align: top"><div class="alpaca-container-item" data-alpaca-container-item-index="22" data-alpaca-container-item-name="stimaDeiCosti_speseGeneraliPercentuale" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div class="form-group alpaca-field alpaca-field-text alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca68" data-alpaca-field-path="/stimaDeiCosti/speseGeneraliPercentuale" data-alpaca-field-name="stimaDeiCosti_speseGeneraliPercentuale">
+
+
+        <span class="intpuModificato alpaca-control form-control"></span>
+
+
+
+    </div>
+
+    </div></td></tr><tr><td style="width: 20%;vertical-align: top"><b style="display:block; text-align:center; margin:0 auto;">TOTALE</b></td><td style="width: 40%;vertical-align: top"></td><td style="width: 20%;vertical-align: top"><div class="alpaca-container-item alpaca-container-item-last" data-alpaca-container-item-index="23" data-alpaca-container-item-name="stimaDeiCosti_totaleImportiPianoFinanziario" data-alpaca-container-item-parent-field-id="alpaca39">
+
+        <div data-custom-field="true" data-custom-field-height="250" class="alpaca-field alpaca-field-importo alpaca-optional" data-alpaca-field-id="alpaca69" data-alpaca-field-path="/stimaDeiCosti/totaleImportiPianoFinanziario" data-alpaca-field-name="stimaDeiCosti_totaleImportiPianoFinanziario">         <div data-disable-interaction-custom-field="true" class="alpaca-container alpaca-vertical alpaca-container-has-items" data-alpaca-container-item-count="1">         <div class="row">             <div class="col-md-12"><div class="alpaca-container-item alpaca-container-item-first alpaca-container-item-last" data-alpaca-container-item-index="0" data-alpaca-container-item-name="stimaDeiCosti_totaleImportiPianoFinanziario_importo" data-alpaca-container-item-parent-field-id="alpaca69">
+
+        <div class="form-group alpaca-field alpaca-field-currency alpaca-required importoFieldRight alpaca-autocomplete" data-alpaca-field-id="alpaca70" data-alpaca-field-path="/stimaDeiCosti/totaleImportiPianoFinanziario/importo" data-alpaca-field-name="stimaDeiCosti_totaleImportiPianoFinanziario_importo">
+
+
+        <span class="intpuModificato alpaca-control form-control"></span>
+
+
+
+    </div>
+
+    </div></div>         </div>     </div>     </div>
+
+    </div></td><td style="width: 20%;vertical-align: top"></td></tr></tbody></table></div></div></div>
+
+    </div>
+
+
+            <div class="alpaca-container-item alpaca-container-item-last" data-alpaca-container-item-index="14" data-alpaca-container-item-name="dettaglioCronoprogramma" data-alpaca-container-item-parent-field-id="alpaca1">
+
+        <div class="form-group alpaca-field alpaca-field-textarea alpaca-optional alpaca-autocomplete" data-alpaca-field-id="alpaca71" data-alpaca-field-path="/dettaglioCronoprogramma" data-alpaca-field-name="dettaglioCronoprogramma">
+
+        <label class="control-label alpaca-control-label" for="alpaca71">Cronoprogramma</label>
+
+        <span class="intpuModificato alpaca-control form-control">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software including versions of Lorem Ipsum.</span>
+
+
+
+    </div>
+
+    </div>
+
+
+    </div>
+
+    </div></div>
+                    </div>
+                </div>
+            </div>
+            
+            <br>
+
+            <div class="row">
+                <div class="col-lg-12">
+<p class="text-center h3" style="page-break-before: always">Riepilogo allegati istanza</p>
+                    <div id="riepilogo-allegati"><p>Nessun allegato disponibile.</p></div>
+                </div>
+            </div>
+            
+            <br>
+            
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="data-pdf">
+                        <strong>Data</strong>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="firma-pdf">
+                        <strong>Alfredo Serafini</strong>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="data-pdf">
+                        <span>06/06/2026</span>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="firma-pdf">
+                        <span></span>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <br>
+            <br>
+            <br>
+            <div class="row">
+                <div class="col-lg-12 text-center pdfFooterMarginNegative">    
+                    <div id="pdf-footer">
+                        <div class="clearfix text-left">La presente istanza è resa ai sensi dell'articolo 38, comma 2 del D.P.R. 28 dicembre 2000, n. 445, in conformità alla previsione di cui all'articolo 65, comma 1, lett. b) del decreto legislativo 7 marzo 2005, n. 82 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>    
+        
+    
+    <script type="text/javascript">
+        var k = jQuery.noConflict();
+
+        Function.prototype.bind = Function.prototype.bind || function (thisp) {
+          var fn = this;
+          return function () {
+            return fn.apply(thisp, arguments);
+          };
+        };
+    
+        var logoInpsInnerUrl = '';
+        var isCaricaBozza = false;
+        var userToken = '';
+        var listaProvinceUrl = 'https://web44.linksmt.it/o/api/alpaca/province';
+        var listaComuniUrl = 'https://web44.linksmt.it/o/api/alpaca/comuni';
+        var listaYearsUrl = 'https://web44.linksmt.it/o/api/alpaca/years';
+        var listaFiveYearsUrl = 'https://web44.linksmt.it/o/api/alpaca/five-years';
+        var listaTitoliStudioUrl = 'https://web44.linksmt.it/o/api/alpaca/titoli-studio';
+        var listaStatiCiviliUrl = 'https://web44.linksmt.it/o/api/alpaca/stati-civili';
+        var listaRelazioniParentelaUrl = 'https://web44.linksmt.it/o/api/alpaca/relazioni-parentela';
+        var listaStatiEsteriUrl = 'https://web44.linksmt.it/o/api/alpaca/stati-esteri';
+        var listaUsoBolloUrl = '';
+        var listaComuniEsteriUrl = 'https://web44.linksmt.it/o/api/alpaca/comuni';
+        var listaStradarioUrl = '';
+        
+        var statiEsteriJsonCF = [];
+        var provinceJsonCF = [];
+        var statiCiviliJsonCF = [];
+        var relazioniParentelaJsonCF = [];
+    
+        //NOMINATIM OPENSTREETMAP
+var getAddressByCoordsUrl = 'https://nominatim.openstreetmap.org/reverse.php?format=json&zoom=16';
+        var getCoordsByAddressUrl = 'https://nominatim.openstreetmap.org/search.php?format=json&limit=1&bounded=1&q=';
+        
+        var listaScuoleByComuneUrl = '';
+        var infoScuolaByIdUrl = '';
+        var numeroMaxScuoleAlternativeUrl = '';
+    
+        var listaDichiarazioniFormScolasticiUrl = '';
+        var listaCriteriScolasticiUrl = '';
+        var componenteNucleoFamigliareUrl = '';
+        var listaNucleoFamigliareUrl = '';
+        var elencoMinoriUrl = '';
+        var inpsIseeUrl = '';
+        
+        var sogliaIseeUrl = '';
+        var checkResidenteUrl = '';
+        var listaScuoleBRgByComuneUrl = '';
+        var listaScuoleFBcByComuneUrl = '';
+        var listaScuolePegComuneUrl = '';
+        var checkResidenteUrl = '';
+        var sendMailCodiceViaMancanteUrl = '';
+        var checkAttivazioneBaciniUrl = '';
+        
+        
+        console.log("listaProvinceUrl=", listaProvinceUrl);
+        console.log("listaComuniUrl=", listaComuniUrl);
+        console.log("listaYearsUrl=", listaYearsUrl);
+        console.log("listaFiveYearsUrl=", listaFiveYearsUrl);
+        console.log("listaStatiEsteriUrl=", listaStatiEsteriUrl);
+        console.log("listaUsoBolloUrl=", listaUsoBolloUrl);
+        console.log("listaComuniEsteriUrl=", listaComuniEsteriUrl);
+        
+                
+
+        console.log("listaCriteriScolasticiUrl=", listaCriteriScolasticiUrl);
+        
+        console.log("listaScuoleByComuneUrl=", listaScuoleByComuneUrl);
+        console.log("infoScuolaByIdUrl=", infoScuolaByIdUrl);
+        console.log("numeroMaxScuoleAlternativeUrl=", numeroMaxScuoleAlternativeUrl);
+        console.log("listaDichiarazioniFormScolasticiUrl=", listaDichiarazioniFormScolasticiUrl);
+        console.log("listaCriteriScolasticiUrl=", listaCriteriScolasticiUrl);
+        console.log("listaNucleoFamigliareUrl=", listaNucleoFamigliareUrl);
+        console.log("componenteNucleoFamigliareUrl=", componenteNucleoFamigliareUrl);
+        
+        var opPeg = '';
+        var codiceFiscaleComponente = '';
+        var cfLoggedUser='';
+        var delegaPresente = false;
+        var codiceFiscaleSelezioneManuale = 'false';
+        var dettagliRichiesta = '';
+        var dataCorrente = new Date();
+        
+        console.log("opPeg " + opPeg);
+        console.log("codiceFiscaleComponente " + codiceFiscaleComponente);
+        console.log("delegaPresente " + delegaPresente);
+        console.log("codiceFiscaleSelezioneManuale " + codiceFiscaleSelezioneManuale);
+    
+        
+        function __alpacaSearchField(obj, name) {
+            for (var key in obj) {
+                if (key == name) {
+                    return obj[key];
+                } else if (key == "fields") {
+                    return __alpacaSearchField(obj[key], name);
+                }
+            }
+            return null;
+        }
+        
+        k(document).ready(function() {
+            var optJson = {"type":"object","fields":{"esecuzione":{"type":"customFormEsecuzione","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"customFormEsecuzione-view","fields":{"configurazione":{"type":"text","hidden":true,"focus":false,"optionLabels":[],"typeahead":{},"allowOptionalEmpty":true,"data":{},"formAttuale":"form-mt-istanza-variazione-2027","formDaMostrare":"form-mt-istanza-variazione-2027-integrazione","autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"manualEntry":false,"disabled":false,"helpers":[],"validate":true,"showMessages":true,"renderButtons":true,"attributes":{},"fields":{}}},"order":1.0},"bloccoStep":{"type":"customBloccaStep","label":"","helpers":[],"fieldClass":"hideInExcelExport","validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","events":{},"view":"customBloccaStep-view","order":1.0,"fields":{}},"titoloForm":{"type":"label","validate":false,"showMessages":true,"disabled":false,"hidden":false,"label":"ISTANZA di VARIAZIONE, RIMODULAZIONE O RINUNCIA<br> (Erogazione di Contributi per Marketing Territoriale- Criteri anno 2027)","helpers":[],"fieldClass":"text-center","hideInitValidationError":false,"focus":false,"optionLabels":[],"typeahead":{},"allowOptionalEmpty":true,"data":{},"autocomplete":"false","disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"sort":false,"fields":{},"order":2.0},"sottoscrittoLabel":{"type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":3.0,"fields":{}},"datiAnagrafici":{"type":"datiAngraficiCustomTwoColOther","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"datiAngraficiCustomTwoColOther-view","order":4.0,"fields":{"nome":{"type":"text","disabled":true,"label":"Nome","renderButtons":true,"helpers":[],"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"cognome":{"type":"text","label":"Cognome","disabled":true,"renderButtons":true,"helpers":[],"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"codiceFiscale":{"type":"text","disabled":true,"label":"Cod.Fiscale","renderButtons":true,"attributes":{},"helpers":[],"validate":true,"showMessages":true,"data":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"dataNascita":{"type":"date","label":"Data di nascita","focus":false,"optionLabels":[],"typeahead":{},"allowOptionalEmpty":true,"data":{},"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"dateFormat":"DD/MM/YYYY","picker":{"useCurrent":false,"format":"DD/MM/YYYY","locale":"it","dayViewHeaderFormat":"MMMM YYYY","extraFormats":[]},"manualEntry":false,"disabled":false,"helpers":[],"validate":true,"showMessages":true,"renderButtons":true,"attributes":{},"events":{},"fields":{}},"luogoNascita":{"type":"text","label":"Luogo di nascita","disabled":true,"renderButtons":true,"events":{},"helpers":[],"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"indirizzoResidenza":{"type":"text","label":"Indirizzo di residenza","disabled":true,"renderButtons":true,"helpers":[],"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"viaHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"events":{},"fields":{}},"civicoHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"fields":{}},"esponenteHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"fields":{}},"scalaHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"fields":{}},"pianoHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"fields":{}},"internoHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"fields":{}},"capHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"fields":{}},"provinciaResHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"fields":{}},"comuneResHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"fields":{}},"identificativo":{"label":"Identificativo","type":"hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"identificativoFamiglia":{"label":"Identificativo","type":"hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"isDelegato":{"label":"delegato","type":"hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}}}},"inQualitaDi":{"label":"in qualità di","type":"text","validate":true,"helpers":[],"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":5.0,"fields":{}},"nomeEnte":{"label":"Denominazione dell’Ente Organizzatore dell’iniziativa: ","type":"text","validate":true,"helpers":[],"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":6.0,"fields":{}},"sedeLegaleLabel":{"type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":7.0,"fields":{}},"sedeLegale":{"type":"object","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","order":8.0,"view":{"parent":"bootstrap-edit","templates":{"container":"<div class='border-0 p-0'>{{#container}}{{/container}}</div>","container-object":"<div><div class='row'><div class='col-md-6'>{{#with items.[0]}}{{#item}}{{/item}}{{/with}}</div><div class='col-md-6'>{{#with items.[1]}}{{#item}}{{/item}}{{/with}}</div></div></div>"},"messages":{"notOptional":"Campo obbligatorio","invalidEmail":"Inserire mail valida, p.e. info@cloudcms.com","invalidPattern":"Inserire un valore numerico"},"id":"view-alpaca173"},"fields":{"provincia":{"label":"Provincia","type":"text","validate":true,"helpers":[],"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":1.0,"fields":{}},"comune":{"label":"Comune","type":"text","validate":true,"helpers":[],"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":2.0,"fields":{}}}},"datiEnte":{"type":"object","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":{"id":"view-alpaca395","parent":"bootstrap-edit","templates":{"container":"<div class='border-0 p-0'>{{#container}}{{/container}}</div>","container-object":"<div><div class='row'><div class='col-md-10'>{{#with items.[0]}}{{#item}}{{/item}}{{/with}}</div><div class='col-md-2'>{{#with items.[1]}}{{#item}}{{/item}}{{/with}}</div></div><div class='row'><div class='col-md-6'>{{#with items.[2]}}{{#item}}{{/item}}{{/with}}</div><div class='col-md-6'>{{#with items.[3]}}{{#item}}{{/item}}{{/with}}</div></div></div>"},"messages":{"notOptional":"Campo obbligatorio","invalidEmail":"Inserire mail valida, p.e. info@cloudcms.com","invalidPattern":"Inserire un valore numerico"}},"order":9.0,"fields":{"viaSedeLegale":{"label":"via","type":"text","validate":true,"helpers":[],"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":1.0,"fields":{}},"numeroCivico":{"label":"n.","type":"text","validate":true,"helpers":[],"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":2.0,"fields":{}},"cf":{"order":3.0,"label":"Codice Fiscale ","type":"text","validate":true,"showMessages":true,"disabled":false,"hidden":false,"helpers":[],"hideInitValidationError":true,"focus":false,"optionLabels":[],"typeahead":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":true,"sort":false,"readonly":false,"renderButtons":true,"attributes":{},"view":{"messages":{"notOptional":"Campo obbligatorio","invalidPattern":"Inserire caratteri alfanumerici","stringTooShort":"Questo campo deve contenere min {0} caratteri alfanumerici","stringTooLong":"Questo campo deve contenere max {0} caratteri alfanumerici"},"templates":{},"parent":"bootstrap-edit","id":"view-alpaca2321"},"data":{},"fields":{}},"partitaIva":{"type":"text","order":4.0,"label":"Partita IVA","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}}}},"nomeIniziativa":{"type":"text","validate":true,"label":"per l’iniziativa denominata","showMessages":true,"disabled":false,"hidden":false,"helpers":[],"fieldClass":"text-left","hideInitValidationError":false,"focus":false,"optionLabels":[],"order":10.0,"typeahead":{},"allowOptionalEmpty":true,"data":{},"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"sort":false,"renderButtons":true,"attributes":{},"fields":{}},"nomeIniziativaLabel":{"type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"order":11.0,"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"comunicaLabel":{"label":"<p>Consapevole della responsabilità penale cui può andare incontro in caso di dichiarazioni mendaci, ai sensi e per gli effetti dell’art. 76 del D.P.R. 28 dicembre 2000, n. 445,</p><br><p class='text-center'>COMUNICA</p>","type":"text","view":"bootstrap-display","validate":true,"helpers":[],"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":12.0,"fields":{}},"tipoIstanza":{"type":"radio","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"useDataSourceAsEnum":true,"emptySelectFirst":false,"vertical":true,"noneLabel":"Nessuno","hideNone":true,"sort":false,"order":13.0,"optionLabels":["Di aggiornare il crono programma come di seguito riportato:","Di rimodulare il piano finanziario come indicato nella nuova Scheda Piano finanziario che si allega","Di rinunciare al finanziamento"],"fields":{}},"stimaDeiCosti":{"type":"object","helpers":[],"validate":true,"disabled":false,"showMessages":true,"dependencies":{"tipoIstanza":["RIMODULAZIONE"]},"collapsible":false,"view":{"templates":{"container":"<div class='text-weight-normal' style='border-style: none !important;'>{{#container}}{{/container}}</div>","container-object":"<div><div class='row'><div class='col-md-12'>{{#with items.[0]}}{{#item}}{{/item}}{{/with}}</div></div><div class='row text-weight-normal'><table class='table table-striped table-bordered text-weight-normal'><tbody><tr><td style='width: 20%;vertical-align: top'>{{#with items.[1]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 40%;vertical-align: top'>{{#with items.[2]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[3]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[4]}}{{#item}}{{/item}}{{/with}}</td></tr><tr><td style='width: 20%;vertical-align: top'><b  style='display:block; text-align:center; margin:0 auto;'>A</b></td><td style='width: 40%;vertical-align: top'>{{#with items.[5]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[6]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[7]}}{{#item}}{{/item}}{{/with}}</td></tr><tr><td style='width: 20%;vertical-align: top'><b  style='display:block; text-align:center; margin:0 auto;'>B</b></td><td style='width: 40%;vertical-align: top'>{{#with items.[8]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[9]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[10]}}{{#item}}{{/item}}{{/with}}</td></tr><tr><td style='width: 20%;vertical-align: top'><b  style='display:block; text-align:center; margin:0 auto;'>C</b></td><td style='width: 40%;vertical-align: top'>{{#with items.[11]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[12]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[13]}}{{#item}}{{/item}}{{/with}}</td></tr><tr><td style='width: 20%;vertical-align: top'><b  style='display:block; text-align:center; margin:0 auto;'>D</b></td><td style='width: 40%;vertical-align: top'>{{#with items.[14]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[15]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[16]}}{{#item}}{{/item}}{{/with}}</td></tr><tr><td style='width: 20%;vertical-align: top'><b  style='display:block; text-align:center; margin:0 auto;'>E</b></td><td style='width: 40%;vertical-align: top'>{{#with items.[17]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[18]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[19]}}{{#item}}{{/item}}{{/with}}</td></tr><tr><td style='width: 20%;vertical-align: top'><b  style='display:block; text-align:center; margin:0 auto;'>F</b></td><td style='width: 40%;vertical-align: top'>{{#with items.[20]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[21]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[22]}}{{#item}}{{/item}}{{/with}}</td></tr><tr><td style='width: 20%;vertical-align: top'><b  style='display:block; text-align:center; margin:0 auto;'>TOTALE</b></td><td style='width: 40%;vertical-align: top'></td><td style='width: 20%;vertical-align: top'>{{#with items.[23]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'></td></tr></tbody></table></div></div>"},"parent":"bootstrap-edit","id":"view-alpaca986"},"legendStyle":"button","order":14.0,"fields":{"titoloStimaCosti":{"type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"vociDiCostoLabel":{"type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"speseLabel":{"type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"importiLabel":{"type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"percentualiLabel":{"type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"assistenzaTecnicaLabel":{"label":"Assistenza tecnica per la gestione e la realizzazione delle attivita","type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"assistenzaTecnicaImporto":{"type":"importo","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"importo-view","fields":{"importo":{"type":"currency","centsLimit":2.0,"centsSeparator":",","prefix":"€","round":"none","thousandsSeparator":".","unmask":true,"disabled":false,"hidden":false,"helpers":[],"hideInitValidationError":true,"focus":false,"readonly":false,"renderButtons":true,"events":{},"order":2.0,"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fieldClass":"importoFieldRight","fields":{}}}},"assistenzaTecnicaPercentuale":{"type":"text","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"consulenzeSpecificheLabel":{"label":"consulenze specifiche per la predisposizione di progetti, studi di settore e di conoscenza e relazioni dei mercati esteri","type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"consulenzeSpecificheImporto":{"type":"importo","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"importo-view","fields":{"importo":{"type":"currency","centsLimit":2.0,"centsSeparator":",","prefix":"€","round":"none","thousandsSeparator":".","unmask":true,"disabled":false,"hidden":false,"helpers":[],"hideInitValidationError":true,"focus":false,"readonly":false,"renderButtons":true,"events":{},"order":2.0,"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fieldClass":"importoFieldRight","fields":{}}}},"consulenzeSpecifichePercentuale":{"type":"text","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"softwareLabel":{"label":"software e connettività alla rete internet","type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"softwareImporto":{"type":"importo","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"importo-view","fields":{"importo":{"type":"currency","centsLimit":2.0,"centsSeparator":",","prefix":"€","round":"none","thousandsSeparator":".","unmask":true,"disabled":false,"hidden":false,"helpers":[],"hideInitValidationError":true,"focus":false,"readonly":false,"renderButtons":true,"events":{},"order":2.0,"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fieldClass":"importoFieldRight","fields":{}}}},"softwarePercentuale":{"type":"text","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"progettazioneLabel":{"label":"progettazione e pubblicazione di stampa di cataloghi, opuscoli, libri, depliant, manifesti, multimediali e ogni altro materiale illustrativo delle attività produttive pugliesi","type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"progettazioneImporto":{"type":"importo","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"importo-view","fields":{"importo":{"type":"currency","centsLimit":2.0,"centsSeparator":",","prefix":"€","round":"none","thousandsSeparator":".","unmask":true,"disabled":false,"hidden":false,"helpers":[],"hideInitValidationError":true,"focus":false,"readonly":false,"renderButtons":true,"events":{},"order":2.0,"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fieldClass":"importoFieldRight","fields":{}}}},"progettazionePercentuale":{"type":"text","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"viaggiLabel":{"label":"viaggi e missioni, anche delle delegazioni ospitate","type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"viaggiImporto":{"type":"importo","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"importo-view","fields":{"importo":{"type":"currency","centsLimit":2.0,"centsSeparator":",","prefix":"€","round":"none","thousandsSeparator":".","unmask":true,"disabled":false,"hidden":false,"helpers":[],"hideInitValidationError":true,"focus":false,"readonly":false,"renderButtons":true,"events":{},"order":2.0,"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fieldClass":"importoFieldRight","fields":{}}}},"viaggiPercentuale":{"type":"text","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"speseGeneraliLabel":{"label":"spese generali da rendicontare nel limite massimo del 10 per cento del costo complessivo dell'intervento","type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"speseGeneraliImporto":{"type":"importo","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"importo-view","fields":{"importo":{"type":"currency","centsLimit":2.0,"centsSeparator":",","prefix":"€","round":"none","thousandsSeparator":".","unmask":true,"disabled":false,"hidden":false,"helpers":[],"hideInitValidationError":true,"focus":false,"readonly":false,"renderButtons":true,"events":{},"order":2.0,"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fieldClass":"importoFieldRight","fields":{}}}},"speseGeneraliPercentuale":{"type":"text","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"totaleImportiPianoFinanziario":{"type":"importo","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"importo-view","fields":{"importo":{"type":"currency","centsLimit":2.0,"centsSeparator":",","prefix":"€","round":"none","thousandsSeparator":".","unmask":true,"disabled":false,"hidden":false,"helpers":[],"hideInitValidationError":true,"focus":false,"readonly":false,"renderButtons":true,"events":{},"order":2.0,"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fieldClass":"importoFieldRight","fields":{}}}}}},"dettaglioCronoprogramma":{"type":"textarea","rows":5.0,"cols":300.0,"label":"Cronoprogramma","order":15.0,"helpers":[],"dependencies":{"tipoIstanza":["CRONOPROGRAMMA"]},"validate":true,"disabled":false,"required":true,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}}}};
+        
+            k("#form").alpaca({
+                "schema": {"type":"object","properties":{"bloccoStep":{"type":"object","properties":{}},"titoloForm":{"type":"string","required":false,"properties":{}},"sottoscrittoLabel":{"type":"string","required":false,"properties":{}},"datiAnagrafici":{"type":"object","properties":{"nome":{"title":"Nome","type":"string","required":false,"properties":{}},"cognome":{"title":"Cognome","type":"string","required":false,"properties":{}},"codiceFiscale":{"title":"Cod.Fiscale","type":"string","required":false,"properties":{}},"dataNascita":{"title":"Data di nascita","type":"string","required":true,"properties":{}},"luogoNascita":{"title":"Luogo di nascita","type":"string","required":true,"properties":{}},"indirizzoResidenza":{"title":"Indirizzo Residenza","required":true,"type":"string","maxLength":250.0,"properties":{}},"viaHidden":{"type":"string","required":false,"properties":{}},"civicoHidden":{"type":"string","required":false,"properties":{}},"esponenteHidden":{"type":"string","required":false,"properties":{}},"scalaHidden":{"type":"string","required":false,"properties":{}},"pianoHidden":{"type":"string","required":false,"properties":{}},"internoHidden":{"type":"string","required":false,"properties":{}},"capHidden":{"type":"string","required":false,"properties":{}},"provinciaResHidden":{"type":"string","required":false,"properties":{}},"comuneResHidden":{"type":"string","required":false,"properties":{}},"identificativo":{"type":"string","required":false,"properties":{}},"identificativoFamiglia":{"type":"string","required":false,"properties":{}},"isDelegato":{"type":"string","required":false,"properties":{}}}},"inQualitaDi":{"type":"string","required":true,"properties":{}},"nomeEnte":{"type":"string","required":true,"properties":{}},"sedeLegaleLabel":{"type":"string","required":false,"properties":{}},"sedeLegale":{"type":"object","required":false,"properties":{"provincia":{"type":"string","required":true,"properties":{}},"comune":{"type":"string","required":true,"properties":{}}}},"datiEnte":{"type":"object","required":false,"properties":{"viaSedeLegale":{"type":"string","required":false,"properties":{}},"numeroCivico":{"type":"string","required":false,"properties":{}},"cf":{"type":"string","pattern":"^[A-Za-z0-9]+$","required":true,"maxLength":16.0,"minLength":11.0,"properties":{}},"partitaIva":{"type":"string","required":true,"pattern":"^\\d+$","maxLength":11.0,"minLength":11.0,"properties":{}}}},"nomeIniziativa":{"type":"string","required":true,"properties":{}},"nomeIniziativaLabel":{"type":"string","required":false,"properties":{}},"comunicaLabel":{"type":"string","required":false,"properties":{}},"tipoIstanza":{"required":true,"enum":["CRONOPROGRAMMA","RIMODULAZIONE","RINUNCIA"],"properties":{}},"stimaDeiCosti":{"type":"object","required":false,"properties":{"titoloStimaCosti":{"type":"string","required":false,"properties":{}},"vociDiCostoLabel":{"type":"string","required":false,"properties":{}},"speseLabel":{"type":"string","required":false,"properties":{}},"importiLabel":{"type":"string","required":false,"properties":{}},"percentualiLabel":{"type":"string","required":false,"properties":{}},"assistenzaTecnicaLabel":{"type":"string","required":false,"properties":{}},"assistenzaTecnicaImporto":{"type":"object","properties":{"importo":{"type":"string","required":true,"properties":{}}}},"assistenzaTecnicaPercentuale":{"type":"string","required":false,"properties":{}},"consulenzeSpecificheLabel":{"type":"string","required":false,"properties":{}},"consulenzeSpecificheImporto":{"type":"object","properties":{"importo":{"type":"string","required":true,"properties":{}}}},"consulenzeSpecifichePercentuale":{"type":"string","required":false,"properties":{}},"softwareLabel":{"type":"string","required":false,"properties":{}},"softwareImporto":{"type":"object","properties":{"importo":{"type":"string","required":true,"properties":{}}}},"softwarePercentuale":{"type":"string","required":false,"properties":{}},"progettazioneLabel":{"type":"string","required":false,"properties":{}},"progettazioneImporto":{"type":"object","properties":{"importo":{"type":"string","required":true,"properties":{}}}},"progettazionePercentuale":{"type":"string","required":false,"properties":{}},"viaggiLabel":{"type":"string","required":false,"properties":{}},"viaggiImporto":{"type":"object","properties":{"importo":{"type":"string","required":true,"properties":{}}}},"viaggiPercentuale":{"type":"string","required":false,"properties":{}},"speseGeneraliLabel":{"type":"string","required":false,"properties":{}},"speseGeneraliImporto":{"type":"object","properties":{"importo":{"type":"string","required":true,"properties":{}}}},"speseGeneraliPercentuale":{"type":"string","required":false,"properties":{}},"totaleImportiPianoFinanziario":{"type":"object","properties":{"importo":{"type":"string","required":true,"properties":{}}}}}},"dettaglioCronoprogramma":{"type":"string","required":false,"properties":{}}},"dependencies":{"stimaDeiCosti":["tipoIstanza"],"dettaglioCronoprogramma":["tipoIstanza"]}},
+                "options": {"type":"object","fields":{"esecuzione":{"type":"customFormEsecuzione","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"customFormEsecuzione-view","fields":{"configurazione":{"type":"text","hidden":true,"focus":false,"optionLabels":[],"typeahead":{},"allowOptionalEmpty":true,"data":{},"formAttuale":"form-mt-istanza-variazione-2027","formDaMostrare":"form-mt-istanza-variazione-2027-integrazione","autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"manualEntry":false,"disabled":false,"helpers":[],"validate":true,"showMessages":true,"renderButtons":true,"attributes":{},"fields":{}}},"order":1.0},"bloccoStep":{"type":"customBloccaStep","label":"","helpers":[],"fieldClass":"hideInExcelExport","validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","events":{},"view":"customBloccaStep-view","order":1.0,"fields":{}},"titoloForm":{"type":"label","validate":false,"showMessages":true,"disabled":false,"hidden":false,"label":"ISTANZA di VARIAZIONE, RIMODULAZIONE O RINUNCIA<br> (Erogazione di Contributi per Marketing Territoriale- Criteri anno 2027)","helpers":[],"fieldClass":"text-center","hideInitValidationError":false,"focus":false,"optionLabels":[],"typeahead":{},"allowOptionalEmpty":true,"data":{},"autocomplete":"false","disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"sort":false,"fields":{},"order":2.0},"sottoscrittoLabel":{"type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":3.0,"fields":{}},"datiAnagrafici":{"type":"datiAngraficiCustomTwoColOther","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"datiAngraficiCustomTwoColOther-view","order":4.0,"fields":{"nome":{"type":"text","disabled":true,"label":"Nome","renderButtons":true,"helpers":[],"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"cognome":{"type":"text","label":"Cognome","disabled":true,"renderButtons":true,"helpers":[],"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"codiceFiscale":{"type":"text","disabled":true,"label":"Cod.Fiscale","renderButtons":true,"attributes":{},"helpers":[],"validate":true,"showMessages":true,"data":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"dataNascita":{"type":"date","label":"Data di nascita","focus":false,"optionLabels":[],"typeahead":{},"allowOptionalEmpty":true,"data":{},"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"dateFormat":"DD/MM/YYYY","picker":{"useCurrent":false,"format":"DD/MM/YYYY","locale":"it","dayViewHeaderFormat":"MMMM YYYY","extraFormats":[]},"manualEntry":false,"disabled":false,"helpers":[],"validate":true,"showMessages":true,"renderButtons":true,"attributes":{},"events":{},"fields":{}},"luogoNascita":{"type":"text","label":"Luogo di nascita","disabled":true,"renderButtons":true,"events":{},"helpers":[],"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"indirizzoResidenza":{"type":"text","label":"Indirizzo di residenza","disabled":true,"renderButtons":true,"helpers":[],"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"viaHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"events":{},"fields":{}},"civicoHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"fields":{}},"esponenteHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"fields":{}},"scalaHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"fields":{}},"pianoHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"fields":{}},"internoHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"fields":{}},"capHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"fields":{}},"provinciaResHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"fields":{}},"comuneResHidden":{"type":"hidden","label":"New hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"fields":{}},"identificativo":{"label":"Identificativo","type":"hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"identificativoFamiglia":{"label":"Identificativo","type":"hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"isDelegato":{"label":"delegato","type":"hidden","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}}}},"inQualitaDi":{"label":"in qualità di","type":"text","validate":true,"helpers":[],"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":5.0,"fields":{}},"nomeEnte":{"label":"Denominazione dell’Ente Organizzatore dell’iniziativa: ","type":"text","validate":true,"helpers":[],"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":6.0,"fields":{}},"sedeLegaleLabel":{"type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":7.0,"fields":{}},"sedeLegale":{"type":"object","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","order":8.0,"view":{"parent":"bootstrap-edit","templates":{"container":"<div class='border-0 p-0'>{{#container}}{{/container}}</div>","container-object":"<div><div class='row'><div class='col-md-6'>{{#with items.[0]}}{{#item}}{{/item}}{{/with}}</div><div class='col-md-6'>{{#with items.[1]}}{{#item}}{{/item}}{{/with}}</div></div></div>"},"messages":{"notOptional":"Campo obbligatorio","invalidEmail":"Inserire mail valida, p.e. info@cloudcms.com","invalidPattern":"Inserire un valore numerico"},"id":"view-alpaca173"},"fields":{"provincia":{"label":"Provincia","type":"text","validate":true,"helpers":[],"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":1.0,"fields":{}},"comune":{"label":"Comune","type":"text","validate":true,"helpers":[],"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":2.0,"fields":{}}}},"datiEnte":{"type":"object","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":{"id":"view-alpaca395","parent":"bootstrap-edit","templates":{"container":"<div class='border-0 p-0'>{{#container}}{{/container}}</div>","container-object":"<div><div class='row'><div class='col-md-10'>{{#with items.[0]}}{{#item}}{{/item}}{{/with}}</div><div class='col-md-2'>{{#with items.[1]}}{{#item}}{{/item}}{{/with}}</div></div><div class='row'><div class='col-md-6'>{{#with items.[2]}}{{#item}}{{/item}}{{/with}}</div><div class='col-md-6'>{{#with items.[3]}}{{#item}}{{/item}}{{/with}}</div></div></div>"},"messages":{"notOptional":"Campo obbligatorio","invalidEmail":"Inserire mail valida, p.e. info@cloudcms.com","invalidPattern":"Inserire un valore numerico"}},"order":9.0,"fields":{"viaSedeLegale":{"label":"via","type":"text","validate":true,"helpers":[],"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":1.0,"fields":{}},"numeroCivico":{"label":"n.","type":"text","validate":true,"helpers":[],"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":2.0,"fields":{}},"cf":{"order":3.0,"label":"Codice Fiscale ","type":"text","validate":true,"showMessages":true,"disabled":false,"hidden":false,"helpers":[],"hideInitValidationError":true,"focus":false,"optionLabels":[],"typeahead":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":true,"sort":false,"readonly":false,"renderButtons":true,"attributes":{},"view":{"messages":{"notOptional":"Campo obbligatorio","invalidPattern":"Inserire caratteri alfanumerici","stringTooShort":"Questo campo deve contenere min {0} caratteri alfanumerici","stringTooLong":"Questo campo deve contenere max {0} caratteri alfanumerici"},"templates":{},"parent":"bootstrap-edit","id":"view-alpaca2321"},"data":{},"fields":{}},"partitaIva":{"type":"text","order":4.0,"label":"Partita IVA","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}}}},"nomeIniziativa":{"type":"text","validate":true,"label":"per l’iniziativa denominata","showMessages":true,"disabled":false,"hidden":false,"helpers":[],"fieldClass":"text-left","hideInitValidationError":false,"focus":false,"optionLabels":[],"order":10.0,"typeahead":{},"allowOptionalEmpty":true,"data":{},"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"sort":false,"renderButtons":true,"attributes":{},"fields":{}},"nomeIniziativaLabel":{"type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"order":11.0,"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"comunicaLabel":{"label":"<p>Consapevole della responsabilità penale cui può andare incontro in caso di dichiarazioni mendaci, ai sensi e per gli effetti dell’art. 76 del D.P.R. 28 dicembre 2000, n. 445,</p><br><p class='text-center'>COMUNICA</p>","type":"text","view":"bootstrap-display","validate":true,"helpers":[],"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"order":12.0,"fields":{}},"tipoIstanza":{"type":"radio","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"useDataSourceAsEnum":true,"emptySelectFirst":false,"vertical":true,"noneLabel":"Nessuno","hideNone":true,"sort":false,"order":13.0,"optionLabels":["Di aggiornare il crono programma come di seguito riportato:","Di rimodulare il piano finanziario come indicato nella nuova Scheda Piano finanziario che si allega","Di rinunciare al finanziamento"],"fields":{}},"stimaDeiCosti":{"type":"object","helpers":[],"validate":true,"disabled":false,"showMessages":true,"dependencies":{"tipoIstanza":["RIMODULAZIONE"]},"collapsible":false,"view":{"templates":{"container":"<div class='text-weight-normal' style='border-style: none !important;'>{{#container}}{{/container}}</div>","container-object":"<div><div class='row'><div class='col-md-12'>{{#with items.[0]}}{{#item}}{{/item}}{{/with}}</div></div><div class='row text-weight-normal'><table class='table table-striped table-bordered text-weight-normal'><tbody><tr><td style='width: 20%;vertical-align: top'>{{#with items.[1]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 40%;vertical-align: top'>{{#with items.[2]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[3]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[4]}}{{#item}}{{/item}}{{/with}}</td></tr><tr><td style='width: 20%;vertical-align: top'><b  style='display:block; text-align:center; margin:0 auto;'>A</b></td><td style='width: 40%;vertical-align: top'>{{#with items.[5]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[6]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[7]}}{{#item}}{{/item}}{{/with}}</td></tr><tr><td style='width: 20%;vertical-align: top'><b  style='display:block; text-align:center; margin:0 auto;'>B</b></td><td style='width: 40%;vertical-align: top'>{{#with items.[8]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[9]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[10]}}{{#item}}{{/item}}{{/with}}</td></tr><tr><td style='width: 20%;vertical-align: top'><b  style='display:block; text-align:center; margin:0 auto;'>C</b></td><td style='width: 40%;vertical-align: top'>{{#with items.[11]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[12]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[13]}}{{#item}}{{/item}}{{/with}}</td></tr><tr><td style='width: 20%;vertical-align: top'><b  style='display:block; text-align:center; margin:0 auto;'>D</b></td><td style='width: 40%;vertical-align: top'>{{#with items.[14]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[15]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[16]}}{{#item}}{{/item}}{{/with}}</td></tr><tr><td style='width: 20%;vertical-align: top'><b  style='display:block; text-align:center; margin:0 auto;'>E</b></td><td style='width: 40%;vertical-align: top'>{{#with items.[17]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[18]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[19]}}{{#item}}{{/item}}{{/with}}</td></tr><tr><td style='width: 20%;vertical-align: top'><b  style='display:block; text-align:center; margin:0 auto;'>F</b></td><td style='width: 40%;vertical-align: top'>{{#with items.[20]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[21]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'>{{#with items.[22]}}{{#item}}{{/item}}{{/with}}</td></tr><tr><td style='width: 20%;vertical-align: top'><b  style='display:block; text-align:center; margin:0 auto;'>TOTALE</b></td><td style='width: 40%;vertical-align: top'></td><td style='width: 20%;vertical-align: top'>{{#with items.[23]}}{{#item}}{{/item}}{{/with}}</td><td style='width: 20%;vertical-align: top'></td></tr></tbody></table></div></div>"},"parent":"bootstrap-edit","id":"view-alpaca986"},"legendStyle":"button","order":14.0,"fields":{"titoloStimaCosti":{"type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"vociDiCostoLabel":{"type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"speseLabel":{"type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"importiLabel":{"type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"percentualiLabel":{"type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"assistenzaTecnicaLabel":{"label":"Assistenza tecnica per la gestione e la realizzazione delle attivita","type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"assistenzaTecnicaImporto":{"type":"importo","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"importo-view","fields":{"importo":{"type":"currency","centsLimit":2.0,"centsSeparator":",","prefix":"€","round":"none","thousandsSeparator":".","unmask":true,"disabled":false,"hidden":false,"helpers":[],"hideInitValidationError":true,"focus":false,"readonly":false,"renderButtons":true,"events":{},"order":2.0,"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fieldClass":"importoFieldRight","fields":{}}}},"assistenzaTecnicaPercentuale":{"type":"text","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"consulenzeSpecificheLabel":{"label":"consulenze specifiche per la predisposizione di progetti, studi di settore e di conoscenza e relazioni dei mercati esteri","type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"consulenzeSpecificheImporto":{"type":"importo","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"importo-view","fields":{"importo":{"type":"currency","centsLimit":2.0,"centsSeparator":",","prefix":"€","round":"none","thousandsSeparator":".","unmask":true,"disabled":false,"hidden":false,"helpers":[],"hideInitValidationError":true,"focus":false,"readonly":false,"renderButtons":true,"events":{},"order":2.0,"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fieldClass":"importoFieldRight","fields":{}}}},"consulenzeSpecifichePercentuale":{"type":"text","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"softwareLabel":{"label":"software e connettività alla rete internet","type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"softwareImporto":{"type":"importo","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"importo-view","fields":{"importo":{"type":"currency","centsLimit":2.0,"centsSeparator":",","prefix":"€","round":"none","thousandsSeparator":".","unmask":true,"disabled":false,"hidden":false,"helpers":[],"hideInitValidationError":true,"focus":false,"readonly":false,"renderButtons":true,"events":{},"order":2.0,"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fieldClass":"importoFieldRight","fields":{}}}},"softwarePercentuale":{"type":"text","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"progettazioneLabel":{"label":"progettazione e pubblicazione di stampa di cataloghi, opuscoli, libri, depliant, manifesti, multimediali e ogni altro materiale illustrativo delle attività produttive pugliesi","type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"progettazioneImporto":{"type":"importo","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"importo-view","fields":{"importo":{"type":"currency","centsLimit":2.0,"centsSeparator":",","prefix":"€","round":"none","thousandsSeparator":".","unmask":true,"disabled":false,"hidden":false,"helpers":[],"hideInitValidationError":true,"focus":false,"readonly":false,"renderButtons":true,"events":{},"order":2.0,"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fieldClass":"importoFieldRight","fields":{}}}},"progettazionePercentuale":{"type":"text","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"viaggiLabel":{"label":"viaggi e missioni, anche delle delegazioni ospitate","type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"viaggiImporto":{"type":"importo","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"importo-view","fields":{"importo":{"type":"currency","centsLimit":2.0,"centsSeparator":",","prefix":"€","round":"none","thousandsSeparator":".","unmask":true,"disabled":false,"hidden":false,"helpers":[],"hideInitValidationError":true,"focus":false,"readonly":false,"renderButtons":true,"events":{},"order":2.0,"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fieldClass":"importoFieldRight","fields":{}}}},"viaggiPercentuale":{"type":"text","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"speseGeneraliLabel":{"label":"spese generali da rendicontare nel limite massimo del 10 per cento del costo complessivo dell'intervento","type":"text","view":"bootstrap-display","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"speseGeneraliImporto":{"type":"importo","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"importo-view","fields":{"importo":{"type":"currency","centsLimit":2.0,"centsSeparator":",","prefix":"€","round":"none","thousandsSeparator":".","unmask":true,"disabled":false,"hidden":false,"helpers":[],"hideInitValidationError":true,"focus":false,"readonly":false,"renderButtons":true,"events":{},"order":2.0,"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fieldClass":"importoFieldRight","fields":{}}}},"speseGeneraliPercentuale":{"type":"text","helpers":[],"validate":true,"disabled":false,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}},"totaleImportiPianoFinanziario":{"type":"importo","label":"","helpers":[],"validate":true,"disabled":false,"showMessages":true,"collapsible":false,"legendStyle":"button","view":"importo-view","fields":{"importo":{"type":"currency","centsLimit":2.0,"centsSeparator":",","prefix":"€","round":"none","thousandsSeparator":".","unmask":true,"disabled":false,"hidden":false,"helpers":[],"hideInitValidationError":true,"focus":false,"readonly":false,"renderButtons":true,"events":{},"order":2.0,"validate":true,"showMessages":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fieldClass":"importoFieldRight","fields":{}}}}}},"dettaglioCronoprogramma":{"type":"textarea","rows":5.0,"cols":300.0,"label":"Cronoprogramma","order":15.0,"helpers":[],"dependencies":{"tipoIstanza":["CRONOPROGRAMMA"]},"validate":true,"disabled":false,"required":true,"showMessages":true,"renderButtons":true,"data":{},"attributes":{},"allowOptionalEmpty":true,"autocomplete":false,"disallowEmptySpaces":false,"disallowOnlyEmptySpaces":false,"fields":{}}}},
+                "data": {"bloccoStep":{},"sottoscrittoLabel":"Il/la sottoscritto/a","datiAnagrafici":{"nome":"Alfredo","cognome":"Serafini","codiceFiscale":"SRFLRD80E19L049V","dataNascita":"01/01/1980","luogoNascita":"Bari (BA)","indirizzoResidenza":"via Listz 21 00144 Roma","isDelegato":"false"},"inQualitaDi":"1111","nomeEnte":"111","sedeLegaleLabel":"Sede legale:","sedeLegale":{"provincia":"RM","comune":"1111"},"datiEnte":{"cf":"drcfba76m27h501k","partitaIva":"11111111111"},"nomeIniziativa":"1111","nomeIniziativaLabel":"relativamente al contributo previsto per <b>Avviso 2027 per Erogazione di Contributi per Marketing Territoriale</b> ","tipoIstanza":"CRONOPROGRAMMA","dettaglioCronoprogramma":"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software including versions of Lorem Ipsum."},
+                "postRender": function(control) {
+                    k('.select2ac1').each(function(index) {
+                        var selectName = k(this).find("select").attr("name");
+                        var s2Value = control.data[selectName + "Value"];
+                        var s2Text = control.data[selectName + "Text"];
+                        var s2DataSource = "";
+
+                        if (s2Value != null && typeof s2Value !== 'undefined' && s2Text != null && typeof s2Text !== 'undefined') {
+                            /*var newOption = new Option(s2Text, s2Value, true, true);*/
+                            k(this).find('select').find('option').remove().end().append('<option value="' + s2Text + '">' + s2Text + '</option>');
+                        }
+                        //window.status = 'ready_to_print';    
+                    });
+                    generaAllegati();
+                    replaceInput();
+                     window.status = 'ready_to_print';    
+                }
+            });
+            //window.setTimeout(replaceInput, 4000);
+            // window.status = 'ready_to_print';                             
+        });    
+        function replaceInput(){
+        
+            console.log("replaceInput");
+            
+            if (dettagliRichiesta && dettagliRichiesta.trim().length > 0 ) {
+                k('.showNumRichiesta label').append(' - ' + dettagliRichiesta);
+            }
+                    
+            k(".hideLabelInPdf").each(
+            function() {
+                 this.children[0].hidden = true;
+            });
+
+            k(".showInPdf").css({
+                display : "block",
+                visibility : "show"
+            });
+            
+            k(".hideInPdf").css({
+                display : "none",
+                visibility : "hidden"
+            }); 
+            
+            k(".hidableObject").each(
+            function() {
+                if (k(this).find("input:checkbox")[0].checked == false) {
+                                this.hidden = true;
+                }
+            });
+       
+            k(".breakPagePdf").css({
+                "page-break-after" : "always"
+            });
+                   
+            k(".breakPagePdfBefore").css({
+                "page-break-before" : "always"
+            });
+             
+            
+            k('input[type="text"], select, textarea').replaceWith(function() {
+                return '<span class="intpuModificato ' + this.className + '">' + k(this).val() + '</span>'
+            });
+            
+            replaceALink();
+        }
+        
+        function replaceALink(){
+            console.log("replaceA");
+            k("a[href]").replaceWith(function() {
+                return '<span class="' + this.className + '">' + k(this).text() + '</span>'
+            });
+        }    
+        
+        function generaAllegati() {
+            console.log("createTable");
+        
+            var allegati = JSON.parse("[]");
+
+
+            if (!allegati || allegati.length === 0) {
+                k("#riepilogo-allegati").html("<p>Nessun allegato disponibile.</p>");
+                return;
+            }
+        
+            var header = '<thead class="tableAllegati"><tr>';
+            header += '<th style="word-wrap: break-word; vertical-align: top;">Nome file</th>';
+            header += '<th style="word-wrap: break-word; vertical-align: top;">Impronta</th>';
+            header += '<th style="word-wrap: break-word; vertical-align: top;">Firmato digitalmente</th>';
+            header += '<th style="word-wrap: break-word; vertical-align: top;">Soggetto firmatario</th>';
+            header += '</tr></thead>';
+        
+            var body = "<tbody class='tableAllegati'>";
+            for (var i = 0; i < allegati.length; i++) {
+                var a = allegati[i];
+                var nome = a.nomeFile;
+                var impronta = a.impronta;
+                var firmato = a.firmato === true ? "Sì" : "No";
+                var identificativo = "";
+                if (a.identificativoFirmatario && a.identificativoFirmatario != null) {
+                    identificativo = a.identificativoFirmatario;
+                }
+        
+                body += "<tr>";
+                body += "<td style='word-wrap: break-word'>" + nome + "</td>";
+                body += "<td style='word-wrap: break-word'>" + impronta + "</td>";
+                body += "<td style='word-wrap: break-word'>" + firmato + "</td>";
+                body += "<td style='word-wrap: break-word'>" + identificativo + "</td>";
+                body += "</tr>";
+            }
+            body += "</tbody>";
+        
+            // Inserisce tabella completa nel contenitore
+            var htmlTable = header + body;
+            k("#riepilogo-allegati").html(htmlTable);
+        
+            // Wrappa la tabella dentro <table> solo dopo averla inserita nel DOM
+            k('.tableAllegati').wrapAll("<table class='table table-bordered' style='table-layout: fixed; width: 100%;'></table>");
+        }
+    </script>
+</body></html>

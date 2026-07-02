@@ -1,0 +1,58 @@
+package org.tasktelemetry;
+
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatNoException;
+
+import java.io.IOException;
+import java.time.Instant;
+
+import org.junit.jupiter.api.Test;
+
+import org.tasktelemetry.event.TaskEvent;
+import org.tasktelemetry.event.TaskEventType;
+
+class TaskTelemetryErrorHandlerTest {
+
+    private final TaskEvent event = sampleEvent();
+
+    @Test
+    void ignoreSwallowsFailure() {
+        assertThatNoException().isThrownBy(
+                () -> TaskTelemetryErrorHandler.ignore().onPublishFailure(event, new RuntimeException("x")));
+    }
+
+    @Test
+    void loggingSwallowsFailure() {
+        assertThatNoException().isThrownBy(
+                () -> TaskTelemetryErrorHandler.logging().onPublishFailure(event, new RuntimeException("x")));
+    }
+
+    @Test
+    void rethrowRethrowsRuntimeExceptionAsIs() {
+        RuntimeException failure = new RuntimeException("boom");
+
+        assertThatExceptionOfType(RuntimeException.class)
+                .isThrownBy(() -> TaskTelemetryErrorHandler.rethrow().onPublishFailure(event, failure))
+                .isSameAs(failure);
+    }
+
+    @Test
+    void rethrowWrapsNonRuntimeException() {
+        IOException checkedFailure = new IOException("disk");
+
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> TaskTelemetryErrorHandler.rethrow().onPublishFailure(event, checkedFailure))
+                .withCause(checkedFailure);
+    }
+
+    private static TaskEvent sampleEvent() {
+        return TaskEvent.builder()
+                .eventId("exec-1-0")
+                .taskName("IMPORT_CLIENTI")
+                .executionId("exec-1")
+                .type(TaskEventType.STARTED)
+                .timestamp(Instant.parse("2026-06-28T10:00:00Z"))
+                .sequenceNumber(0)
+                .build();
+    }
+}

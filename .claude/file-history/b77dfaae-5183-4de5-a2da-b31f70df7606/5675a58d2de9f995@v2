@@ -1,0 +1,120 @@
+package org.tasktelemetry;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.junit.jupiter.api.Test;
+
+/**
+ * Integration-level test of the publish/subscribe contract defined by
+ * {@link TaskTransport}, {@link TaskListener} and {@link TaskExecutionDescriptor}.
+ *
+ * <p>It uses a minimal synchronous transport defined inside the test to exercise
+ * the three abstractions together end-to-end. The real {@code InMemoryTaskTransport}
+ * will replace this reference implementation in a later step.
+ */
+class TransportDispatchIT {
+
+    private static final TaskExecutionDescriptor DESCRIPTOR =
+            new TaskExecutionDescriptor("IMPORT_CLIENTI", "exec-1", "pratica-556101");
+
+    @Test
+    void subscribedListenerReceivesPublishedEvents() {
+        SynchronousTaskTransport transport = new SynchronousTaskTransport();
+        List<TaskEvent> received = new ArrayList<>();
+        transport.subscribe(received::add);
+
+        transport.publish(executionEvent(0, TaskEventType.STARTED));
+        transport.publish(executionEvent(1, TaskEventType.COMPLETED));
+
+        assertThat(received)
+                .extracting(TaskEvent::type)
+                .containsExactly(TaskEventType.STARTED, TaskEventType.COMPLETED);
+    }
+
+    @Test
+    void everySubscribedListenerReceivesTheEvent() {
+        SynchronousTaskTransport transport = new SynchronousTaskTransport();
+        List<TaskEvent> firstInbox = new ArrayList<>();
+        List<TaskEvent> secondInbox = new ArrayList<>();
+        transport.subscribe(firstInbox::add);
+        transport.subscribe(secondInbox::add);
+
+        transport.publish(executionEvent(0, TaskEventType.STARTED));
+
+        assertThat(firstInbox).hasSize(1);
+        assertThat(secondInbox).hasSize(1);
+    }
+
+    @Test
+    void unsubscribedListenerStopsReceivingEvents() {
+        SynchronousTaskTransport transport = new SynchronousTaskTransport();
+        List<TaskEvent> received = new ArrayList<>();
+        TaskListener listener = received::add;
+        transport.subscribe(listener);
+
+        transport.publish(executionEvent(0, TaskEventType.STARTED));
+        transport.unsubscribe(listener);
+        transport.publish(executionEvent(1, TaskEventType.COMPLETED));
+
+        assertThat(received)
+                .extracting(TaskEvent::type)
+                .containsExactly(TaskEventType.STARTED);
+    }
+
+    @Test
+    void deliveredEventKeepsExecutionIdentity() {
+        SynchronousTaskTransport transport = new SynchronousTaskTransport();
+        List<TaskEvent> received = new ArrayList<>();
+        transport.subscribe(received::add);
+
+        transport.publish(executionEvent(0, TaskEventType.STARTED));
+
+        TaskEvent delivered = received.get(0);
+        assertThat(delivered.taskName()).isEqualTo(DESCRIPTOR.taskName());
+        assertThat(delivered.executionId()).isEqualTo(DESCRIPTOR.executionId());
+        assertThat(delivered.correlationKey()).isEqualTo(DESCRIPTOR.correlationKey());
+    }
+
+    private static TaskEvent executionEvent(long sequenceNumber, TaskEventType type) {
+        return TaskEvent.builder()
+                .eventId("event-" + sequenceNumber)
+                .taskName(DESCRIPTOR.taskName())
+                .executionId(DESCRIPTOR.executionId())
+                .correlationKey(DESCRIPTOR.correlationKey())
+                .type(type)
+                .timestamp(Instant.parse("2026-06-28T10:00:00Z").plusSeconds(sequenceNumber))
+                .sequenceNumber(sequenceNumber)
+                .build();
+    }
+
+    /**
+     * Minimal synchronous transport: delivers each published event to the
+     * currently subscribed listeners, in subscription order.
+     */
+    private static final class SynchronousTaskTransport implements TaskTransport {
+
+        private final List<TaskListener> listeners = new CopyOnWriteArrayList<>();
+
+        @Override
+        public void publish(TaskEvent event) {
+            for (TaskListener listener : listeners) {
+                listener.onEvent(event);
+            }
+        }
+
+        @Override
+        public void subscribe(TaskListener listener) {
+            listeners.add(listener);
+        }
+
+        @Override
+        public void unsubscribe(TaskListener listener) {
+            listeners.remove(listener);
+        }
+    }
+}

@@ -1,0 +1,667 @@
+category.bandi=Bandi
+javax.portlet.title.it_servizidigitali_gestionebandi_operatore_frontend_ScrivaniaOperatoreBandiPortlet=Scrivania Operatore Bandi
+
+nessun.risultato.trovato=Nessun risultato trovato
+codice.bando=Codice identificativo
+denominazione=Denominazione
+descrizione=Descrizione
+data.inizio=Data inizio
+data.fine=Data fine
+domanda.bando.id=ID Domanda
+codice.fiscale=Codice Fiscale
+ragione.sociale=Ragione Sociale
+codice.fiscale.richiedente=Codice Fiscale Richiedente
+cognome.nome=Cognome e Nome
+nome.cognome.richiedente=Nome/Cognome Richiedente
+data.arrivo=Data Arrivo
+data.arrivo.da=Data Arrivo Da
+data.arrivo.a=Data Arrivo A
+stato.domanda=Stato Domanda
+id.domanda.bando=Id Domanda
+numero.protocollo=Numero Protocollo
+n.protocollo=N. Protocollo
+utente.autenticato=Utente autenticato
+utente.guest=Utente guest (non autenticato)
+tipo.autenticazione=Tipo autenticazione
+titolo=Titolo
+dettaglio=Dettaglio
+
+error.minore.zero=Inserisci un valore pi? grande o uguale a 0.
+error.nessun.bando.con.id=Nessun bando con ID: {0}
+accesso.con.autenticazione=Accesso con autenticazione
+accesso.senza.autenticazione=Accesso senza autenticazione
+
+valutazioni=Valutazioni
+punteggio=Punteggio
+note=Note
+numero=N.
+punteggio-totale=Punteggio totale
+importo-ammissibile-fase-valutazione=Importo ammissibile
+criterio-di-valutazione=Criterio di valutazione
+punteggio-min= Min: {0}
+punteggio-max=Max: {0}
+soglia-minima=Soglia minima: {0}
+
+indietro=Indietro
+azioni=Azioni
+cerca=Cerca
+reset=Ripristina
+tutti=Tutti
+accesso=Accesso
+annulla=Annulla
+salva-budget=Salva budget
+procedi=Procedi
+conferma=Conferma
+salva=Salva
+chiudi=Chiudi
+
+#tab
+bandi.aperti=Bandi Aperti
+bandi.chiusi=Bandi Chiusi
+bandi.richieste.referente=Richieste Cambio Referente
+eventi.aperti=Eventi Aperti
+eventi.chiusi=Eventi Chiusi
+in.arrivo=In Arrivo
+in.lavorazione=In Lavorazione
+in.itinere.chiusi=In Itinere/Chiusi
+vai-a-dettaglio=Vai a dettaglio
+prendi-in-carico=Prendi in carico
+rilascia=Rilascia
+dati.identificativi=Dati Identificativi
+domanda.inserita=Domanda Compilata
+allegati=Allegati
+commenti=Commenti
+attivita=Attivit&agrave;
+integrazioni=Integrazioni
+anticipo=Domanda di Anticipo
+saldo=Domanda di Saldo
+rinuncia=Domanda di Rinuncia
+servizi.esecuzione=Servizi Esecuzione
+importo-assegnato=Importo assegnato
+importo-assegnato-due-righe=Importo<br>Assegnato
+esito-ammissibilita=Esito ammissibilit&agrave;
+esito-ammissibilita-due-righe=Esito<br>Ammissibilit&agrave;
+punteggio-totale-due-righe=Punt.<br>Totale
+data-arrivo=Data arrivo
+data-arrivo-due-righe=Data<br>Arrivo
+importo-confermato=Importo confermato
+importo-confermato-due-righe=Importo<br>Confermato
+scarica-graduatoria-provvisoria=Scarica graduatoria provvisoria
+scarica-graduatoria-definitiva=Scarica graduatoria definitiva
+scarica-lista-domande=Scarica lista domande
+chiudi-avvisi-sportello=Chiudi domande restanti
+budget-lista-domande=<b>Budget totale:</b> &euro; {0}<b> - Budget residuo:</b> &euro; {1}
+nessuna-istanza-trovata=Nessuna istanza trovata
+integrazione=Richiedi integrazione
+ricevuta=Conferma ricezione
+
+approva-graduatoria-provvisoria=Approva graduatoria provvisoria
+approva-graduatoria-definitiva=Approva graduatoria definitiva
+genera-graduatoria-provvisoria=Crea graduatoria provvisoria
+graduatoria-provvisoria=Graduatoria provvisoria
+graduatoria-definitiva=Graduatoria definitiva
+lista-domande-title=Lista domande - {0} ({1})
+visualizza-graduatoria-provvisoria=Visualizza graduatoria provvisoria
+visualizza-lista-domande=Visualizza lista domande
+visualizza-graduatoria-definitiva=Visualizza graduatoria definitiva
+grad-message-senza-verifica=Attenzione! Non &egrave; possibile creare la graduatoria in quanto sono presenti domande bando senza valutazione di ammissibilit&agrave; o di merito!
+grad-prov-message-generic=Attenzione! Sei sicuro di voler generare la graduatoria provvisoria?
+genera-graduatoria-definitiva=Crea graduatoria definitiva
+conferma-graduatoria-definitiva=Conferma graduatoria definitiva
+verifica-importi-assegnati=Verifica importi assegnati
+conferma-importi-assegnati=Conferma importi assegnati
+approva-graduatoria-definitiva-generic=Attenzione! Confermando l'operazione la graduatoria definitiva sar&agrave; definitivamente approvata e non saranno possibili ulteriori modifiche.
+approva-graduatoria-provvisoria-generic=Attenzione! Confermando l'operazione la graduatoria provvisoria sar&agrave; definitivamente approvata e non saranno possibili ulteriori modifiche.
+grad-def-message-generic=Attenzione! Sei sicuro di voler generare la graduatoria definitiva?
+verifica-ammissibilita-domanda-bando=Verifica ammissibilit&agrave;
+verifica-calcolata-sistema=Verifica ammissibilit&agrave; calcolata dal sistema: 
+ammissibile=Ammissibile
+non-ammissibile=Non ammissibile
+ammissibile-con-riserva=Ammissibile con riserva
+dati-dettaglio-pratica=Dati di Dettaglio della Pratica n. {0} - Ragione sociale: {1} - {2} - Fase {3}
+dati-dettaglio-pratica-no-fase=Dati di Dettaglio della Pratica n. {0} - Ragione sociale: {1} - {2}
+valuta-domanda-bando=Valuta domanda bando
+valuta-ammissibilita-domanda-bando=Valuta ammissibilit&agrave; domanda
+nessun-risultato-trovato=La verifica dell'ammissibilit&agrave; non ha rilevato incongruenze tra i dati inseriti dall'utente e i requisiti
+dati-richiedente=Dati Richiedente
+nome-richiedente=Nome Richiedente
+cognome-richiedente=Cognome Richiedente
+codice-fiscale=Codice Fiscale
+partita-iva=Partita IVA
+ragione-sociale=Ragione Sociale
+ragione-sociale-due-righe=Ragione<br>Sociale
+id-domanda=ID
+pec=Pec
+stato=Stato
+data-creazione=Data creazione
+data-inserimento=Data Inserimento
+data-ultimo-aggiornamento=Data Ultimo Aggiornamento
+dati-domanda=Dati domanda
+bando=Bando
+oggetto=Oggetto
+num-protocollo-domanda=Num. Protocollo Domanda
+data-protocollo-domanda=Data Protocollo Domanda
+telefono=Telefono
+allegati-richiedente=Allegati (Richiedente)
+allegati-operatore=Allegati (Operatore)
+provvedimento-finale=Provvedimento finale
+dettaglio-domanda-inserita=Domanda Compilata
+nessun-allegato=Non sono presenti allegati
+nessun-commento=Nessun commento
+nessuna-attivita=Nessuna attivit&agrave;
+nessuna-integrazione=Nessuna integrazione
+indirizzo-residenza=Indirizzo di Residenza
+invio-con-autenticazione=Invio pratica effettuato con autenticazione
+invio-senza-autenticazione=Invio pratica effettuato senza autenticazione
+aggiungi-commento=Aggiungi Commento
+testo=Testo
+visibile-al-cittadino=Visibile al richiedente
+inserisci-modifica-commento=Inserisci/Modifica Commento
+salva-commento=Salva commento
+data-ora=Data/Ora
+operatore=Operatore
+false=NO
+true=SI
+aggiungi-allegato=Aggiungi Allegato
+aggiungi-modifica-allegato=Aggiungi o Modifica Allegato
+titolo-documento=Titolo Documento
+seleziona-file=Seleziona File
+salva-allegato=Salva Allegato
+nome-file=Nome File
+dimensione=Dimensione
+inserito-da=Inserito da
+vis-richied=Vis. Richied.
+assegna-responsabile=Assegna Responsabile
+assegna-altro-responsabile=Assegna altro Responsabile
+chiudi-esito-positivo=Chiudi con Esito Positivo
+chiudi-esito-negativo=Chiudi con Esito Negativo
+invia-a-valutazione=Invia a fase di valutazione
+concludi-istruttoria=Concludi Istruttoria
+conferma-esito-ammissibilita=Conferma esito ammissibilit&agrave;
+invia-a-valutazione-message=Confermi di voler procedere alla fase di valutazione della domanda?
+concludi-istruttoria-message=Confermi di voler concludere la fase di istruttoria della domanda?
+conferma-esito-ammissibilita-message=Confermi di voler salvare l'esito ammissibilit&agrave; scelto?
+concludi-valutazione-message=Confermi di voler concludere la fase di valutazione della domanda?
+concludi-valutazione-ammissibilita-message=Confermi di voler concludere la fase di valutazione dell'ammissibilit&agrave; della domanda?
+invia-a-valutazione-modal-title=Invia a valutazione
+concludi-istruttoria-modal-title=Concludi Istruttoria
+valutazione-domanda-bando-modal-title=Valuta domanda bando {0}
+concludi-valutazione-modal-title=Concludi valutazione
+concludi-valutazione-ammissibilita-modal-title=Concludi valutazione ammissibilit&agrave;
+richiedi-modifiche-integrazioni-richiedente=Richiedi Modifiche/Integrazioni al Richiedente
+rimanda-al-referente=Rimanda al Referente
+inoltra-a-responsabile=Inoltra a Responsabile
+selezione-responsabile=Selezione Responsabile
+seleziona-un-responsabile=Seleziona un responsabile...
+commento=Commento
+selezione-altro-responsabile=Selezione Altro Responsabile
+chiudi-esito-message=Attenzione! La chiusura con esito negativo della pratica &eacute; irreversibile. Non sar&agrave; pi&ugrave; possibile inserire commenti, allegati o richiedere documentazione integrativa al richiedente.
+istanze-senza-protocollazione-alert=Avviso: &eacute; presente della documentazione inserita dal richiedente che non risulta ancora protocollata.
+seleziona-allegati-condividere=Seleziona gli allegati da condividere con il richiedente
+rilascia-pratica=Rilascia Pratica
+rilascia-message=Attenzione! Sei sicuro di voler rilasciare la pratica?
+non-sono-previste-integrazioni=Attualmente non sono previste integrazioni per questa istanza
+conferma-richiedi-integrazioni=Conferma richiesta integrazioni
+conferma-richiedi-integrazioni-dettaglio=Procedendo verr&agrave; inviata una richiesta di integrazione documentale all'istante. Si intende confermare l'operazione?
+chiudi-pratica=Chiudi pratica con esito negativo
+chiudi-pratica-positivo=Chiudi pratica con esito positivo
+non-sono-presenti-allegati=Non sono presenti allegati.
+integrazioni-message=La pratica sar&agrave; restituita al richiedente in modo tale che possa modificarla e/o integrarla con documentazione aggiuntiva.
+seleziona-documenti-integrazione=Seleziona i documenti di cui &eacute; necessaria l'integrazione
+richiedi-disciplinare=Compila Disciplinare
+compila-disciplinare-message=Il disciplinare generato sar&agrave; disponibile nella sezione allegati della domanda.
+seleziona-disciplinare=Seleziona il disciplinare da compilare
+chiudi-esito-configurato=Inoltra a 
+completa-attivita=Completa Attivit&agrave;
+invia-a-concessione-message=Attenzione! Confermando l'operazione questa attivit&agrave; sar&agrave; completata. Confermi di voler passare alla fase di concessione della domanda?	
+invia-a-esecuzione-message=Attenzione! Confermando l'operazione questa attivit&agrave; sar&agrave; completata. Confermi di voler procedere alla fase di esecuzione della domanda?
+chiudi-esito-message-generic=Attenzione! Confermando l'operazione questa attivit&agrave; sar&agrave; completata e la pratica avanzer&agrave; nell'iter del procedimento.
+richiedi-documenti-esecuzione=Abilita attivit&agrave; beneficiario
+selezione_allegati_attivit_beneficiario=Seleziona gli allegati da condividere con il richiedente
+label.step=Step
+label.descrizione=Descrizione
+label.campo=Campo
+label.obbligatorio=Obbligatorio
+non-sono-previsti-moduli=Non sono previsti moduli
+non-previsto-disciplinare=Nessun disciplinare configurato per il bando
+seleziona-disciplinare-message=Selezionare il modulo del disciplinare da compilare
+avanza-fase-concessione=Concludi istruttoria
+avanza-fase-concessione-errore=Attenzione! devi generare prima la graduatoria definitiva!
+iter-della-pratica=Iter della pratica
+non-ammissibile-valutazione=Domanda inammissibile per carenza di punteggio
+ammissibilita-formale-non-superata=Domanda dichiarata non ammissibile in fase di istruttoria
+redazione-atto-revoca=Redazione Atto di Revoca	
+compila-revoca-message=L'atto di revoca generato sar&agrave; disponibile nella sezione allegati della domanda.	
+seleziona-revoca=Selezionare il modulo della revoca da compilare
+seleziona-revoca-message=Selezionare il modulo della revoca da compilare
+esporta-xls-ricerca=Esporta
+esporta-pdf=Esporta PDF
+esporta-excel=Esporta Excel
+
+empty-table=Nessun elemento da visualizzare
+scadenzario-domanda-modal-button=Scadenzario domanda
+scadenzario-domanda-modal-title=Scadenzario domanda
+scadenzario-domanda-modal-description=
+scadenzario-domanda-modal-button-aggiungi=Aggiungi scadenza
+scadenzario-domanda-modal-lista=Lista scadenze domanda
+scadenzario-domanda-modal-nuovo=Nuova scadenza domanda
+scadenzario-domanda-codice=Codice *
+scadenzario-domanda-durata=Durata
+scadenzario-domanda-durata-placeholder=30gg12h30m
+scadenzario-domanda-festivi=Festivi
+scadenzario-domanda-data-termine=Data termine *
+scadenzario-domanda-descrizione=Descrizione *
+scadenzario-domanda-data-termine-scaduta=Il termine domanda "{0}", risulta scaduto il: {1}
+
+data-scadenza-allegato=Data scadenza
+scadenza-allegato-domanda-modal-title=Scadenza allegato
+scadenza-allegato-domanda-nomeAllegato=Nome file:
+scadenza-allegato-domanda-data-termine-scaduta=L'allegato "{0}", risulta scaduto il: {1}
+scadenza-allegato-domanda-data-termine-aggiornata=La scadenza dell'allegato &egrave; stata aggiornata con successo
+scadenzario-domanda-modal-table-header-data-scadenza=Data scadenza
+scadenzario-domanda-modal-table-header-descrizione=Descrizione
+
+erogazione-domanda-modal-button=Gestisci Erogazioni
+erogazione-domanda-modal-title=Erogazioni domanda
+erogazione-domanda-modal-description-importo-assegnato=Importo assegnato alla domanda: {0}
+erogazione-domanda-modal-description-importo-residuo-erogabile=Importo residuo erogabile: 
+erogazione-domanda-modal-lista=Lista erogazioni domanda
+erogazione-domanda-modal-button-aggiungi=Aggiungi erogazione
+erogazione-domanda-modal-nuovo=Nuova erogazione domanda
+erogazione-domanda-modal-table-header-tipo-erogazione=Tipo Erogazione
+erogazione-domanda-modal-table-header-numero-atto=Numero Atto
+erogazione-domanda-modal-table-header-data-atto-erogazione=Data Atto Erogazione
+erogazione-domanda-modal-table-header-importo-erogato=Importo Erogato
+erogazione-domanda-modal-table-footer-totale-importo-erogato=Totale Importo Erogato
+erogazione-domanda-tipo-erogazione=Tipo Erogazione *
+erogazione-domanda-numero-atto=Numero Atto *
+erogazione-domanda-data-atto-erogazione=Data Atto Erogazione *
+erogazione-domanda-importo-erogato=Importo Erogato *
+
+annulla-revoca-modal-button=Annulla Revoca
+annulla-revoca=Annulla Revoca
+annulla-revoca-message=Attenzione! Sei sicuro di voler annullare la revoca?
+
+conferma.elimina.allegato=Conferma elimina allegato
+conferma.elimina.allegato.dettaglio=Sei sicuro di voler eliminare l'allegato? Quando l'allegato verr\u00E0 cancellato, non sar\u00E0 pi\u00F9 possibile recuperarlo.
+
+conferma.modifica.allegato=Modifica allegato
+
+calendario-scadenze-empty=Non ci sono scadenze per il giorno selezionato
+calendario-scadenze-table-header-domanda=Domanda
+calendario-scadenze-table-header-tipoScadenza=Tipo Scadenza
+calendario-scadenze-table-header-dataScadenza=Data Scadenza
+calendario-scadenze-table-header-descrizione=Descrizione
+calendario-scadenze-modal-title=Calendario scadenze
+calendario-scadenze-btn-open-modal=Calendario scadenze
+
+bandi.admin=Strumenti di amministrazione
+esegui=Esegui
+sincronizza-azioni-operatore-message=Sincronizza domande e azioni operatori.
+sincronizza-azioni-operatore-alert=Sei sicuro di voler sincronizzare tutte le domande e le azioni operatore?
+sincronizza-message=Sincronizza domande e processi.
+sincronizza-alert=Sei sicuro di voler sincronizzare tutte le domande?
+sincronizza-success=La sincronizzazione &nbsp; terminata con successo.
+
+scarica-visualizza-modello-compilato-cittadino=Scarica/Visualizza Modello compilato dal richiedente
+salva-dati-protocollo=Salva Dati Protocollo
+num-protocollo-esito=Num. Protocollo Esito
+data-protocollo-esito=Data Protocollo Esito
+
+data-invio=Data invio
+
+donwload-allegato-integrativo=Scarica integrazione compilata
+allegati.integrazione=Allegati integrazione
+integrazione.inserita=Integrazione compilata
+domanda.inserita=Domanda compilata
+allegati.domanda=Allegati domanda
+scarica.domanda=Scarica domanda compilata
+
+dati-dettaglio-pratica-integrazioni=Dati di Dettaglio dell'integrazione relativa alla Pratica n. {0} - {1}
+
+importo-richiesto=Importo Richiesto
+importo-richiesto-due-righe=Importo<br>Richiesto
+importo-assegnato-operatore=Importo Assegnato
+importo-ammissibile= Importo Ammissibile
+importo-ammissibile-due-righe= Importo<br>Ammissibile
+nessuna-graduatoria=Graduatoria non presente!
+nessuna-domanda=Lista domande non presente!
+titolo-progetto=Titolo progetto
+titolo-progetto-due-righe=Titolo<br>Progetto
+esito=Esito
+costi-ammissibili=Costi ammissibili
+
+reinvia-fase-valutazione=Reinvia alla fase di valutazione
+reinvia-fase-ammissibilita=Reinvia alla fase di valutazione ammissibilit\u00E0
+invia-fase-esecuzione=Invia alla fase di esecuzione
+rielabora-valutazione-domanda-bando=Rielabora valutazione domanda {0}
+invia-esecuzione-domanda-bando=Invia in esecuzione domanda {0}
+rielabora-valutazione-modal-body=Sei sicuro di voler rielaborare la valutazione per la domanda {0}?
+invia-concessione-modal-body=Sei sicuro di voler inviare in concessione la domanda bando {0}, relativa al soggetto: {1}?
+invia-concessione-modal-budget-parziale=L'importo ammissibile supera il budget residuo. Sei sicuro di voler inviare in concessione la domanda bando {0}, relativa al soggetto: {1}, assegnando tutto il budget residuo?
+rielabora-ammissibilita-domanda-bando=Rielabora ammissibilit\u00E0 domanda bando {0}
+rielabora-ammissibilita-domanda=Rielabora ammissibilit\u00E0 domanda bando
+rielabora-ammissibilita-modal-body=Sei sicuro di voler rielaborare l'ammissibilit\u00E0 per la domanda bando {0}?
+rielaborazione-ammissibilita-modal-body=Sei sicuro di voler rielaborare l\\'ammissibilit\u00E0 per la domanda bando {0}?
+chiudi-avviso-sportello=Chiudi con esito negativo tutte le domande restanti
+chiudi-avviso-sportello-modal-body=Sei sicuro di voler chiudere con esito negativo tutte le domande al quale non \u00E8 possibile assegnare budget? L'operazione non \u00E8 reversibile.
+
+allegati-non-visualizzabili=Questi allegati saranno disponibili dopo la chiusura del bando
+
+numero-protocollo-esteso=Numero protocollo esteso
+
+data-protocollo=Data protocollo
+numero-protocollo=Numero protocollo
+numero-protocollo-ingresso=Numero protocollo ingresso
+data-protocollo-ingresso=Data protocollo ingresso
+
+annullamento-domanda-bando=Annullamento domanda {0}
+annullamento-domanda-bando-message=Sei sicuro di voler annullare la domanda con ID {0}?
+seleziona-allegato-annullamento-domanda=Seleziona il documento di annullamento domanda
+
+num-protocollo-annullamento=Numero protocollo annullamento
+data-protocollo-annullamento=Data protocollo annullamento
+
+attenzione=Attenzione
+totale-importi-assegnati=Totale importi assegnati: &euro; {0}
+budget-totale-bando=Budget totale bando: &euro; {0}
+avviso-confronto-budget-dettaglio=Attenzione, l'importo totale assegnato alle domande non coincide con il budget del bando (&euro;{0}). Procedendo la ripartizione degli importi verr\u00E0 adeguata al budget del bando. Si intende comunque procedere?
+
+esito-valutazione-ammissibilita=Valutazione di ammissibilit\u00E0 effettuata dall'operatore <b>{0}</b> il <b>{1}</b> alle ore <b>{2}</b>
+
+compila-disciplinare-azione-operatore=Compilazione disciplinare effettuata dall'operatore <b>{0}</b> il <b>{1}</b> alle ore <b>{2}</b>
+
+compila-revoca-azione-operatore=Compilazione revoca effettuata dall'operatore <b>{0}</b> il <b>{1}</b> alle ore <b>{2}</b>
+
+valutazione-ammissibilita=Valutazione ammissibilit&agrave;
+valutazione-ammissibilita-dettaglio=Valutazione di ammissibilit&agrave; effettuata dall'operatore {0} il giorno {1} alle ore {2}
+valutazione-ammissibilita-dettaglio-non-convalidata=Valutazione di ammissibilit&agrave; effettuata dall'operatore {0} il giorno {1} alle ore {2}. La valutazione di ammissibilit&agrave; non &egrave; ancora confermata. 
+valutazione-merito=Valutazione di merito
+valutazione-merito-dettaglio=Valutazione di merito effettuata dall'operatore {0} il giorno {1} alle ore {2}
+valutazione-merito-dettaglio-non-convalidata=Valutazione di merito effettuata dall'operatore {0} il giorno {1} alle ore {2}. La valutazione di merito non &egrave; ancora confermata.
+valutazioni-non-disponibili=Valutazioni non disponibili
+valutazioni-merito-non-disponibili=Valutazione di merito non disponibile
+
+valutazione-non-convalidata=Valutazione ammissibilit&agrave; non convalidata
+valutazione-merito-non-convalidata=Valutazione di merito non convalidata
+
+integrazioni-non-richieste=Non sono ancora state richieste integrazioni
+servizi-esecuzione-non-richiesti=Non sono ancora stati inviati servizi di esecuzione
+
+conferma-cambio-stato-ammissibilita-dettaglio=Confermando la <b>non ammissibilit&agrave;</b> i punteggi precedentemente attribuiti nella valutazione di merito verranno eliminati.
+valutazione-in-corso=Valutazione in corso
+
+inserisci-allegato-annullamento=Non sono presenti allegati da associare all'annullamento
+
+AMMESSO=Ammesso
+NON_AMMESSO=Non ammesso
+ANNULLATA=Domanda annullata
+RINUNCIATARIO=Rinunciatario
+PROGETTO_FINANZIABILE=Progetto finanziabile
+PROGETTO_NON_FINANZIABILE=Progetto non finanziabile
+RICHIESTA_NUOVA_VALUTAZIONE_AMMISSIBILITA=Richiesta nuova valutazione di ammissibilit&agrave;
+RICHIESTA_NUOVA_VALUTAZIONE_MERITO=Richiesta nuova valutazione di merito
+CHIUSA_CON_ESITO_NEGATIVO=Chiusa con esito negativo
+
+seleziona-almeno-un-integrazione=Seleziona almeno un'integrazione
+chiusa_con_esito_negativo=Chiusa con esito negativo
+annullata=Domanda annullata
+grad-message-no-domande=Attenzione! Non &egrave; possibile creare la graduatoria in quanto non sono presenti domande bando!
+
+visualizza-dati-monitoraggio=Visualizza dati monitoraggio
+
+errore-recupero-file-documentale=Errore durante il recupero del file
+
+allegato-usato-non-modificabile=Allegato gi� condiviso con il richiedente e protocollato: non � pi� possibile modificarlo o eliminarlo.
+
+bozza=Bozza
+compilata=Compilata
+inviata=Inviata
+protocollata=Protocollata
+attesaCompilazione=Attesa Compilazione
+errore-punteggio-criterio=Valore non valido
+errore-punteggio-criterio-format-exception=Errore durante l'elaborazione dei punteggi inseriti!
+errore-punteggio-soglia=Inserire un valore compreso tra {0}
+errore-punteggio-criterio-max-exception=Errore durante il salvataggio della valutazione: in corrispondenza di uno o pi&ugrave; criteri sono stati indicati punteggi non ammissibili.
+errore-importo-ammissibile-obbligatorio=Il campo Importo Ammissibile &egrave; obbligatorio.
+errore-importo-ammissibile-maggiore-richiesto=L'importo ammissibile non pu&ograve; essere maggiore dell'importo richiesto.
+errore-importo-ammissibile-minore-zero=L'importo ammissibile deve essere maggiore di 0.
+
+visualizza-insegne-storiche=Visualizza insegne storiche
+nessuna-insegna-storica=Nessuna insegna storica
+
+insegne.title.label=Elenco attivit&agrave; storiche e di tradizione della puglia
+
+insegne.label.ragioneSociale=Ragione sociale
+insegne.label.insegna=Insegna
+insegne.label.cap=Cap
+insegne.label.stato=Stato
+insegne.label.stato.tutti=Tutti
+insegne.label.stato.attive=Attivo
+insegne.label.stato.revocate=Revocato
+
+insegne.sc.label.ragione.sociale=Ragione sociale
+insegne.sc.label.identificativo=Identificativo
+insegne.sc.label.provincia=Prov
+insegne.sc.label.indirizzo=Indirizzo
+insegne.sc.label.citta=Citt&agrave;
+insegne.sc.label.cap=CAP
+insegne.sc.label.settore=Settore
+insegne.sc.label.ateco.prevalente=ATECO
+insegne.sc.label.attivita=Attivit&agrave;
+insegne.sc.label.insegna=Insegna
+insegne.sc.label.data.inizio.attivita=Data Inizio Attivit&agrave;
+insegne.sc.label.riconoscimento.attribuito=Riconoscimento attribuito
+insegne.sc.label.atto.dirigenziale=Atto Dirigenziale
+insegne.sc.label.data.revoca=Data revoca
+insegne.sc.label.azioni=Azioni
+insegne.sc.label.data.note= Note	
+insegne.button.export=Export
+
+insegne.modal.button.annulla=Annulla
+insegne.modal.button.conferma=Conferma
+insegne.modal.title=Revoca Insegna Storica
+insegne.modal.body=Attenzione! Sei sicuro di voler revocare il riconoscimento per l'insegna storica selezionata?
+
+insegne.error.revoca=Errore durante la revoca dell'insegna storica
+insegne.error.note=Errore durante l'aggiunta o la modifica delle note all'insegna storica
+
+riconoscimento.richiesto=Riconoscimento Richiesto
+riconoscimento.assegnato=Riconoscimento Assegnato
+riconoscimento.vuoto=Seleziona Riconoscimento
+
+modal-label-selziona-riconoscimento=Seleziona il riconoscimento da attribuire all'attivit&agrave;
+approva-riconoscimenti=Approva riconoscimenti
+
+insegne.appr.ricon.modal.title=Approvazione definitiva dei riconoscimenti
+insegne.appr.ricon.modal.body=Proseguendo verranno definitivamente approvati tutti i riconoscimenti attribuiti alle attivit&agrave; storiche.
+insegne.appr.ricon.modal.body.input.label=Numero atto dirigenziale
+
+insegne.note.modal.title=Aggiunta note insegna storiche
+insegne.note.modal.body.input.label=Note
+visualizzazioneEventi=Abilita visualizzazione eventi
+conferma-esito-modal-button=Conferma esito
+conferma-esito-modal-title=Conferma esito ammissibilit&agrave;
+conferma-esito-message=Sei sicuro di voler confermare l'esito di ammissibilit&agrave;?
+conferma-esito-riserva-message=Sei sicuro di voler confermare l'esito di ammissibilit&agrave;? La conferma generer&agrave; una notifica al richiedente.
+richiedi-compilazione-brochure=Richiedi compilazione brochure
+richiedi-brochure-modal-title=Richiedi compilazione brochure
+non-sono-previste-brochure=Non sono state configurate brochure per questo
+brochure-message=La pratica sar&agrave; restituita al richiedente in modo tale che possa procedere alla compilazione della brochure.
+seleziona-brochure=Seleziona la brochure da far compilare al richiedente
+brochure=Brochure
+conferma-richiesta-brochure=Conferma richiesta compilazione brochure
+conferma-richiesta-brochure-dettaglio=Procedendo verr&agrave; inviata una richiesta di compilazione brochure al richiedente. Si intende confermare l'operazione?
+count-domande-fase-partecipazione=Domande attualmente avanzate in fase di partecipazione: {0}
+invia-esecuzione-modal-body=La domanda verr&agrave; inoltrata in fase di esecuzione e generer&agrave; una notifica al richiedente. Non sar&agrave; possibile tornare alla fase di valutazione ammissibilit&agrave;, sei sicuro di voler procedere?
+partecipazione-effettuata-modal-title=Registra partecipazione
+partecipazione-non-effettuata-modal-title=Registra assenza non giustificata
+partecipazione-effettuata-message=Attenzione! La registrazione dell'avvenuta partecipazione all'evento &eacute; irreversibile. Non sar&agrave; pi&ugrave; possibile inserire commenti, allegati o richiedere documentazione integrativa al richiedente.
+partecipazione-non-effettuata-message=Attenzione! La registrazione della mancata partecipazione all'evento senza giustificativo &eacute; irreversibile. Non sar&agrave; pi&ugrave; possibile inserire commenti, allegati o richiedere documentazione integrativa al richiedente.
+partecipazione-giustificativo-modal-title=Registra assenza giustificata
+partecipazione-giustificativo-message=Attenzione! La registrazione della mancata partecipazione all'evento con giustificativo &eacute; irreversibile. Non sar&agrave; pi&ugrave; possibile inserire commenti, allegati o richiedere documentazione integrativa al richiedente.
+partecipazione-effettuata=Registra partecipazione
+partecipazione-non-effettuata=Registra assenza non giustificata
+partecipazione-non-effettuata-giustificativo=Registra assenza giustificata
+invia-fase-partecipazione=Invia alla fase di partecipazione
+invia-partecipazione-alla-call-modal-body=La domanda con ID {0} dell'ente {1} passer&agrave; alla fase di partecipazione e generer&agrave; una notifica al richiedente. Non sar&agrave; possibile tornare alla fase di valutazione ammissibilit&agrave;, sei sicuro di voler procedere?
+invia-comunicazione=Invia comunicazione esito ammissibilit&agrave;
+invia-comunicazione-modal-title=Invia comunicazione domanda ${domandaBandoId}
+invia-comunicazione-modal-body=Attenzione! La seguente azione permette l'invio di una comunicazione al richiedente con l'esito ammissibilit&agrave; previsto. Sei sicuro di voler procedere?
+approvazione-domanda-di-anticipo=Approvazione domanda di anticipo
+approvazione-domanda-di-anticipo-modal-title=Approvazione domanda di anticipo
+approvazione-domanda-di-anticipo-modal-body=Attenzione! Confermando il beneficiario potr&agrave; inviare la domanda di saldo. Confermi di voler approvare la domanda di anticipo?
+invia-concessione-forzatura-modal-body=Sei sicuro di voler inviare in concessione la domanda bando {0}, relativa al soggetto: {1}? L'avanzamento della stessa non rispetta l'ordine di arrivo previsto.
+invia-concessione-forzatura-modal-budget-parziale=L'importo ammissibile supera il budget residuo. Sei sicuro di voler inviare in concessione la domanda bando {0}, relativa al soggetto: {1} assegnando tutto il budget residuo? L'avanzamento della stessa non rispetta l'ordine di arrivo previsto.
+label-avanzamento-deroga=La pratica corrente \u00E8 avanzata al posto di:
+abilita-invio-documenti=Abilita invio documenti
+abilita-invio-documenti-modal-body=Abilitare l'invio dei documenti per la pratica {0}?
+abilita-invio-documenti-title=Abilita invio documenti - {0}
+abilita-invio-documenti-label=La domanda \u00E8 in attesa di documentazione aggiuntiva
+commento-operatore=Annotazioni relative alla richiesta integrazione
+invia-concessione-modal-body-assegnazione-totale=Sei sicuro di voler inviare la domanda {0}, relativa al soggetto: {1} in fase di concessione? Verr&agrave; assegnato l'intero importo ammissibile.
+invia-concessione-modal-body-assegnazione-parziale=Sei sicuro di voler inviare la domanda {0}, relativa al soggetto: {1} in fase di concessione? Verr&agrave; assegnato l'importo parziale.
+invia-concessione-domanda-bando=Invia domanda in fase di concessione
+invia-concessione-domanda-bando-errore=Errore invio domanda in fase di concessione
+budget-residuo-insufficiente=La pratica non pu&ograve; avanzare alla fase di concessione in quanto il budget residuo non &egrave; sufficiente.
+avanza-domande-concessione=Avanza domande in concessione
+avanza-domande-concessione-modal-title=Avanzamento domande in fase di concessione
+avanza-domande-concessione-modal-body=Sei sicuro di voler avanzare le domande ammissibili in fase di concessione? L'operazione non &egrave; reversibile.
+avanza-domande-concessione-alert-domande-gia-avanzate=Attenzione! Le domande con ID {0} sono gi&agrave; state avanzate in fase di Concessione
+numero-protocollo-uscita=Numero protocollo uscita
+data-protocollo-uscita=Data protocollo uscita
+conferma-operazione-title=Conferma Salva Dati Protocollo
+conferma-operazione-body=Sei sicuro di voler salvare i dati del protocollo?
+conferma-presa-in-carico-title=Conferma Presa in Carico
+conferma-presa-in-carico-body=Sei sicuro di voler prendere in carico la domanda?
+conferma-presa-in-carico-referente-body=Sei sicuro di voler prendere in carico la domanda?
+
+graduatoria.note.modal.title=Aggiunta note Graduatoria provvisoria
+graduatoria.note.modal.body.input.label=Note
+graduatoria.note.modal.max.caratteri.label=Massimo 250 caratteri
+graduatoria.modal.button.annulla=Annulla
+graduatoria.modal.button.conferma=Conferma
+errore-salvataggio-documento=Si &egrave; verificato un errore durante il salvataggio del documento.<br/>Se l'errore persiste contattare l'assistenza.
+errore-protocollazione-documento=Si &egrave; verificato un errore durante la protocollazione del documento.<br/>Se l'errore persiste contattare l'assistenza.
+errore-firma-digitale-remota=Si &egrave; verificato un errore durante l'apposizione del sigillo elettronico o della firma digitale sul documento.<br/>Se l'errore persiste nonostante le credenziali inserite siano corrette, contattare l'assistenza.
+errore-configurazione-fdr-operatore=Per questo bando &eacute; abilitata la protocollazione della richiesta di soccorso istruttorio ma l'utenza in uso non contiene le configurazioni per applicare la Firma Digitale. Contattare l'assistenza per proseguire con la richiesta di soccorso istruttorio.
+errore-configurazione-fdr-operatore-primo-anticipo=Per questo bando &eacute; abilitata la protocollazione dell'approvazione della prima domanda di anticipo ma l'utenza in uso non contiene le configurazioni per applicare la Firma Digitale. Contattare l'assistenza per proseguire con la richiesta di approvazione prima domanda di anticipo.
+errore-configurazione-fdr-operatore-secondo-anticipo=Per questo bando &eacute; abilitata la protocollazione dell'approvazione della seconda domanda di anticipo ma l'utenza in uso non contiene le configurazioni per applicare la Firma Digitale. Contattare l'assistenza per proseguire con la richiesta di approvazione seconda domanda di anticipo.
+errore-configurazione-fdr-operatore-esito-domanda=Per questo bando &eacute; abilitata la protocollazione della chiusura della domanda ma l'utenza in uso non contiene le configurazioni per applicare la Firma Digitale. Contattare l'assistenza per proseguire con la chiusura con esito.
+
+password-fdr=Password
+codice-otp=Codice OTP
+
+
+approvazione-prima-domanda-di-anticipo-modal-title=Approvazione prima domanda di anticipo
+approvazione-prima-domanda-di-anticipo-modal-body=Attenzione! Confermando il beneficiario potr&agrave; inviare la seconda domanda di anticipo. Confermi di voler approvare la prima domanda di anticipo?
+
+approvazione-seconda-domanda-di-anticipo-modal-title=Approvazione seconda domanda di anticipo
+approvazione-seconda-domanda-di-anticipo-modal-body=Attenzione! Confermando il beneficiario potr&agrave; inviare la domanda di saldo. Confermi di voler approvare la seconda domanda di anticipo?
+
+approvazione-prima-domanda-di-anticipo=Approvazione prima domanda di anticipo
+approvazione-seconda-domanda-di-anticipo=Approvazione seconda domanda di anticipo
+
+stato-richiesta-PROTOCOLLATA=Protocollata
+stato-richiesta-NUOVA=Nuova
+stato-richiesta-ACCETTATA=Accettata
+stato-richiesta-RIFIUTATA=Rifiutata
+
+stato-richiesta-referente-NUOVA=Nuova
+stato-richiesta-referente-PROTOCOLLATA=Protocollata
+stato-richiesta-referente-IN_LAVORAZIONE=In lavorazione
+stato-richiesta-referente-ACCETTATA=Accettata
+stato-richiesta-referente-RIFIUTATA=Rifiutata
+
+dominio=Dominio
+dominio-SERVIZI=Servizi
+dominio-BANDI=Bandi
+dominio-EVENTI=Eventi
+
+protocollo=Protocollo
+id-richiesta-istanza=ID Istanza Principale
+id-richiesta=ID Richiesta
+pdf-richiesta=Domanda inoltrata
+label-download-form=In questa sezione &egrave; possibile scaricare il modulo generato dal form compilato
+label-download-richiesta=In questa sezione &egrave; possibile scaricare i documenti allegati in fase di richiesta
+tab-dati=Dettaglio richiesta referente
+tab-allegati=Altri documenti allegati
+lavora-accetta=Accetta cambio
+lavora-rifiuta=Rifiuta cambio
+
+apposizione-firma-digitale-operatore=Apposizione firma digitale operatore
+dettagli.pec=Dettagli invio PEC
+mittente-pec=Mittente PEC: {0}
+lista-accettazioni-vuota=Non sono disponibili informazioni sull'accettazione di questo invio PEC
+lista-consegne-vuota=Non sono disponibili informazioni sulle consegne di questo invio PEC
+lista-mancate-consegne-vuota=Non sono disponibili informazioni sulle mancate consegne di questo invio PEC
+data-accettazione=Data accettazione
+id-accettazione=ID Accettazione
+destinatario-accettazione=Destinatario accettazione
+num-mancate-consegne=Numero mancate consegne: {0}
+data-consegna=Data consegna
+id-consegna=ID Consegna
+destinatario-consegna=Destinatario consegna
+data-mancata-consegna=Data mancata consegna
+id-mancata-consegna=ID Mancata consegna
+destinatario-mancata-consegna=Destinatario mancata consegna
+dettagli-pec-non-disponibili=Per questa integrazione non sono ancora disponibili i dettagli dell'invio PEC
+dettagli-pec-non-disponibili-domanda=Per questa domanda non sono ancora disponibili i dettagli dell'invio PEC
+dettaglio.pec.ingresso=Dettaglio PEC ingresso
+dettaglio.pec.uscita=Dettaglio PEC uscita
+errore-richiesta-integrazione=Errore durante l'invio della richiesta di integrazione al richiedente per la domanda bando con ID {0}
+errore-chiusura-pratica=Si \u00e8 verificato un errore durante la chiusura della pratica per la domanda bando con ID {0}.
+errore-chiusura-domanda-graduatoria=Si \u00e8 verificato un errore durante la chiusura della domanda bando con ID {0}.
+errore-invio-concessione=Si \u00e8 verificato un errore durante l''avanzamento in concessione: {0}
+data-invio-integrazione=Data inserimento richiesta
+data-invio-richiedente=Data inserimento
+ammetti-finanziamento=Esito Valutazione
+ammetti-finanziamento-domanda-bando=Esito Valutazione
+ammetti-finanziamento-domanda-bando-body=Selezionare di seguito l'esito della valutazione
+seleziona-voce=Seleziona Esito
+valutazione-assegnata=Esito
+conferma-richiedi-finanziamento=Conferma esito valutazione
+conferma-richiedi-finanziamento-dettaglio=Procedendo verr&agrave; confermato l'esito della valutazione. Si intende confermare l'operazione?
+assegna-importo-modal-body=Specificare l'importo da assegnare alla domanda
+assegna-importo-domanda-bando=Assegnazione importo domanda bando ID {0}
+importo-richiesto-input=Importo richiesto
+assegna-importo=Assegna importo
+invia-fase-concessione=Invia a fase di concessione
+approvazione-graduatoria-definitiva-non-consentita=Sono presenti domande non ammissibili o non finanziabili. Prima di approvare la graduatoria definitiva \u00e8 necessario chiudere tali domande con esito negativo, utilizzando l'azione contrassegnata dall'icona X.
+accetta-richiesta-istanza=Accetta cambio referente
+rifiuta-richiesta-istanza=Rifiuta cambio referente
+approva-richiesta-cambio-referente-message=Attenzione! L'accettazione della richiesta di cambio referente \u00e8 irreversibile. Dopo la conferma non sar&agrave; pi&ugrave; possibile modificare la decisione n\u00e8 effettuare ulteriori operazioni sulla richiesta.
+rifiuta-richiesta-cambio-referente-message=Attenzione! Il rifiuto della richiesta di cambio referente \u00e8 irreversibile. Dopo la conferma non sar&agrave; pi&ugrave; possibile modificare la decisione n\u00e8 effettuare ulteriori operazioni sulla richiesta.
+avviso-cambio-referente-approvato=Attenzione! In data {0} \u00e8 stata approvata una richiesta di cambio referente pertanto i dati identificativi del richiedente sono stati aggiornati.
+visualizza-dettaglio-richiesta-referente=Visualizza dettaglio richiesta cambio referente
+evento=Evento
+
+NON_VALIDATA=Non validata
+VALIDATA=Validata
+CONFERMATA=Confermata
+DA_INTEGRARE=Da integrare
+INTEGRATA=Integrata
+RICEVUTA=Ricevuta
+richiedi-esecuzione-integrazione=Richiesta integrazione servizio di esecuzione
+esecuzione-integrazione-message=Sulla pratica sar&agrave; abilitato un nuovo servizio di esecuzione per effettuare l'integrazione
+ricevuta-esecuzione-integrazione=Conferma ricezione servizio di esecuzione
+ricevuta-esecuzione-integrazione-message=Sulla pratica sar&agrave; confermata la ricezione del servizio di esecuzione
+
+scarica-tutti-allegati=Scarica tutti gli allegati
+scarica-allegati-richiedente=Scarica allegati richiedente
+scarica-allegati-operatore=Scarica allegati operatore
+scarica-allegati-integrazione=Scarica allegati integrazione
+richiedente=Richiedente
+
+errore-lavorazione-pratica=Si � verificato un errore durante la lavorazione della pratica.
+errore-verifica-firma=Si � verificato un errore durante la verifica della firma del documento.
+
+protocollo.numero=Numero protocollo
+protocollo.numero.esito=Numero protocollo esito
+protocollo.data=Data protocollo
+protocollo.data.esito=Data protocollo esito
+download=Download
+qualifica=Qualifica
+qualificaInfocamere=Qualifica Infocamere
+
+seleziona-allegati-da-aggiungere=Seleziona gli allegati da aggiungere alla richiesta

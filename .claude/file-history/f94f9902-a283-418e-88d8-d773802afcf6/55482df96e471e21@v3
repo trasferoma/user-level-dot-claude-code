@@ -1,0 +1,126 @@
+package it.servizidigitali.gestione.referente.istanze.common.service.internal;
+
+import com.liferay.counter.kernel.service.CounterLocalService;
+import com.liferay.portal.kernel.service.UserLocalService;
+import it.servizidigitali.camunda.integration.client.CamundaClient;
+import it.servizidigitali.file.utility.factory.FileServiceFactory;
+import it.servizidigitali.gestione.referente.istanze.common.enumeration.DominioIstanza;
+import it.servizidigitali.gestione.referente.istanze.common.service.internal.transformer.DomandaBandoToRichiestaDTOTransformer;
+import it.servizidigitali.gestione.referente.istanze.service.AllegatoReferenteIstanzaLocalService;
+import it.servizidigitali.gestione.referente.istanze.service.RichiestaReferenteIstanzaLocalService;
+import it.servizidigitali.gestionebandi.service.BandoLocalService;
+import it.servizidigitali.gestionebandi.service.DomandaBandoDatoAggiuntivoLocalService;
+import it.servizidigitali.gestionebandi.service.DomandaBandoLocalService;
+import it.servizidigitali.gestionebandi.service.SottoOrganizzazioneLocalService;
+import it.servizidigitali.gestionebandi.service.TipologiaBandoLocalService;
+import it.servizidigitali.protocollo.integration.service.ProtocolloService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+@Component(name = "bandiStrategy", service = DominioStrategy.class)
+public class BandiStrategy extends BaseBandiStrategy {
+    @Reference
+    private BandoLocalService bandoLocalService;
+    @Reference
+    private TipologiaBandoLocalService tipologiaBandoLocalService;
+    @Reference
+    private DomandaBandoLocalService domandaBandoLocalService;
+    @Reference
+    private FileServiceFactory fileServiceFactory;
+    @Reference
+    private AllegatoReferenteIstanzaLocalService allegatoReferenteIstanzaLocalService;
+    @Reference
+    private RichiestaReferenteIstanzaLocalService richiestaReferenteIstanzaLocalService;
+    @Reference
+    private SottoOrganizzazioneLocalService sottoOrganizzazioneLocalService;
+    @Reference
+    private UserLocalService userLocalService;
+    @Reference
+    private CamundaClient camundaClient;
+    @Reference
+    private DomandaBandoDatoAggiuntivoLocalService domandaBandoDatoAggiuntivoLocalService;
+    @Reference
+    private CounterLocalService counterLocalService;
+    @Reference
+    private ProtocolloService protocolloService;
+    @Reference
+    private DomandaBandoToRichiestaDTOTransformer domandaBandoToRichiestaDTOTransformer;
+    @Reference
+    private ReferenteIstanzaHistoryService referenteIstanzaHistoryService;
+
+    @Override
+    protected DominioIstanza getDominio() {
+        return DominioIstanza.BANDI;
+    }
+
+    @Override
+    protected DomandaBandoLocalService getDomandaBandoLocalService() {
+        return domandaBandoLocalService;
+    }
+
+    @Override
+    protected BandoLocalService getBandoLocalService() {
+        return bandoLocalService;
+    }
+
+    @Override
+    protected TipologiaBandoLocalService getTipologiaBandoLocalService() {
+        return tipologiaBandoLocalService;
+    }
+
+    @Override
+    protected SottoOrganizzazioneLocalService getSottoOrganizzazioneLocalService() {
+        return sottoOrganizzazioneLocalService;
+    }
+
+    @Override
+    protected AllegatoReferenteIstanzaLocalService getAllegatoReferenteIstanzaLocalService() {
+        return allegatoReferenteIstanzaLocalService;
+    }
+
+    @Override
+    protected RichiestaReferenteIstanzaLocalService getRichiestaReferenteIstanzaLocalService() {
+        return richiestaReferenteIstanzaLocalService;
+    }
+
+    @Override
+    protected FileServiceFactory getFileServiceFactory() {
+        return fileServiceFactory;
+    }
+
+    @Override
+    protected UserLocalService getUserLocalService() {
+        return userLocalService;
+    }
+
+    @Override
+    protected CamundaClient getCamundaClient() {
+        return camundaClient;
+    }
+
+    @Override
+    protected DomandaBandoDatoAggiuntivoLocalService getDomandaBandoDatoAggiuntivoLocalService() {
+        return domandaBandoDatoAggiuntivoLocalService;
+    }
+
+    @Override
+    protected CounterLocalService getCounterLocalService() {
+        return counterLocalService;
+    }
+
+    @Override
+    protected ProtocolloService getProtocolloService() {
+        return protocolloService;
+    }
+
+    @Override
+    protected DomandaBandoToRichiestaDTOTransformer getDomandaBandoToRichiestaDTOTransformer() {
+        return domandaBandoToRichiestaDTOTransformer;
+    }
+
+    @Override
+    protected ReferenteIstanzaHistoryService getReferenteIstanzaHistoryService() {
+        return referenteIstanzaHistoryService;
+    }
+
+}

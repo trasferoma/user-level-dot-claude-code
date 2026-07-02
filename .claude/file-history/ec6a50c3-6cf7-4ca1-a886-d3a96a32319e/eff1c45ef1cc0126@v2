@@ -1,0 +1,162 @@
+package it.servizidigitali.common.fdr.client.api.impl;
+
+import java.io.ByteArrayOutputStream;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.util.Base64;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Test autonomo del flusso di verifica firma FdR.
+ *
+ * Replica fedelmente il comportamento attuale del codice:
+ *   1) ottiene un token OAuth2 (client_credentials) come ApiPugliaServiceImpl.getToken
+ *   2) chiama POST /verifica/sigilli?ts_date_validity=0&codice_sigillo=ANY in multipart
+ *
+ * Non e un test JUnit: e una classe con main eseguibile col single-file launcher di Java 11
+ * (non viene eseguita da gradle test). Dipende solo dal JDK.
+ *
+ * Esecuzione (Java 11+):
+ *   java .../FdrVerificaTest.java
+ *
+ * Configurazione tramite variabili d'ambiente (nessun segreto nel sorgente):
+ *   FDR_TOKEN_URL      URL completo del token endpoint (ApiPugliaEnteConfiguration baseUrl + tokenPath), es: https://api-gw.regione.puglia.it/token
+ *   FDR_CONSUMER_KEY   consumer key per ambiente+contesto in uso
+ *   FDR_SECRET_KEY     secret key per ambiente+contesto in uso
+ *   FDR_VERIFICA_BASE  base URL servizio FdR (default: https://api-gw.regione.puglia.it/api-fdr/1.0)
+ *   FDR_VERIFICA_PATH  path verifica (default: /verifica/sigilli)
+ *   FDR_TEST_FILE      percorso del file da verificare (anche non firmato)
+ *   FDR_FILE_MIME      content-type del file (default: application/pdf; per CAdES .p7m: application/pkcs7-mime)
+ */
+public class FdrVerificaTest {
+
+    private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(30);
+    private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(120);
+
+    public static void main(String[] args) throws Exception {
+        String tokenUrl = requireEnv("FDR_TOKEN_URL");
+        String consumerKey = requireEnv("FDR_CONSUMER_KEY");
+        String secretKey = requireEnv("FDR_SECRET_KEY");
+        String verificaBase = envOrDefault("FDR_VERIFICA_BASE", "https://api-gw.regione.puglia.it/api-fdr/1.0");
+        String verificaPath = envOrDefault("FDR_VERIFICA_PATH", "/verifica/sigilli");
+        String testFile = requireEnv("FDR_TEST_FILE");
+        String fileMime = envOrDefault("FDR_FILE_MIME", "application/pdf");
+
+        HttpClient httpClient = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
+                .connectTimeout(CONNECT_TIMEOUT)
+                .build();
+
+        String accessToken = ottieniToken(httpClient, tokenUrl, consumerKey, secretKey);
+        if (accessToken == null || accessToken.isEmpty()) {
+            System.err.println("STOP: token nullo o vuoto, impossibile procedere con la verifica.");
+            System.exit(1);
+        }
+
+        verificaDocumento(httpClient, verificaBase, verificaPath, accessToken, testFile, fileMime);
+    }
+
+    private static String ottieniToken(HttpClient httpClient, String tokenUrl, String consumerKey, String secretKey)
+            throws Exception {
+
+        String url = tokenUrl + "?grant_type=client_credentials";
+        String credentials = consumerKey + ":" + secretKey;
+        String basic = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI(url))
+                .method("POST", HttpRequest.BodyPublishers.noBody())
+                .header("Authorization", "Basic " + basic)
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .header("Accept", "application/json")
+                .timeout(REQUEST_TIMEOUT)
+                .build();
+
+        System.out.println("=== STEP 1 - TOKEN ===");
+        System.out.println("POST " + url);
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("Status: " + response.statusCode());
+        System.out.println("Body:   " + response.body());
+        System.out.println();
+
+        return estraiAccessToken(response.body());
+    }
+
+    private static void verificaDocumento(HttpClient httpClient, String verificaBase, String verificaPath,
+            String accessToken, String testFile, String fileMime) throws Exception {
+
+        byte[] fileBytes = Files.readAllBytes(Path.of(testFile));
+        String fileName = Path.of(testFile).getFileName().toString();
+
+        String url = verificaBase + verificaPath + "?ts_date_validity=0&codice_sigillo=ANY";
+
+        String boundary = "----FdrVerificaTestBoundary" + System.nanoTime();
+        byte[] body = buildMultipartFilePart(boundary, fileName, fileMime, fileBytes);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI(url))
+                .method("POST", HttpRequest.BodyPublishers.ofByteArray(body))
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                .timeout(REQUEST_TIMEOUT)
+                .build();
+
+        System.out.println("=== STEP 2 - VERIFICA ===");
+        System.out.println("POST " + url);
+        System.out.println("File: " + testFile + " (" + fileBytes.length + " byte, " + fileMime + ")");
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("Status: " + response.statusCode());
+        System.out.println("Body:   " + response.body());
+    }
+
+    private static byte[] buildMultipartFilePart(String boundary, String fileName, String mime, byte[] fileBytes)
+            throws Exception {
+
+        String header = "--" + boundary + "\r\n"
+                + "Content-Disposition: form-data; name=\"file\"; filename=\"" + fileName + "\"\r\n"
+                + "Content-Type: " + mime + "\r\n\r\n";
+        String footer = "\r\n--" + boundary + "--\r\n";
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        out.write(header.getBytes(StandardCharsets.UTF_8));
+        out.write(fileBytes);
+        out.write(footer.getBytes(StandardCharsets.UTF_8));
+        return out.toByteArray();
+    }
+
+    private static String estraiAccessToken(String json) {
+        if (json == null) {
+            return null;
+        }
+        Matcher matcher = Pattern.compile("\"access_token\"\\s*:\\s*\"([^\"]+)\"").matcher(json);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    private static String requireEnv(String name) {
+        String value = System.getenv(name);
+        if (value == null || value.isEmpty()) {
+            throw new IllegalStateException("Variabile d'ambiente mancante: " + name);
+        }
+        return value;
+    }
+
+    private static String envOrDefault(String name, String defaultValue) {
+        String value = System.getenv(name);
+        return (value == null || value.isEmpty()) ? defaultValue : value;
+    }
+}

@@ -1,0 +1,180 @@
+package it.servizidigitali.presentatoreforms.bandi.frontend.portlet.render;
+
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.dao.search.SearchPaginationUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
+import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.util.WebKeys;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
+import it.servizidigitali.gestionebandi.common.enumeration.TipoFormEnum;
+import it.servizidigitali.gestionebandi.common.enumeration.TipologiaBandoEnum;
+import it.servizidigitali.gestionebandi.model.Bando;
+import it.servizidigitali.gestionebandi.model.TipologiaBando;
+import it.servizidigitali.gestionebandi.service.BandoLocalService;
+import it.servizidigitali.gestionebandi.service.TipologiaBandoLocalService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+import it.servizidigitali.audit.common.service.AuditService;
+import it.servizidigitali.gestionebandi.common.enumeration.StatoIntegrazioneDomandaBandoEnum;
+import it.servizidigitali.gestionebandi.model.DomandaBando;
+import it.servizidigitali.gestionebandi.model.IstanzaDomandaBando;
+import it.servizidigitali.gestionebandi.service.DomandaBandoLocalService;
+import it.servizidigitali.gestionebandi.service.StatoDomandaLocalService;
+import it.servizidigitali.gestioneforms.model.Form;
+import it.servizidigitali.gestioneforms.service.FormLocalService;
+import it.servizidigitali.presentatoreforms.bandi.frontend.constants.PresentatoreFormsPortletKeys;
+import it.servizidigitali.presentatoreforms.bandi.frontend.dto.IntegrazioneDTO;
+import it.servizidigitali.presentatoreforms.bandi.frontend.exception.UserMismatchException;
+import it.servizidigitali.presentatoreforms.bandi.frontend.service.PresentatoreFormFrontendService;
+
+@Component(//
+        immediate = true, //
+        property = { //
+                "com.liferay.portlet.instanceable=true", //
+                "javax.portlet.display-name=PresentatoreForms", //
+                "javax.portlet.init-param.template-path=/", //
+                "javax.portlet.init-param.view-template=/view.jsp", //
+                "javax.portlet.name=" + PresentatoreFormsPortletKeys.PRESENTATOREFORMS, //
+                "mvc.command.name=" + PresentatoreFormsPortletKeys.LISTA_DOCUMENTI_ESECUZIONE_RENDER_COMMAND//
+        }, //
+        service = MVCRenderCommand.class//
+) //
+public class CompilaDocumentoEsecuzioneRenderCommand implements MVCRenderCommand {
+
+    private static final Log log = LogFactoryUtil.getLog(CompilaIstanzaFormIntegrativoRenderCommand.class.getName());
+
+    @Reference
+    private PresentatoreFormFrontendService presentatoreFormFrontendService;
+
+    @Reference
+    private FormLocalService formLocalService;
+
+    @Reference
+    private DomandaBandoLocalService domandaBandoLocalService;
+
+    @Reference
+    private StatoDomandaLocalService statoDomandaLocalService;
+    
+    @Reference
+	private AuditService auditService;
+
+    @Reference
+    private BandoLocalService bandoLocalService;
+
+    @Reference
+    private TipologiaBandoLocalService tipologiaBandoLocalService;
+
+
+    @Override
+    public String render(RenderRequest renderRequest, RenderResponse renderResponse) throws PortletException {
+
+
+        int cur = ParamUtil.getInteger(renderRequest, "curFormEsecuzione", 1);
+        int delta = ParamUtil.getInteger(renderRequest, "deltaFormEsecuzione", 10);
+        Bando bando = null;
+        try {
+            ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
+            long loggedUser = themeDisplay.getUserId();
+
+            long domandaBandoId = ParamUtil.getLong(renderRequest, PresentatoreFormsPortletKeys.DOMANDABANDO_ID);
+            DomandaBando domandaBando = domandaBandoLocalService.getDomandaBando(domandaBandoId);
+
+            if (loggedUser != domandaBando.getUserId()) {
+                throw new UserMismatchException();
+            }
+
+            bando = bandoLocalService.getBando(domandaBando.getBandoId());
+
+            int[] limits = SearchPaginationUtil.calculateStartAndEnd(cur, delta);
+            int start = limits[0];
+            int end = limits[1];
+            List<String> tipoFormList = TipoFormEnum.getTipoFormEsecuzione().stream().map(Enum::name).collect(Collectors.toList());
+            if (bando.getAbilitaEsecuzioneIntegrazione()) {
+                tipoFormList.add(TipoFormEnum.ESECUZIONE_INTEGRAZIONE.name());
+                tipoFormList.add(TipoFormEnum.ESECUZIONE_INTEGRAZIONE_DISCIPLINARE.name());
+            }
+            List<IstanzaDomandaBando> formEsecuzione = presentatoreFormFrontendService.getIstanzeFormIntegrativiDomandaByTipoForm(domandaBandoId, tipoFormList, start, end, null);
+
+            int totaleIntegrazioni;
+
+            if (bando.getAbilitaEsecuzioneIntegrazione()) {
+                totaleIntegrazioni = (int) presentatoreFormFrontendService.countIstanzeFormbyDomandaBandoIdAndTipoForms(domandaBandoId, tipoFormList);
+            }else{
+                totaleIntegrazioni = (int) presentatoreFormFrontendService.countIstanzeFormIntegrativiEsecuzioneRichiesta(domandaBandoId);
+            }
+
+            List<IntegrazioneDTO> integrazioni = formEsecuzione.stream()
+                    .map(this::mapToIntegrazione)
+                    .collect(Collectors.toList());
+
+            boolean validi = integrazioni.stream().anyMatch(x -> StatoIntegrazioneDomandaBandoEnum.VALIDATA.name().equals(x.getStato()) || StatoIntegrazioneDomandaBandoEnum.CONFERMATA.name().equals(x.getStato()));
+            
+            boolean abilitaConfermaEInvia = false;
+
+            for(IstanzaDomandaBando istanza : formEsecuzione){
+                if(istanza.getStato().equalsIgnoreCase(StatoIntegrazioneDomandaBandoEnum.VALIDATA.name())){
+                    abilitaConfermaEInvia = true;
+                    break;
+                }
+            }
+
+            if (Validator.isNotNull(bando)) {
+                TipologiaBando tipologiaBando = tipologiaBandoLocalService.getTipologiaBando(bando.getTipologiaBandoId());
+
+                if(Validator.isNotNull(tipologiaBando) && tipologiaBando.getCodice().equalsIgnoreCase(TipologiaBandoEnum.EVENTO.name())){
+                    renderRequest.setAttribute("tipologiaEvento",Boolean.TRUE);
+                }
+            }
+            renderRequest.setAttribute(PresentatoreFormsPortletKeys.VALIDI, validi);
+            renderRequest.setAttribute(PresentatoreFormsPortletKeys.DOMANDABANDO, domandaBando);
+            renderRequest.setAttribute(PresentatoreFormsPortletKeys.FORM_INTEGRATIVI, integrazioni);
+            renderRequest.setAttribute(PresentatoreFormsPortletKeys.TOTALE_FORM_INTEGRATIVI, totaleIntegrazioni);
+            renderRequest.setAttribute(PresentatoreFormsPortletKeys.CUR, cur);
+            renderRequest.setAttribute(PresentatoreFormsPortletKeys.DELTA, delta);
+            renderRequest.setAttribute(PresentatoreFormsPortletKeys.COMPILA_DOCUMENTO_ESECUZIONE, true);
+            renderRequest.setAttribute(PresentatoreFormsPortletKeys.ABILITA_CONFERMA_E_INVIA, abilitaConfermaEInvia);
+
+            return PresentatoreFormsPortletKeys.JSP_SCEGLI_DOCUMENTO_ESECUZIONE;
+
+        } catch (UserMismatchException e) {
+        	auditService.saveErrorLog(renderRequest, e.getMessage());
+            log.error(e);
+            SessionErrors.add(renderRequest, e.getClass());
+            return PresentatoreFormsPortletKeys.JSP_ERROR;
+        } catch (Exception e) {
+        	auditService.saveErrorLog(renderRequest, e.getMessage());
+            SessionErrors.add(renderRequest, PresentatoreFormsPortletKeys.IMPOSSIBILE_RECUPERARE_PROCEDURA);
+            log.error("Errore durante il caricamento della lista documenti per l'esecuzione: " + e.getMessage(), e);
+            return PresentatoreFormsPortletKeys.JSP_HOME;
+        }
+
+    }
+
+    private IntegrazioneDTO mapToIntegrazione(IstanzaDomandaBando istanzaDomandaBando) {
+        try {
+            long formId = istanzaDomandaBando.getFormId();
+            Form form = formLocalService.getForm(formId);
+            IntegrazioneDTO dto = new IntegrazioneDTO();
+            dto.setIstanzaDomandaBandoId(istanzaDomandaBando.getIstanzaDomandaBandoId());
+            dto.setDenominazione(form.getNome());
+
+            dto.setStato(istanzaDomandaBando.getStato());
+            return dto;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+}

@@ -1,0 +1,29 @@
+package org.tasktelemetry.logging;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
+
+class LoggingPropertiesLoaderTest {
+
+    @Test
+    void loadsPrefixFromYamlResource() {
+        LoggingProperties properties = LoggingPropertiesLoader.load("task-telemetry-custom.yml");
+
+        assertThat(properties.logPrefix()).isEqualTo("custom-prefix >>");
+    }
+
+    @Test
+    void fallsBackToDefaultWhenResourceIsMissing() {
+        LoggingProperties properties = LoggingPropertiesLoader.load("does-not-exist.yml");
+
+        assertThat(properties.logPrefix()).isEqualTo(LoggingProperties.DEFAULT_LOG_PREFIX);
+    }
+
+    @Test
+    void bundledResourceDefinesDefaultPrefix() {
+        LoggingProperties properties = LoggingPropertiesLoader.load();
+
+        assertThat(properties.logPrefix()).isEqualTo("task-telemetry -");
+    }
+}

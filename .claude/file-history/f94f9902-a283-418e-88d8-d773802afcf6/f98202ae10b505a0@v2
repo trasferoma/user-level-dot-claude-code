@@ -1,0 +1,69 @@
+package it.servizidigitali.common.fdr.dto;
+
+import java.util.List;
+
+public class VerificaFirmaOptions {
+    private String descrizione;
+    private boolean verificaSigilloQualificato;
+    private boolean verificaFirmaCf;
+    private String cfLoggato;
+    private List<String> tipiFirmaAmmessi;
+    private long dataFineValidita = 0;
+    private boolean verificaFirmaSuDataFineValidita = false;
+
+    public boolean isVerificaFirmaCf() {
+        return verificaFirmaCf;
+    }
+
+    public void setVerificaFirmaCf(boolean verificaFirmaCf) {
+        this.verificaFirmaCf = verificaFirmaCf;
+    }
+
+    public String getCfLoggato() {
+        return cfLoggato;
+    }
+
+    public void setCfLoggato(String cfLoggato) {
+        this.cfLoggato = cfLoggato;
+    }
+
+    public boolean isVerificaSigilloQualificato() {
+        return verificaSigilloQualificato;
+    }
+
+    public void setVerificaSigilloQualificato(boolean verificaSigilloQualificato) {
+        this.verificaSigilloQualificato = verificaSigilloQualificato;
+    }
+
+    public String getDescrizione() {
+        return descrizione;
+    }
+
+    public void setDescrizione(String descrizione) {
+        this.descrizione = descrizione;
+    }
+
+    public List<String> getTipiFirmaAmmessi() {
+        return tipiFirmaAmmessi;
+    }
+
+    public void setTipiFirmaAmmessi(List<String> tipiFirmaAmmessi) {
+        this.tipiFirmaAmmessi = tipiFirmaAmmessi;
+    }
+
+    public long getDataFineValidita() {
+        return dataFineValidita;
+    }
+
+    public void setDataFineValidita(long dataFineValidita) {
+        this.dataFineValidita = dataFineValidita;
+    }
+
+    public boolean isVerificaFirmaSuDataFineValidita() {
+        return verificaFirmaSuDataFineValidita;
+    }
+
+    public void setVerificaFirmaSuDataFineValidita(boolean verificaFirmaSuDataFineValidita) {
+        this.verificaFirmaSuDataFineValidita = verificaFirmaSuDataFineValidita;
+    }
+}

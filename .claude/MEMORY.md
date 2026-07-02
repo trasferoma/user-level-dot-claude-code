@@ -1,0 +1,7 @@
+- Sistema locale: windows 11
+- JAVA_HOME per progetti Liferay: `C:\lavoro\jdk\openlogic-openjdk-11.0.18+10-windows-x64` (JDK 11, da impostare prima di lanciare `gradlew`)
+- Incapsula i metodi per rendere il più chiaro possibile l'intenzione di quello che si vuole fare
+- L'obbiettivo principale della tecnica di scrittura è rendere la lettura del codice il più semplice possibile per le persone
+- I metodi, specialmente quelli principali devono essere puliti e devono incasulare la logica di cosa deve vare
+- Il codice prodotto deve sempre in una forma tale da mostrare le proprie intenzioni alla persona che legge il codice
+- Il target del nostro codice è sempre l'umano che lo legge e solo in seconda battutat il compilatore      

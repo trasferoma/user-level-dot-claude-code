@@ -1,0 +1,56 @@
+ Contesto: progetto Liferay 7.4 / Java 11 "servizi-digitali-build" (bandi PA Puglia).
+  Lavoro sulla FIRMA DIGITALE REMOTA (FDR) e sul CONTROLLO/VERIFICA della firma.
+  Branch attuale: feature/verifica_firma_fdr. Build SOLO con JDK 11
+  (C:\lavoro\jdk\openlogic-openjdk-11.0.18+10-windows-x64): il JAVA_HOME di default è
+  JDK 17 e rompe Gradle 6.6.1 con IllegalAccessError su compileJava. In PowerShell:
+  $env:JAVA_HOME="C:\lavoro\jdk\openlogic-openjdk-11.0.18+10-windows-x64"; $env:PATH="$env:JAVA_HOME\bin;$env:PATH"; .\gradlew <task>
+
+  ## Architettura della firma (catena, già mappata)
+  - Punto d'ingresso d'esempio: ReferentChangePdfOrchestrator (modulo
+    gestione-referente-istanze-common) -> PdfSigningProcessor (applyDigitalSignature /
+    applyElectronicSeal) -> FirmaRemotaService.applicaSigillo(...).
+  - IL servizio riusabile è FirmaRemotaService / FirmaRemotaServiceImpl nel modulo
+    servizi-digitali-common/servizi-digitali-fdr-integration. Espone:
+    applicaSigillo(...), verificaFirma(groupId, contesto, file, VerificaFirmaOptions),
+    recuperaImpronta(...).
+  - verificaFirma applica regole di validazione (firmato, tipo firma ammesso, sigillo
+    qualificato, CF firmatario = utente loggato) e poi delega a un FirmaRemotaClient.
+  - I provider concreti (FirmaRemotaClient) sono selezionati per groupId via config
+    FirmaRemotaCommonEnteConfiguration.provider():
+    - FirmaRemotaApiClient (provider "API", SOAP/XML) in servizi-digitali-fdr-api
+    - FirmaRemotaRestClient (provider "REST", multipart) in servizi-digitali-fdr-rest
+  - Entrambi i client fanno una CHIAMATA HTTP REALE con un HttpClient creato internamente
+    (non iniettato) e dipendono da apiPugliaService.getToken(...) (OAuth2). La logica
+    pura/deterministica è solo nel mapping risposta -> VerificaResponse (metodo mapResponse,
+    duplicato tra API e REST client) e nel parsing SOAP (parseMessage).
+
+  ## Cosa è già stato fatto in questa fase
+  1. Creato e poi RIMOSSO un test su FirmaRemotaServiceImpl.verificaFirma perché mockava
+     anche l'esito della verifica -> poco utile (confermava solo lo stubbing). build.gradle
+     di servizi-digitali-fdr-integration riportato all'originale (niente Mockito).
+  2. Creato un test UTILE sulla logica pura di mappatura:
+     servizi-digitali-fdr-api/src/test/java/it/servizidigitali/common/fdr/client/api/impl/
+     FirmaRemotaApiClientTest.java -> testa FirmaRemotaApiClient.mapResponse (3 test, verdi):
+     esito+flag, strip prefisso "TINIT-" dal CF, esclusione certificati non validi, niente
+     NPE con certificati null.
+     - Per renderlo testabile: mapResponse cambiato da "private static" a "static"
+       (package-private), con commento "Visibilita di package per consentire il test unitario".
+     - build.gradle di servizi-digitali-fdr-api: aggiunte testImplementation per junit 4.12,
+       assertj-core 3.24.2, release.portal.api, project fdr-integration, common-utility,
+       api-puglia-integration, jakarta.xml.soap-api:1.4.2, saaj-impl:1.5.3.
+     - SCOPERTA: per caricare FirmaRemotaApiClient nei test servono TUTTE le sue compileOnly
+       sul classpath di test; in particolare i tipi javax.xml.soap.* NON sono nel JDK 11
+       (vanno aggiunti jakarta.xml.soap-api + saaj-impl), altrimenti NoClassDefFoundError.
+     - Convenzione test del repo: JUnit 4 + AssertJ, classi *Test (non *Tests).
+
+  ## Task aperto (da iniziare nella nuova chat)
+  Voglio testare verificaDocumentoFirmato di FirmaRemotaApiClient.
+  Requisito chiarito: oggi il controllo firma sull'istanza parte SEMPRE con
+  ts_date_validity = 0 verso POST /verifica/sigilli (endpoint
+  https://api-gw.regione.puglia.it/fdr/2.0), valore interpretato dal servizio come
+  "verifica alla data odierna". È QUESTO il comportamento attuale che voglio fissare con un test.
+
+  Nota tecnica già emersa: ts_date_validity = 0 è lato client e COSTANTE (hardcoded come
+  DATA_ODIERNA = 0 dentro verificaDocumentoFirmato); codice_sigillo = "ANY". Quindi la
+  request è identica per un documento firmato oggi o ieri: la differenza positivo/negativo
+  dipende solo dalla semantica del servizio remoto. 

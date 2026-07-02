@@ -1,0 +1,198 @@
+<c:if test="${queryTabParent == 'in.lavorazione'}">
+	<div class="row mt-2 mb-2">
+		<div class="col-12">
+			<c:forEach items="${azioni}" var="azione">
+				<c:choose>
+					<c:when test="${azione.codiceAzioneUtente == 'ASSEGNA_ALTRO_RESPONSABILE'}">
+						<button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />assegnaAltroResponsabileModal">
+							<liferay-ui:message key="assegna-altro-responsabile" />
+						</button>
+					</c:when>
+
+                    <c:when test="${azione.codiceAzioneUtente == 'TIPO_OPERAZIONE_VALUTA_DOMANDA_BANDO' && !convalidaValutazione}">
+                        <button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />valutazioniModal">
+                            <liferay-ui:message key="valuta-domanda-bando" />
+                        </button>
+                    </c:when>
+                    
+                    <c:when test="${azione.codiceAzioneUtente == 'TIPO_OPERAZIONE_VALUTA_AMMISSIBILITA'}">
+                        <button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />valutaAmmissibilitaModal">
+                            <liferay-ui:message key="verifica-ammissibilita-domanda-bando" />
+                        </button>
+                    </c:when>
+                    
+                    <c:when test="${azione.codiceAzioneUtente == 'TIPO_OPERAZIONE_INVIA_A_VALUTAZIONE' && ammissibilitaDomandaOperatore == 'AMMISSIBILE' && tipologiaBando != 'AVVISO_SPORTELLO' && tipologiaBando != 'CLICK_DAY' && tipologiaBando != 'ISCRIZIONE_ELENCO' && tipologiaBando != 'EVENTO' && tipologiaBando != 'PROCEDURA_NEGOZIALE'}">
+						<button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />avanzaAValutazioneModal">
+							<liferay-ui:message key="invia-a-valutazione" />
+						</button>		
+					</c:when>
+
+					<c:when test="${azione.codiceAzioneUtente == 'TIPO_OPERAZIONE_INVIA_A_VALUTAZIONE' && ammissibilitaDomandaOperatore == 'AMMISSIBILE' && (tipologiaBando == 'AVVISO_SPORTELLO' || tipologiaBando == 'EVENTO' || tipologiaBando == 'PROCEDURA_NEGOZIALE')}">
+                        <button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />procediElaborazioneModal">
+                            <liferay-ui:message key="concludi-istruttoria" />
+                        </button>
+                    </c:when>
+
+					<c:when test="${azione.codiceAzioneUtente == 'ASSEGNA_RESPONSABILE'}">
+						<button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />assegnaResponsabileModal">
+							<liferay-ui:message key="assegna-responsabile" />
+						</button>
+					</c:when>
+
+					<c:when test="${(azione.codiceAzioneUtente == 'ESITO_PROCEDIMENTO_POSITIVO' && tipologiaBando == 'ISCRIZIONE_ELENCO' && checkPresenzaValutazioneAmmissibilita ) || (azione.codiceAzioneUtente == 'ESITO_PROCEDIMENTO_POSITIVO' && tipologiaBando == 'EVENTO' && checkPresenzaValutazioneAmmissibilita )
+					|| (azione.codiceAzioneUtente == 'ESITO_PROCEDIMENTO_POSITIVO' && !checkPresenzaRevoca && tipologiaBando != 'ISCRIZIONE_ELENCO' && isEsecuzione) || (azione.codiceAzioneUtente == 'ESITO_PROCEDIMENTO_POSITIVO' && tipologiaBando == 'PROCEDURA_NEGOZIALE_VALUTAZIONE' && convalidaValutazione)}">
+						<button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />chiudiEsitoPositivoModal">
+							<liferay-ui:message key="chiudi-esito-positivo" />
+						</button>
+					</c:when>
+
+					<c:when test="${azione.codiceAzioneUtente == 'ESITO_PROCEDIMENTO_NEGATIVO'}">
+						<button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />chiudiEsitoNegativoModal">
+							<liferay-ui:message key="chiudi-esito-negativo" />
+						</button>
+					</c:when>
+					
+					<c:when test="${azione.codiceAzioneUtente == 'TIPO_OPERAZIONE_CONCESSIONE' && !checkPresenzaRevoca}">
+                        <button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />inoltraaConcessioneModal"
+                        data-parametro="${azione.variableValue}" >
+                            ${azione.descrizione}
+                        </button>
+                    </c:when>
+
+                    <c:when test="${azione.codiceAzioneUtente == 'TIPO_OPERAZIONE_ESECUZIONE'}">
+                        <button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />inoltraaEsecuzioneModal"
+                        data-parametro="${azione.variableValue}" >
+                            ${azione.descrizione}
+                        </button>
+                    </c:when>
+                    
+                     <c:when test="${azione.codiceAzioneUtente == 'TIPO_OPERAZIONE_CONCLUDI_VALUTAZIONE' && checkPresenzaValutazione && !convalidaValutazione}">
+                        <button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />concludiValutazioneModal"
+                        data-parametro="${azione.variableValue}" >
+                            ${azione.descrizione}
+                        </button>
+                    </c:when>
+
+					<c:when test="${azione.codiceAzioneUtente == 'RICHIESTA_INTEGRAZIONE'}">
+						<button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />richiediModificheModal">
+							<liferay-ui:message key="richiedi-modifiche-integrazioni-richiedente" />
+						</button>
+					</c:when>
+
+					<c:when test="${azione.codiceAzioneUtente == 'ATTIVITA_BENEFICIARIO'}">
+                        <button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />richiediAttivitaBeneficiarioModal">
+                            <liferay-ui:message key="richiedi-documenti-esecuzione" />
+                        </button>
+					</c:when>
+
+					<c:when test="${azione.codiceAzioneUtente == 'RILASCIA_TASK'}">
+						<button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />rilasciaModal">
+							<liferay-ui:message key="rilascia" />
+						</button>
+					</c:when>
+
+					<c:when test="${azione.codiceAzioneUtente == 'TIPO_OPERAZIONE_RIMANDA_REFERENTE'}">
+						<button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />rimandaAlReferenteModal">
+							<liferay-ui:message key="rimanda-al-referente" />
+						</button>
+					</c:when>
+
+					<c:when test="${azione.codiceAzioneUtente == 'COMPILA_DISCIPLINARE'}">
+						<button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />richiediCompilaModal">
+							<liferay-ui:message key="richiedi-disciplinare" />
+						</button>
+					</c:when>
+
+					<c:when test="${azione.codiceAzioneUtente == 'COMPILA_DISCIPLINARE_ESECUZIONE'}">
+						<button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />richiediCompilaEsecuzioneModal">
+							<liferay-ui:message key="richiedi-disciplinare-esecuzione" />
+						</button>
+					</c:when>
+					
+					<c:when test="${azione.codiceAzioneUtente == 'CONTROLLO_SCADENZE' && !checkPresenzaRevoca}">
+						<button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace/>scadenzarioDomandaModal">
+							<liferay-ui:message key="scadenzario-domanda-modal-button" />
+						</button>
+					</c:when>
+
+					<c:when test="${azione.codiceAzioneUtente == 'GESTISCI_EROGAZIONI' && !checkPresenzaRevoca}">
+						<button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace/>erogazioneDomandaModal">
+							<liferay-ui:message key="erogazione-domanda-modal-button" />
+						</button>
+                    </c:when>
+
+                    <c:when test="${azione.codiceAzioneUtente == 'COMPILA_REVOCA' && !checkPresenzaRevoca}">
+                        <button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace/>richiediCompilaRevocaModal">
+                            <liferay-ui:message key="redazione-atto-revoca" />
+                    	</button>
+                    </c:when>
+
+					<c:when test="${azione.codiceAzioneUtente == 'COMPILA_REVOCA' && checkPresenzaRevoca}">
+                        <button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace/>annullaRevocaModal">
+                            <liferay-ui:message key="annulla-revoca-modal-button" />
+                    	</button>
+                    </c:when>
+                    
+                    <c:when test="${azione.codiceAzioneUtente == 'TIPO_OPERAZIONE_ANNULLAMENTO_DOMANDA'}">
+                        <button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />annullamentoDomandaModal"
+                        data-parametro="${azione.variableValue}" >
+                            ${azione.descrizione}
+                        </button>
+                    </c:when>
+
+                    <c:when test="${azione.codiceAzioneUtente == 'TIPO_OPERAZIONE_CONFERMA_ESITO' && tipologiaBando == 'EVENTO' && checkPresenzaValutazioneAmmissibilita}">
+                        <button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />confermaEsitoModal"
+                        data-parametro="${azione.variableValue}" >
+                            <liferay-ui:message key="conferma-esito-modal-button" />
+                        </button>
+                    </c:when>
+
+					<c:when test="${azione.codiceAzioneUtente == 'ESITO_PROCEDIMENTO_PARTECIPAZIONE_EFFETTUATA'}">
+						<button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />partecipazioneEffettuataModal">
+							<liferay-ui:message key="partecipazione-effettuata" />
+						</button>
+					</c:when>
+
+					<c:when test="${azione.codiceAzioneUtente == 'ESITO_PROCEDIMENTO_PARTECIPAZIONE_NON_EFFETTUATA'}">
+						<button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />partecipazioneNonEffettuataModal">
+							<liferay-ui:message key="partecipazione-non-effettuata" />
+						</button>
+					</c:when>
+
+					<c:when test="${azione.codiceAzioneUtente == 'ESITO_PROCEDIMENTO_PARTECIPAZIONE_NON_EFFETTUATA_GIUSTIFICATIVO'}">
+						<button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />partecipazioneGiustificativoModal">
+							<liferay-ui:message key="partecipazione-non-effettuata-giustificativo" />
+						</button>
+					</c:when>
+
+					<c:when test="${azione.codiceAzioneUtente == 'TIPO_OPERAZIONE_APPROVAZIONE_ANTICIPO' && abilitaAzioneDomandaAnticipo}">
+						<button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />approvaDomandaAnticipoModal">
+							<liferay-ui:message key="approvazione-domanda-di-anticipo" />
+						</button>
+					</c:when>
+
+                     <c:when test="${(azione.codiceAzioneUtente == 'TIPO_OPERAZIONE_CONCLUDI_VAL_AMMISSIBILITA' && ammissibilitaDomandaOperatore == 'NON_AMMISSIBILE' && tipologiaBando != 'CLICK_DAY' && tipologiaBando != 'ISCRIZIONE_ELENCO' && tipologiaBando != 'PROCEDURA_NEGOZIALE_VALUTAZIONE') || (azione.codiceAzioneUtente == 'TIPO_OPERAZIONE_CONCLUDI_VAL_AMMISSIBILITA' && ammissibilitaDomandaOperatore == 'NON_AMMISSIBILE' && tipologiaBando == 'PROCEDURA_NEGOZIALE_VALUTAZIONE' && !convalidaValutazioneAmmissibilita)}">
+                        <button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />concludiValutazioneAmmissibilitaModal"
+                        data-parametro="${azione.variableValue}" >
+                            ${azione.descrizione}
+                        </button>
+                    </c:when>
+
+
+                    <c:when test="${azione.codiceAzioneUtente == 'TIPO_OPERAZIONE_APPROVAZIONE_PRIMA_ANTICIPO' && abilitaAzionePrimaDomandaAnticipo}">
+                        <button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />approvaPrimaDomandaAnticipoModal">
+                            <liferay-ui:message key="approvazione-prima-domanda-di-anticipo" />
+                        </button>
+                    </c:when>
+
+                    <c:when test="${azione.codiceAzioneUtente == 'TIPO_OPERAZIONE_APPROVAZIONE_SECONDO_ANTICIPO' && abilitaAzioneSecondaDomandaAnticipo}">
+                        <button class="btn btn-outline-primary mr-1 mt-1" data-toggle="modal" data-target="#<portlet:namespace />approvaSecondaDomandaAnticipoModal">
+                            <liferay-ui:message key="approvazione-seconda-domanda-di-anticipo" />
+                        </button>
+                    </c:when>
+				</c:choose>
+			</c:forEach>
+
+		</div>
+	</div>
+</c:if>

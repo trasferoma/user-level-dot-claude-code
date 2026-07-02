@@ -1,0 +1,203 @@
+package it.servizidigitali.scrivaniacittadino.frontend.constants;
+
+import com.liferay.petra.string.StringPool;
+
+/**
+ * @author pindi
+ */
+public class ScrivaniaCittadinoPortletKeys {
+
+	public static final String SCRIVANIACITTADINO = "it_servizidigitali_scrivaniacittadino_frontend_ScrivaniaCittadinoPortlet";
+	public static final String BUNDLE_SYMBOLIC_NAME = "it.servizidigitali.scrivaniacittadino.frontend";
+
+	public static final String SEZIONE_SCRIVANIA = "sezioneScrivania";
+	public static final String SEZIONE_ATTIVITA = "sezioneAttivita";
+	public static final String SEZIONE_DOMANDE_BANDO = "sezioneDomandeBando";
+	public static final String SEZIONE_MESSAGGI = "sezioneMessaggi";
+	public static final String SEZIONE_SERVIZI = "sezioneServizi";
+	public static final String SEZIONE_APPUTAMENTI = "sezioneAppuntamenti";
+	public static final String SEZIONE_PAGAMENTI = "sezionePagamenti";
+	public static final String SEZIONE_CALENDARIO = "sezioneCalendario";
+	public static final String DETTAGLIO_DATI_RICHIESTA = "dettaglioDatiRichiesta";
+	public static final String DETTAGLIO_MESSAGGI = "dettaglioMessaggi";
+	public static final String DETTAGLIO_TAB_DA_APRIRE = "dettaglioTaDaAprire";
+    public static final String DETTAGLIO_DATI_RICHIESTA_REFERENTE = "dettaglioDatiRichiestaReferente";
+
+	public static final String TAB_ATTIVA = "tabAttiva";
+	public static final String TAB_ATTIVA_DETTAGLIO = "tabAttivaDettaglio";
+
+	public static final String TABS_VALUES = "tabsValuesCommaSeparated";
+	public static final String LISTA_RICHIESTE = "listaRichieste";
+	public static final String LISTA_PRENOTAZIONI = "listaPrenotazioni";
+	public static final String LISTA_COMUNICAZIONI = "listaComunicazioni";
+	public static final String LISTA_PAGAMENTI = "listaPagamenti";
+	public static final String LISTA_TIPOLOGIA_COMUNICAZIONE = "listaTipologiaComunicazione";
+	public static final String LISTA_TIPOLOGIA_RICHIESTA = "listaTipologiaRichiesta";
+	public static final String LISTA_STATO = "listaStato";
+	public static final String LISTA_STATO_RICHIESTA_REFERENTE = "listaStatoRichiestaReferente";
+	public static final String BANDI_ENABLED = "bandiEnabled";
+	public static final String PAGAMENTI_ENABLED = "pagamentiEnabled";
+
+	public static final String RESOURCE_COMMAND_GET_RICHIESTE = "/getRichiesteUtente";
+	public static final String RESOURCE_COMMAND_GET_COMUNICAZIONI = "/getComunicazioniUtente";
+	public static final String RESOURCE_COMMAND_GET_PAGAMENTI = "/getPagamentiUtente";
+	public static final String RESOURCE_COMMAND_GET_PRENOTAZIONI = "/getPrenotazioniUtente";
+	public static final String RESOURCE_COMMAND_DOWNLOAD_FILE = "/downloadFile";
+	public static final String RESOURCE_COMMAND_DOWNLOAD_FILE_DOMANDABANDO = "/downloadFileDomandaBando";
+	public static final String RESOURCE_COMMAND_GET_SERVIZI_PIU_UTILIZZATI = "/getServiziPiuUtilizzati";
+	public static final String RESOURCE_COMMAND_GET_DOMANDE_BANDO = "/getDomandeBandoUtente";
+	public static final String RESOURCE_COMMAND_GET_BANDI = "/getBandi";
+	public static final String RESOURCE_COMMAND_GET_STATI_DOMAND_BANDO = "/getStatiDomandaBando";
+	public static final String RESOURCE_COMMAND_SALVA_SCADENZA_ALLEGATO_DOMANDA_BANDO = "/salvaScadenzaAllegatoDomanda";
+	public static final String RESOURCE_COMMAND_GET_PATH_AVVISO = "/getPathAvviso";
+	public static final String RESOURCE_COMMAND_GET_RICHIESTE_REFERENTE = "/getRichiesteReferenteUtente";
+	public static final String RESOURCE_COMMAND_GET_ITEMS_BY_DOMINIO_REFERENTE = "/getItemsByDominioReferente";
+
+	public static final String CALENDARIO_SCADENZE = "calendario_scadenze";
+	public static final String CALENDARIO_SCADENZE_RESOURCE = StringPool.FORWARD_SLASH + CALENDARIO_SCADENZE;
+
+	public static final String RENDER_COMMAND_DETTAGLIO_RICHIESTA = "/dettaglioRichiesta";
+	public static final String RENDER_COMMAND_ELENCO_DOVUTI = "/elencoDovuti";
+	public static final String RENDER_COMMAND_DETTAGLIO_DOMANDABANDO = "/dettaglioDomandaBando";
+	public static final String RENDER_COMMAND_MODIFICA_PAGAMENTO = "/visualizzaPagamento";
+	public static final String RENDER_REDIRECT_PAGAMENTO = "/redirectPagamento";
+	public static final String RESOURCE_COMMAND_FORM_PAGAMENTO = "/redirectFormPagamento";
+	public static final String RENDER_COMMAND_ANNULLA_DOMANDABANDO = "/annullaDomandaBando";
+    public static final String RENDER_COMMAND_DETTAGLIO_RICHIESTA_REFERENTE = "/dettaglioRichiestaReferente";
+
+	public static final String FILTER_STATO_RICHIESTE = "filterStatoRichiesta";
+	public static final String FILTER_STATO_DOMANDA_BANDO = "filterStatoDomandaBando";
+	public static final String FILTER_ID_RICHIESTA = "filterIdRichiesta";
+	public static final String FILTER_ID_DOMANDA_BANDO = "filterIdDomandaBando";
+	public static final String FILTER_OGGETTO_RICHIESTE = "filterOggettoRichiesta";
+	public static final String FILTER_BANDO = "filterBando";
+	public static final String FILTER_STATO_PAGAMENTO = "filterStatoPagamento";
+	public static final String FILTER_OGGETTO_PAGAMENTO = "filterOggettoPagamento";
+	public static final String FILTER_OGGETTO_COMUNICAZIONE = "filterOggettoComunicazione";
+	public static final String FILTER_TIPO_COMUNICAZIONE = "filterTipoComunicazione";
+	public static final String FILTER_ID_RICHIESTA_REFERENTE = "filterIdRichiestaReferente";
+	public static final String FILTER_RICHIESTA_ID_REFERENTE = "filterRichiestaIdReferente";
+	public static final String FILTER_DOMINIO_REFERENTE = "filterDominioReferente";
+	public static final String FILTER_SERVIZIO_REFERENTE = "filterServizioReferente";
+	public static final String FILTER_STATO_RICHIESTA_REFERENTE = "filterStatoRichiestaReferente";
+	public static final String FILTER_DATA_INSERIMENTO_DA_REFERENTE = "filterDataInserimentoDaReferente";
+	public static final String FILTER_DATA_INSERIMENTO_A_REFERENTE = "filterDataInserimentoAReferente";
+
+	public static final String PARAM_ID = "id";
+	public static final String PARAM_DOMANDABANDO_ID = "domandaBandoId";
+	public static final String PARAM_PAGAMENTO_ID = "pagamentoId";
+	public static final String PARAM_DOVUTO_ID = "dovutoId";
+	public static final String PARAM_PAGAMENTO_DOVUTO_ID = "pagamentoDovutoId";
+	public static final String PARAM_BANDO_ID = "bandoId";
+	public static final String PARAM_NOME_BANDO = "nomeBando";
+	public static final String PARAM_TIPO_EVENTO = "tipologiaEvento";
+	public static final String PARAM_FILE_ID = "fileId";
+	public static final String PARAM_COMUNICAZIONE_ID = "comunicazioneId";
+	public static final String PARAM_TIPOLOGIA_COMUNICAZIONE = "tipologiaComunicazione";
+	public static final String PARAM_LIST_CUR = "listCur";
+	public static final String RICHIESTA = "richiesta";
+	public static final String DOMANDA_BANDO = "domandaBando";
+	public static final String PAGAMENTO = "pagamento";
+	public static final String STATO_DOMANDA_BANDO_LABEL = "statoDomandaBandoLabel";
+	public static final String STATO_DOMANDA_BANDO_CODICE = "statoDomandaBandoCodice";
+	public static final String ALLEGATI_RICHIESTA = "allegatiRichiesta";
+	public static final String ALLEGATI_PROVVEDIMENTI_FINALI = "allegatiProvvedimentiFinali";
+	public static final String ALLEGATO_RICEVUTA_PAGAMENTO = "allegatoRicevutaPagamento";
+	public static final String LISTA_RICEVUTE = "listaRicevute";
+
+	public static final String COMMENTI_RICHIESTA = "commentiRichiesta";
+	public static final String COMMENTI_DOMANDABANDO = "commentiDomandaBando";
+	public static final String COMMENTI_RICHIESTA_COUNT = "commentiRichiestaCount";
+	public static final String COMMENTI_DOMANDABANDO_COUNT = "commentiDomandaBandoCount";
+	public static final String ATTIVITA_RICHIESTA = "attivitaRichiesta";
+	public static final String ATTIVITA_DOMANDABANDO = "attivitaDomandaBando";
+	public static final String ATTIVITA_RICHIESTA_COUNT = "attivitaRichiestaCount";
+	public static final String ATTIVITA_DOMANDABANDO_COUNT = "attivitaDomandaBandoCount";
+	public static final String PAGAMENTI_DOVUTI = "pagamentiDovuti";
+	public static final String PAGAMENTI = "pagamenti";
+	public static final String PAGAMENTI_COUNT = "pagamentiCount";
+	public static final String PAGAMENTI_DOVUTI_COUNT = "pagamentiDovutiCount";
+	public static final String TIPOLOGIE_DOVUTO_DA_RIELABORARE = "tipologieDovutiDaRielaborare";
+	public static final String PDF_RICHIESTA = "pdfRichiesta";
+
+	public static final String SEARCH_CONTAINER_NAME = "searchContainerName";
+	public static final String SEARCH_CONTAINER_ATTIVITA = "attivita";
+	public static final String SEARCH_CONTAINER_COMMENTI = "commenti";
+	public static final String SEARCH_CONTAINER_PAGAMENTI = "pagamenti";
+	public static final String SEARCH_CONTAINER_DOVUTI = "dovuti";
+
+	public static final String JSP_HOME = "/view.jsp";
+	public static final String JSP_DETTAGLIO_RICHIESTA = "/dettaglio_richiesta.jsp";
+	public static final String JSP_DETTAGLIO_DOMANDABANDO = "/dettaglio_domandabando.jsp";
+	public static final String JSP_MODIFICA_PAGAMENTO = "/modificaPagamento.jsp";
+	public static final String JSP_ELENCO_DOVUTI = "/elencoPagamentiDovuti.jsp";
+	public static final String JSP_REDIRECT = "/redirect.jsp";
+    public static final String JSP_DETTAGLIO_RICHIESTA_REFERENTE = "/dettaglio_richiesta_referente.jsp";
+
+	public static final String ERROR_IMPOSSIBILE_OTTENERE_DETTAGLIO = "error-impossiible-ottenere-dettaglio";
+	public static final String SESSION_ERROR_IMPOSSIBILE_GENERARE_AVVISO = "errore-impossibile-generare-avviso";
+	public static final String SESSION_ERROR_IMPOSSIBILE_GENERARE_PAGAMENTO = "errore-impossibile-generare-pagamento";
+
+	public static final int DEFAULT_DELTA = 10;
+	public static final String CUR_ATTIVITA = "curAttivita";
+	public static final String DELTA_ATTIVITA = "deltaAttivita";
+
+	public static final String CUR_COMMENTI = "curCommenti";
+	public static final String DELTA_COMMENTI = "deltaCommenti";
+	
+	public static final String CUR_PAGAMENTI = "curPagamenti";
+	public static final String DELTA_PAGAMENTI = "deltaPagamenti";
+	
+	public static final String CUR_DOVUTI = "curDovuti";
+	public static final String DELTA_DOVUTI = "deltaDovuti";
+
+	public static final String PARAM_ALLEGATO_DOMANDA_BANDO_ID = "allegatoDomandaBandoId";
+	public static final String PARAM_ALLEGATO_DOMANDA_BANDO_DATA_SCADENZA = "dataScadenzaAllegato";
+
+	public static final String ATTIVITA_BENEFICIARIO = "attivitaBeneficiario";
+	
+	public static final String DATI_MONITORAGGIO_URL = "datiMonitoraggioUrl";
+	
+	public static final String STATO_DOMANDA_ANNULLATA = "statoDomandaAnnullata";
+
+	public static final String INTEGRAZIONE_CITTADINO = "/integrazioneCittadino";
+
+	public static final String TIPO_FORM_ESECUZIONE = "ESECUZIONE";
+	public static final String TIPO_FORM_ESECUZIONE_CRONOPROGRAMMA = "ESECUZIONE_CRONOPROGRAMMA";
+	
+	public static final String MONITORAGGIO_BANDO_FRIENDLY_URL = "/dati-monitoraggio-bando";
+	public static final String DOMANDA_BANDO_CONFIDI = "domandaBandoConfidi"; 
+	public static final String NUMERO_MESSAGGI_NON_LETTI = "numeroMessaggiNonLetti"; 
+	
+	public static final String GENERA_PAGAMENTO_ACTION_COMMAND = "/generaPagamento"; 
+	public static final String CODICE_MODELLO_1 = "codiceModello1"; 
+	public static final String CODICE_MODELLO_3 = "codiceModello3"; 
+	public static final String TUTTI = "tutti"; 
+	public static final String IMPORTO = "importo"; 
+	public static final String ABILITA_ANTEPRIMA_DOCUMENTO = "abilitaAnteprimaDocumento"; 
+	public static final String CONTESTO_PAGAMENTO_FE = "contestoPagamentoFE"; 
+	public static final String CONTESTO_PAGAMENTO_BE = "contestoPagamentoBE"; 
+	public static final String STATO_COMPLETATO = "statoCompletato"; 
+	public static final String RICHIESTA_ID = "richiestaId";
+	public static final String SESSION_ERROR_IMPORTO_NON_INSERITO = "errore-importo-non-inserito";
+	public static final String RESOURCE_COMMAND_SCARICA_AVVISO_PAGAMENTO = "/downloadAvvisoPagamento";
+	public static final String RESOURCE_COMMAND_SCARICA_RICEVUTA_PAGAMENTO = "/downloadRicevutaPagamento";
+	public static final String NOME_ENTE = "nomeEnte";
+	public static final String SERVIZIO_PAGAMENTO = "servizioAPagamento";
+
+	public static final String SERVIZI_DINAMICI_AGGIUNTIVI_ABILITATI = "serviziDinamiciAggiuntiviAbilitati";
+	public static final String SERVIZI_DINAMICI_AGGIUNTIVI_CONFIGS = "serviziDinamiciAggiuntiviConfigs";
+
+	public static final String SHOW_ACTION_BUTTONS = "showActionButtons";
+	public static final String QUESTIONARIO_COMPILATO = "Questionario compilato";
+	public static final String SEZIONE_RICHIESTE_REFERENTE = "sezioneRichiesteReferente";
+    public static final String DETTAGLIO_RICHIESTA = "dettaglioRichiesta";
+    public static final String RICHIESTA_REFERENTE_ID = "richiestaReferenteId";
+    public static final String RESOURCE_COMMAND_DOWNLOAD_FILE_ALLEGATO_REFERENTE = "/downloadFileAllegatoReferente";
+    public static final String PARAM_FILE_NAME = "fileName";
+    public static final String COMMENTI_RICHIESTA_REFERENTE = "commentiRichiestaReferente";
+    public static final String COMMENTI_RICHIESTA_REFERENTE_COUNT = "commentiRichiestaReferenteCount";
+	public static final String ACTION_APRI_TICKET_DOMANDABANDO = "/apriTicketDomandaBando";
+	public static final String ACTION_APRI_TICKET_RICHIESTA = "/apriTicketRichiesta";
+	public static final String ERRORE_APERTURA_TICKET = "errore-apertura-ticket";
+}

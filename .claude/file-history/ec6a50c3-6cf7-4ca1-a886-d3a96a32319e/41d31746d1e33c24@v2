@@ -1,0 +1,105 @@
+package it.servizidigitali.gestionebandi.service.persistence.impl;
+
+import java.util.List;
+
+import org.osgi.service.component.annotations.Component;
+
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
+import com.liferay.portal.kernel.util.Validator;
+
+import it.servizidigitali.gestionebandi.model.CommentoDomandaBando;
+import it.servizidigitali.gestionebandi.service.CommentoDomandaBandoLocalServiceUtil;
+import it.servizidigitali.gestionebandi.service.DomandaBandoLocalServiceUtil;
+import it.servizidigitali.gestionebandi.service.LetturaCommentoDomandaBandoLocalServiceUtil;
+import it.servizidigitali.gestionebandi.service.persistence.CommentoDomandaBandoFinder;
+
+@Component(service = CommentoDomandaBandoFinder.class)
+public class CommentoDomandaBandoFinderImpl extends CommentoDomandaBandoFinderBaseImpl implements CommentoDomandaBandoFinder {
+
+    @Override
+    public List<CommentoDomandaBando> findCommentiByCodiceFiscaleAndVisibileAndCompanyId(String codiceFiscale, long companyId) {
+
+        ClassLoader classLoader = getClass().getClassLoader();
+
+        DynamicQuery dynamicQuery = DynamicQueryFactoryUtil.forClass(CommentoDomandaBando.class, classLoader);
+        DynamicQuery domandaBandoDynamicQuery = DomandaBandoLocalServiceUtil.dynamicQuery();
+
+        if (Validator.isNotNull(codiceFiscale)) {
+            domandaBandoDynamicQuery.add(RestrictionsFactoryUtil.eq("codiceFiscale", codiceFiscale));
+            domandaBandoDynamicQuery.setProjection(PropertyFactoryUtil.forName("domandaBandoId"));
+            dynamicQuery.add(PropertyFactoryUtil.forName("domandaBandoId").in(domandaBandoDynamicQuery));
+            dynamicQuery.add(PropertyFactoryUtil.forName("visibile").eq(true));
+            if (companyId > 0) {
+                dynamicQuery.add(RestrictionsFactoryUtil.eq("companyId", companyId));
+            }
+        }
+
+        return commentoDomandaBandoPersistence.findWithDynamicQuery(dynamicQuery);
+    }
+
+    @Override
+    public long countCommentiNonLettiByCodiceFiscaleAndCompanyId(String codiceFiscale, long companyId) {
+
+        if (Validator.isNull(codiceFiscale)) {
+            return 0;
+        }
+
+        ClassLoader classLoader = getClass().getClassLoader();
+
+        DynamicQuery dynamicQuery = DynamicQueryFactoryUtil.forClass(CommentoDomandaBando.class, classLoader);
+        DynamicQuery domandaBandoDynamicQuery = DomandaBandoLocalServiceUtil.dynamicQuery();
+
+        domandaBandoDynamicQuery.add(RestrictionsFactoryUtil.eq("codiceFiscale", codiceFiscale));
+        domandaBandoDynamicQuery.setProjection(PropertyFactoryUtil.forName("domandaBandoId"));
+
+        dynamicQuery.add(PropertyFactoryUtil.forName("domandaBandoId").in(domandaBandoDynamicQuery));
+        dynamicQuery.add(PropertyFactoryUtil.forName("visibile").eq(true));
+        dynamicQuery.add(RestrictionsFactoryUtil.isNull("dataLettura"));
+
+        if (companyId > 0) {
+            dynamicQuery.add(RestrictionsFactoryUtil.eq("companyId", companyId));
+        }
+
+        return commentoDomandaBandoPersistence.countWithDynamicQuery(dynamicQuery);
+    }
+
+    @Override
+    public long countCommentiNonLettiByDomandaBandoIdAndUserId(long domandaBandoId, long userId) {
+        DynamicQuery commentiQuery = createCommentiNonLettiDynamicQuery(domandaBandoId, userId);
+
+        return commentoDomandaBandoPersistence.countWithDynamicQuery(commentiQuery);
+    }
+
+    @Override
+    public List<Long> findCommentIdsNonLettiByDomandaBandoIdAndUserId(long domandaBandoId, long userId) {
+        DynamicQuery commentiQuery = createCommentiNonLettiDynamicQuery(domandaBandoId, userId);
+
+        commentiQuery.setProjection(PropertyFactoryUtil.forName("commentoDomandaBandoId"));
+
+        return commentoDomandaBandoPersistence.findWithDynamicQuery(commentiQuery);
+    }
+
+    private DynamicQuery createCommentiNonLettiDynamicQuery(long domandaBandoId, long userId) {
+        DynamicQuery lettureSubQuery = LetturaCommentoDomandaBandoLocalServiceUtil.dynamicQuery();
+
+        lettureSubQuery.add(
+                RestrictionsFactoryUtil.eq("primaryKey.userId", userId));
+        lettureSubQuery.setProjection(
+                PropertyFactoryUtil.forName("primaryKey.commentoDomandaBandoId"));
+
+        DynamicQuery commentiQuery = CommentoDomandaBandoLocalServiceUtil.dynamicQuery();
+
+        commentiQuery.add(
+                RestrictionsFactoryUtil.eq("domandaBandoId", domandaBandoId));
+        commentiQuery.add(
+                RestrictionsFactoryUtil.ne("userId", userId));
+        commentiQuery.add(
+                PropertyFactoryUtil.forName("commentoDomandaBandoId")
+                        .notIn(lettureSubQuery));
+
+        return commentiQuery;
+    }
+}

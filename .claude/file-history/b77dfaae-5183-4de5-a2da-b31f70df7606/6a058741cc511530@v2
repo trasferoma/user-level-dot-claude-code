@@ -1,0 +1,87 @@
+package org.tasktelemetry;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class TaskTelemetryTest {
+
+    private static final Instant FIXED_INSTANT = Instant.parse("2026-06-28T10:00:00Z");
+
+    @Mock
+    private TaskTransport transport;
+
+    @Mock
+    private TaskListener listener;
+
+    @Test
+    void startEmitsStartedWithGeneratedExecutionId() {
+        TaskTelemetry telemetry = telemetry();
+
+        telemetry.start("IMPORT_CLIENTI");
+
+        TaskEvent started = publishedEvents().get(0);
+        assertThat(started.type()).isEqualTo(TaskEventType.STARTED);
+        assertThat(started.taskName()).isEqualTo("IMPORT_CLIENTI");
+        assertThat(started.executionId()).isEqualTo("exec-fixed");
+        assertThat(started.timestamp()).isEqualTo(FIXED_INSTANT);
+    }
+
+    @Test
+    void startWithCorrelationKeyPropagatesIt() {
+        TaskTelemetry telemetry = telemetry();
+
+        telemetry.start("IMPORT_CLIENTI", "pratica-556101");
+
+        assertThat(publishedEvents().get(0).correlationKey()).isEqualTo("pratica-556101");
+    }
+
+    @Test
+    void listenSubscribesListenerAndHandleUnsubscribes() {
+        TaskTelemetry telemetry = telemetry();
+
+        ListenerHandle handle = telemetry.listen().taskName("IMPORT_CLIENTI").onEvent(listener).start();
+        handle.stop();
+
+        verify(transport, times(1)).subscribe(any());
+        verify(transport, times(1)).unsubscribe(any());
+    }
+
+    @Test
+    void startWithoutListenerThrows() {
+        TaskTelemetry telemetry = telemetry();
+
+        assertThatNullPointerException()
+                .isThrownBy(() -> telemetry.listen().taskName("IMPORT_CLIENTI").start());
+    }
+
+    private TaskTelemetry telemetry() {
+        return TaskTelemetry.builder()
+                .transport(transport)
+                .clock(Clock.fixed(FIXED_INSTANT, ZoneOffset.UTC))
+                .heartbeatInterval(null)
+                .executionIdGenerator(() -> "exec-fixed")
+                .build();
+    }
+
+    private List<TaskEvent> publishedEvents() {
+        ArgumentCaptor<TaskEvent> captor = ArgumentCaptor.forClass(TaskEvent.class);
+        verify(transport, atLeastOnce()).publish(captor.capture());
+        return captor.getAllValues();
+    }
+}

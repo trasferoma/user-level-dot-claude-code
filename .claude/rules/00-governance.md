@@ -1,0 +1,237 @@
+---
+id: governance
+title: Global Skill Governance
+category: governance
+priority: 100
+version: 1.1
+status: active
+---
+
+# Scopo
+Questo file definisce le regole globali con cui il modello deve:
+- interpretare la collezione di file skill disponibili
+- decidere quali skill applicare
+- risolvere conflitti tra skill
+- stabilire priorità, compatibilità ed esclusioni
+- garantire coerenza tra comportamento generale e comportamento specializzato
+
+Questo file non contiene regole di dominio specifiche.
+Questo file governa l’uso delle altre skill.
+
+# Definizioni
+## Skill
+Una skill è un file markdown specializzato che definisce comportamenti, vincoli, preferenze operative e criteri di attivazione relativi a uno specifico contesto.
+
+## Skill primaria
+La skill principale selezionata per il task corrente.
+Governa il comportamento dominante della risposta.
+
+## Skill secondaria
+Una skill compatibile con la skill primaria che supporta aspetti specifici del task senza sostituirne il ruolo principale.
+
+## Contesto
+L’insieme di segnali utili a selezionare una skill:
+- intenzione dell’utente
+- tipo di output richiesto
+- dominio tecnico o operativo
+- vincoli espliciti
+- natura dell’azione richiesta
+
+# Principi generali
+- Le skill sono moduli di comportamento contestuale, non istruzioni universali.
+- Una skill deve essere applicata solo se migliora in modo diretto la risposta.
+- Il modello deve evitare attivazioni deboli o speculative.
+- Il modello deve preferire la skill più specifica e pertinente.
+- Il modello può usare più skill solo se compatibili e non ridondanti.
+- L’assenza di skill applicabili è una situazione valida.
+
+# Ordine di precedenza
+In caso di conflitto, applicare questo ordine:
+
+1. Regole superiori e vincoli di sicurezza
+2. Istruzioni esplicite dell’utente
+3. Questo file di governance
+4. Skill più specifiche per il task
+5. Skill più generiche ma compatibili
+6. Preferenze stilistiche implicite o accessorie
+
+# Processo di selezione
+Per ogni richiesta, il modello deve seguire questa sequenza:
+
+1. identificare il tipo di task
+2. identificare l’output richiesto
+3. valutare le skill disponibili
+4. selezionare la skill primaria più pertinente
+5. selezionare eventuali skill secondarie compatibili
+6. scartare skill inutili, ridondanti o incompatibili
+7. rispondere secondo il comportamento risultante
+
+# Regole di attivazione
+Una skill deve essere attivata solo se almeno una di queste condizioni è vera:
+- il task corrisponde chiaramente al suo scopo
+- l’output richiesto rientra nel suo ambito operativo
+- la skill migliora correttezza, qualità, coerenza o struttura della risposta
+- l’utente richiede un comportamento che la skill disciplina esplicitamente
+
+Una skill non deve essere attivata se:
+- il task è esterno al suo perimetro
+- la pertinenza è solo indiretta o debole
+- esiste una skill più specifica per lo stesso task
+- l’utente richiede esplicitamente un comportamento incompatibile
+- l’attivazione introdurrebbe vincoli inutili
+
+# Regole di composizione
+Il modello può applicare più skill contemporaneamente solo se:
+- non si contraddicono
+- hanno aree di responsabilità distinte
+- la combinazione migliora il risultato
+- la skill primaria resta chiaramente dominante
+
+Quando più skill sono attive:
+- una sola skill deve essere primaria
+- le altre devono essere secondarie
+- le skill secondarie non devono alterare il core behavior della skill primaria
+- le skill secondarie devono essere ignorate se aggiungono solo ridondanza
+
+# Regole di conflitto
+Se due skill sono in conflitto:
+- prevale la skill più specifica rispetto al task
+- a parità di specificità, prevale quella con priorità più alta
+- a parità anche di priorità, prevale quella che preserva meglio correttezza e aderenza alla richiesta
+- se il conflitto resta ambiguo, il modello deve adottare il comportamento più conservativo e coerente
+
+# Regole di esclusione
+Il modello non deve:
+- attivare tutte le skill disponibili in parallelo
+- usare skill solo perché semanticamente vicine
+- fondere skill incompatibili
+- applicare una skill fuori contesto
+- usare una skill per ignorare una richiesta esplicita valida
+- introdurre comportamenti specialistici quando il task non li richiede
+
+# Regole di fallback
+Se nessuna skill è chiaramente applicabile:
+- il modello deve usare il comportamento generale
+- non deve forzare l’attivazione di skill
+- deve rispettare comunque le istruzioni esplicite dell’utente
+
+# Convenzione metadata
+Ogni skill deve dichiarare un front matter YAML iniziale.
+
+## Campi obbligatori
+- `id`: identificatore univoco e stabile
+- `title`: nome leggibile della skill
+- `category`: ambito principale della skill
+- `priority`: priorità numerica intera
+- `version`: versione della skill
+- `status`: stato della skill
+
+## Campi facoltativi consigliati
+- `scope`: area operativa specifica
+- `owner`: autore o responsabile logico
+- `tags`: etichette utili alla classificazione
+- `conflicts_with`: elenco di skill potenzialmente incompatibili
+- `requires`: skill o prerequisiti logici
+- `supports`: skill che può affiancare
+- `notes`: annotazioni operative sintetiche
+
+## Regole sui metadata
+- `id` deve essere unico nella collezione
+- `priority` deve essere un intero maggiore di 0
+- `status` dovrebbe essere uno tra: `draft`, `active`, `deprecated`, `disabled`
+- `version` deve seguire un formato semplice coerente, ad esempio `1.0`, `1.1`, `2.0`
+- i metadata non devono contraddire il contenuto della skill
+
+# Schema minimo obbligatorio per ogni skill
+Ogni skill deve includere almeno queste sezioni, con questi nomi o equivalenti strettamente compatibili:
+
+1. `# Scopo`
+2. `# Quando usare questa skill`
+3. `# Quando NON usare questa skill`
+4. `# Regole di precedenza`
+5. `# Regole operative`
+6. `# Vincoli`
+
+## Sezioni facoltative consigliate
+- `# Obiettivi`
+- `# Preferenze di output`
+- `# Esempi di attivazione`
+- `# Esempi di non attivazione`
+- `# Note finali`
+
+## Regole sul contenuto delle skill
+Ogni skill deve:
+- essere autonoma e comprensibile
+- evitare duplicazioni inutili con altre skill
+- dichiarare chiaramente trigger ed esclusioni
+- descrivere comportamento operativo, non teoria generica
+- evitare ambiguità su ciò che influenza
+
+Ogni skill non deve:
+- contenere policy globali che appartengono alla governance
+- ridefinire l’ordine di precedenza globale
+- assumere di essere sempre attiva
+- imporre comportamenti fuori dal proprio contesto
+
+# Convenzione di naming dei file
+Per favorire ordine e selezione, i file dovrebbero seguire questa convenzione:
+
+`NN-skill-<area>-<focus>.md`
+
+Esempi:
+- `00-governance.md`
+- `10-skill-code-generation-clean-code.md`
+- `15-skill-code-generation-java-conventions.md`
+- `16-skill-code-generation-java-version-11.md`
+- `30-skill-code-generation-springboot.md`
+
+## Regole di naming
+- usare lettere minuscole
+- usare trattini come separatori
+- evitare nomi vaghi come `best-practices.md` o `notes.md`
+- il prefisso numerico ordina logicamente la collezione ma non sostituisce la priorità dichiarata nei metadata
+
+# Policy di interpretazione
+Il modello deve interpretare le skill come:
+- istruzioni contestuali
+- moduli operativi attivabili
+- vincoli locali e non universali
+
+Il modello non deve interpretarle come:
+- conoscenza obbligatoria sempre attiva
+- sostituti delle istruzioni dell’utente
+- licenze per ignorare il contesto reale del task
+
+# Regole specifiche per il codice
+Quando il task richiede generazione o modifica di codice:
+- il modello deve cercare una skill specifica per il codice
+- se presente, deve usarla come skill primaria
+- skill generiche di scrittura non devono compromettere qualità tecnica, leggibilità o testabilità del codice
+
+# Regole specifiche per output non di codice
+Quando il task non richiede codice:
+- le skill di code generation non devono essere attivate
+- eventuali principi tecnici possono essere richiamati solo come contesto, non come comportamento dominante
+
+# Criterio di qualità finale
+L’uso delle skill deve produrre risposte:
+- pertinenti
+- coerenti
+- non contraddittorie
+- specializzate solo quando serve
+- proporzionate al task
+
+Il modello deve selezionare skill con disciplina.
+Non deve comportarsi come un frullatore di istruzioni.
+
+# Skill registry
+Le seguenti skill sono attualmente disponibili.
+
+- `skill-code-generation-clean-code` → `10-skill-code-generation-clean-code.md`
+- `skill-code-generation-java-conventions` → `15-skill-code-generation-java-conventions.md`
+- `skill-code-generation-java-version-11` → `16-skill-code-generation-java-version-11.md`
+- `skill-code-generation-java-version-17` → `17-skill-code-generation-java-version-17.md`
+- `skill-code-generation-java-version-21` → `18-skill-code-generation-java-version-21.md`
+- `skill-code-generation-springboot` → `30-skill-code-generation-springboot.md`
+- `skill-code-generation-liferay` → `35-skill-code-generation-liferay.md`
+- `skill-scripting-groovy` → `skills/groovy/SKILL.md`

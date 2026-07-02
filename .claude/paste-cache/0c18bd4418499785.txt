@@ -1,0 +1,9 @@
+Estendere l'eligibilità: includere il modulo disciplinare esecuzione tra i form che abilitano la richiesta integrazioni, anche in assenza di un'istanza di servizio esecuzione "classica" → estendere il filtro in getBandoFormStreamDaIntegrareByDomandaBandoId (6564) e la lista tipi in getIntegrazioni(..., isEsecuzione, ...).
+
+Form senza parent: garantire che il form disciplinare esecuzione non entri nella catena formAttuale/formDaMostrare che abilita gli altri form di esecuzione.
+
+Abilitazione mirata: l'accettazione del disciplinare esecuzione deve abilitare esclusivamente il form di sottoscrizione disciplinare (caso speciale in richiediIntegrazioni, ramo isEsecuzione), non l'intera sequenza dei form di esecuzione.
+
+Nessuna propagazione: verificare che l'accettazione di tale servizio non attivi updateIstanzaDaIntegrare/abilitazioni a cascata previste per gli altri servizi.
+
+Allineare le liste tipo-form dove vengono enumerati i form di esecuzione (es. CompletaEsecuzioniActionCommand, getTipoFormEsecuzione) per riconoscere disciplinare esecuzione e sottoscrizione disciplinare.

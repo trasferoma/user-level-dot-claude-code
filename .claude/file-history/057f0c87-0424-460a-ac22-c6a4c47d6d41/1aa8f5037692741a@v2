@@ -1,0 +1,3 @@
+# task-telemetry logging configuration.
+# log-prefix is prepended to every log message emitted by the library.
+log-prefix: "task-telemetry -"

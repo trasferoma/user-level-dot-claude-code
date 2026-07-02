@@ -1,0 +1,16 @@
+{
+  "autoUpdatesChannel": "latest",
+  "theme": "dark",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /c/Users/fabio.dearcangelis/.claude/hooks/intro-progetto.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+- [PDF integrazioni: prima pagina bianca](pdf-integrazioni-prima-pagina-bianca.md) — causa = contenuto wizard > 1 pagina + page-break-inside:avoid nel CSS di stampa del tema
+- [PDF integrazioni: definizione form da snapshot](pdf-integrazioni-definizione-form-da-snapshot.md) — il PDF legge IstanzaDomandaBando.json, non la definizione madre; come testare via DB + cache
+- [tipoForm calcolato al salvataggio bando](tipoform-calcolato-al-salvataggio-bando.md) — bando_form.tipoForm si ricalcola solo ri-salvando il bando, non modificando il JSON del form
+- [Disciplinare esecuzione: routing per tipoForm](disciplinare-esecuzione-routing-per-tipoform.md) — la sottoscrizione va come ESECUZIONE_INTEGRAZIONE; il routing esistente per tipoForm fa il resto

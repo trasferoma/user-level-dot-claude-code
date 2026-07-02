@@ -1,0 +1,265 @@
+# Checklist interventi TIER 1 — Continuità dati operatori migrati SPID
+
+> Deriva da `censimento_aree_impattate_da_old_screen_name.md`.
+> Perimetro: **solo TIER 1** (identità dell'operatore). Il TIER 2 (CF cittadino/impresa) è fuori scope
+> salvo estensione deliberata dell'edge-case Q4.
+> Data: 2026-07-02 · Branch: `feature/iam-operatore`.
+
+---
+
+## Premessa: i due pattern di union già presenti nel repo
+
+Ogni intervento **replica uno di questi due idiomi già in uso**, non ne inventa di nuovi.
+
+### Pattern A — Camunda: seconda interrogazione sul vecchio userId + merge
+`ScrivaniaOperatoreFrontendService.addOldUserTasks` (:658-672). L'API `searchTasks` accetta un solo
+`assignee`, quindi si esegue una seconda `searchTasks` con `oldUserId` e si fondono i risultati in
+`Map<processInstanceId, Task>` via `putIfAbsent`. Se `getOldUserId` è `null` → no-op.
+
+### Pattern B — DynamicQuery: da `eq(identità)` a `in([identità, vecchiaIdentità])`
+`ComunicazioneFinderImpl` ramo `destinatarioId` (:161-179): costruisce una lista
+`[destinatarioId, oldUserId]` e passa da `eq` a `.in(list)`. Per la variante su CF esiste
+`CommentoRichiestaFinderImpl.buildCodiciFiscali` (:58-68): lista `[codiceFiscale, oldScreenName.toUpperCase()]`.
+
+**Regola di applicazione del Pattern B:**
+- filtro di **appartenenza/lettura** (`eq` reader/destinatario/owner) → diventa `in([corrente, vecchio])`;
+- filtro di **esclusione** dell'identità propria (`ne("userId", userId)`) → diventa `notIn([corrente, vecchio])`.
+
+### Direzione della risoluzione
+`OldUserResolver` risolve **nuovo → vecchio** (`getOldUserId`, `getOldScreenName`). Non esiste il verso
+inverso (vecchio → nuovo): rilevante per l'unico caso di *notifica* (vedi §8).
+
+### Stato wiring `OldUserResolver` per modulo
+| Modulo | `@Reference OldUserResolver` già presente? |
+|---|---|
+| scrivania-operatore-frontend | ✅ |
+| scrivania-operatore-bandi-frontend | ✅ |
+| gestione-comunicazioni-service | ✅ |
+| scrivania-operatore-service (commenti) | ✅ |
+| gestione-bandi-service (commenti) | ✅ |
+| **gestione-referente-istanze (middleware + finder)** | ❌ da aggiungere (`+compileOnly` common-utility + `@Reference`) |
+| **servizi-digitali-communication-utility** | ❌ da verificare/aggiungere |
+
+---
+
+## 1. Camunda — `countUserTasks` (servizi + bandi)
+
+- [x] **`ScrivaniaOperatoreFrontendService`** — `countUserTasks` (due overload) — ✅ FATTO: helper `countOldUserTasks`, somma dei count. Compilato OK.
+- [x] **`ScrivaniaOperatoreBandiFrontendService`** — `countUserTasks` — ✅ FATTO: helper `countOldUserTasks` duplicato nel modulo, somma dei count. Compilato OK.
+
+**Problema:** `getUserTasks` è coperto (mostra i task vecchi), ma il contatore no → lista e badge divergono.
+
+**Strategia (Pattern A adattato al count):** risolvere `oldUserId = oldUserResolver.getOldUserId(currentUserId)`;
+se non null, sommare la seconda `countTasks` sul vecchio assignee.
+
+```java
+long count = camundaClient.countTasks(tenantId, String.valueOf(currentUser.getUserId()), null, variableQueryParameters);
+Long oldUserId = oldUserResolver.getOldUserId(currentUser.getUserId());
+if (oldUserId != null) {
+    count += camundaClient.countTasks(tenantId, String.valueOf(oldUserId), null, variableQueryParameters);
+}
+return count;
+```
+
+**⚠️ Decisione da prendere (semantica del conteggio):** `getUserTasks` deduplica per `processInstanceId`
+(`putIfAbsent`), quindi la **dimensione della lista** = process instance distinti. La somma dei count invece
+conta i **task**: se una stessa process instance ha task sia per il nuovo sia per il vecchio userId (raro, ma
+possibile), il badge può risultare > lista. Opzioni:
+- (a) somma dei count — semplice, con rara sovrastima (coerente con lo stile "limite noto documentato" già usato per la paginazione per-assignee);
+- (b) contare i `processInstanceId` distinti riusando la mappa di `getUserTasks` — esatto ma costoso.
+Raccomandata (a) con commento esplicito.
+
+**Test:** operatore migrato con task su vecchio e nuovo userId → badge = lista.
+
+---
+
+## 2. Camunda — confronti in-memory sull'assignee (`is-mine` / claim eligibility)
+
+- [ ] **`ScrivaniaOperatoreBandiFrontendService`** — :1459, :1518, :5249, :1782, :1932, :2105, :2149, :2153, :2249, :2285, :2334, :2362, :2411, :2441, :2726, :3832, :4052
+- [ ] **`ScrivaniaOperatoreFrontendService`** — :972, :1338, :1378, :1532, :1597
+
+**Problema:** dopo la union i task possono avere `assignee = oldUserId`; questi confronti valutano solo
+`currentUserId` → il task compare in lista ma risulta "non mio" per le azioni.
+
+**Strategia:** introdurre **un solo helper** per modulo e sostituire le uguaglianze puntuali.
+
+```java
+private boolean isAssignedToOperatoreCorrente(Task task, long currentUserId) {
+    String assignee = task.getAssignee();
+    if (assignee == null) {
+        return false;
+    }
+    if (assignee.equalsIgnoreCase(String.valueOf(currentUserId))) {
+        return true;
+    }
+    Long oldUserId = oldUserResolver.getOldUserId(currentUserId);
+    return oldUserId != null && assignee.equalsIgnoreCase(String.valueOf(oldUserId));
+}
+```
+
+**⚠️ Nota performance:** `getOldUserId` fa lookup su User/Expando. Con ~20 call site in loop conviene
+**risolvere `oldUserId` una volta** a monte del ciclo e passarlo all'helper, evitando risoluzioni ripetute.
+
+**⚠️ Nota sicurezza:** questo tocca la *claim eligibility*. Verificare che consentire l'azione su un task
+del vecchio userId sia il comportamento voluto (di norma sì: è lo stesso operatore). Non allargare oltre.
+
+**Test:** operatore migrato apre un task ancora assegnato al vecchio userId → può eseguire le azioni previste.
+
+---
+
+## 3. Camunda — assignee nel referente istanze
+
+- [ ] **`GestioneReferenteMiddlewareService`** — `setAssignee(...)` :1374 + `searchTasks(query)` :1387
+
+**Problema:** l'assignee della `SearchTaskQuery` è impostato col solo `operatoreUserId` corrente.
+
+**Strategia (Pattern A):** se `getOldUserId(operatoreUserId)` non null, eseguire una seconda ricerca con il
+vecchio assignee e fondere i risultati (stessa logica di `addOldUserTasks`). Valutare se estrarre l'helper di
+merge in un punto condiviso o replicarlo qui.
+
+**Prerequisito:** wiring `OldUserResolver` nel modulo gestione-referente-istanze (vedi tabella wiring).
+
+**⚠️ Da ispezionare prima:** verificare se la ricerca è paginata/contata a parte (in tal caso vale anche la
+decisione del §1 sul conteggio).
+
+---
+
+## 4. Comunicazioni — finder non coperti (lettore/destinatario operatore)
+
+Tutti in **`ComunicazioneFinderImpl`** (modulo già wired). Applicare il **Pattern B**.
+
+- [ ] `generaQuery` ramo `stato`/lettura :190 — `eq("primaryKey.userId", filters.getUserId())` → `in([userId, oldUserId])`
+- [ ] `findComunicazioniNonLetteByUserId` :234 — reader `eq("primaryKey.userId", userId)` → `in`; autore `ne("userId", userId)` :243 → `notIn([userId, oldUserId])`
+- [ ] `findComunicazioniNonLetteByUserIdAndSubOrgIds` :252 — reader `eq` → `in` (l'`in(userIds)` sugli operatori resta invariato)
+- [ ] `countComunicazioniNonLetteByUserId` :270 — reader `eq` → `in`; destinatario `eq("primaryKey.destinatarioId", userId)` :285 → `in`
+- [ ] `countComunicazioniNonLetteByUserId(userId, groupId, companyId)` :294 — idem :308
+- [ ] **`MessaggioFinderImpl`** :51 (`ne("userId", userId)` → `notIn`) e :67 (l'`in(userIdsOperatori)` resta; il reader `eq` → `in`)
+- [ ] **`LetturaMessaggioFinderImpl`** :21 `findMessaggioIdsByUserId` — `eq` → `in([userId, oldUserId])`
+- [ ] **`DestinatarioComunicazioneLocalServiceImpl.findByDestinatarioId`** :68 — è un finder generato per singolo id: valutare se serve un metodo che accetti una lista o se il chiamante può fare due lookup e fondere
+
+**Strategia comune (helper locale, per non ripetere la risoluzione):**
+```java
+private List<Long> buildUserIds(long userId) {
+    List<Long> ids = new ArrayList<>();
+    ids.add(userId);
+    Long oldUserId = oldUserResolver.getOldUserId(userId);
+    if (oldUserId != null) {
+        ids.add(oldUserId);
+    }
+    return ids;
+}
+```
+Poi: filtri di lettura/destinatario `eq(...)` → `.in(buildUserIds(userId))`; filtri di esclusione
+`ne("userId", userId)` → `notIn(buildUserIds(userId))`.
+
+- [ ] (opzionale, solo ricerca testuale operatore) `generaQuery` ramo `username` :133-159 e `searchUsers` :220 —
+  ilike su `screenName`: per trovare per CF un operatore migrato servirebbe includere anche il vecchio
+  screenName. **Bassa priorità** (feature di ricerca, non "i miei dati").
+
+**Test:** operatore migrato → conteggio e lista "non lette" includono le comunicazioni del vecchio userId; i
+messaggi da lui scritti sotto la vecchia identità non compaiono come "non letti".
+
+---
+
+## 5. Commenti richiesta — metodo con `eq` residuo
+
+- [ ] **`CommentoRichiestaFinderImpl.findCommentiByCodiceFiscaleAndCompanyIdAndRichiestaId`** :82 (ramo `else`, `richiestaId <= 0`)
+
+**Problema:** usa `RestrictionsFactoryUtil.eq("codiceFiscale", codiceFiscale)` mentre i metodi gemelli dello
+stesso file usano già `buildCodiciFiscali`. Incoerenza interna.
+
+**Strategia:** sostituire con l'helper già presente nella classe:
+```java
+richiestaDynamicQuery.add(PropertyFactoryUtil.forName("codiceFiscale").in(buildCodiciFiscali(codiceFiscale, companyId)));
+```
+Intervento a una riga, zero wiring aggiuntivo. Il ramo `richiestaId > 0` filtra per `richiestaId` e non va toccato.
+
+**Test:** merge commenti su pratica presentata sotto vecchia identità, con `richiestaId` non valorizzato.
+
+---
+
+## 6. Commenti — non letti per lettore (userId operatore)
+
+Stessa logica nei due moduli. Applicare **Pattern B** (reader `in`, autore `notIn`).
+
+- [ ] **`CommentoRichiestaFinderImpl.createCommentiNonLettiDynamicQuery`** :137 — lettura `eq("primaryKey.userId", userId)` :141 → `in`; autore `ne("userId", userId)` :150 → `notIn`
+- [ ] **`CommentoDomandaBandoFinderImpl`** — metodi `countCommentiNonLettiByDomandaBandoIdAndUserId` :94 e `findCommentIdsNonLettiByDomandaBandoIdAndUserId` :101 (verificare l'helper interno equivalente)
+
+**⚠️ Valutazione di dominio:** questi contano i commenti *non letti dall'operatore corrente*. Ha senso unire le
+letture del vecchio userId solo se l'operatore aveva già letto commenti sotto la vecchia identità. Confermare
+la reale utenza di lettura prima di intervenire; se lo scenario non è concreto, declassare a "non necessario".
+
+**Test:** commento letto sotto vecchia identità non risulta "non letto" dopo la migrazione.
+
+---
+
+## 7. Referente istanze — finder owner + assignee
+
+- [ ] **`RichiestaReferenteIstanzaFinderImpl.searchRichiestaReferente`** :31 e **`countRichiestaReferente`** :38
+
+**Problema:** filtrano su `userId` (owner) `eq` + `codiceFiscale` + assignee col solo valore corrente.
+
+**Strategia:** Pattern B su `userId` (`eq` → `in([userId, oldUserId])`); per l'eventuale assignee, coerente con §3.
+
+**⚠️ Da ispezionare prima di implementare:** non ho letto questo finder in dettaglio — verificare firma esatta,
+quali chiavi sono effettivamente identità operatore vs. richiedente, e il wiring `OldUserResolver` nel modulo.
+
+**Test:** operatore migrato vede le istanze referente sia del nuovo sia del vecchio userId.
+
+---
+
+## 8. Notifica su assignee (verso inverso vecchio → nuovo)
+
+- [ ] **`CommunicationServiceImpl`** :992 — `tasks.get(0).getAssignee()` → notifica quell'utente
+
+**Problema (diverso dagli altri):** qui si legge l'assignee di un task per **inviare** una notifica. Se il task
+è ancora assegnato al **vecchio** userId (utenza interna, potenzialmente disattivata), la notifica andrebbe alla
+vecchia identità. Serve la risoluzione **vecchio → nuovo**, che `OldUserResolver` **non espone**.
+
+**Opzioni:**
+- (a) estendere `OldUserResolver` con `getCurrentUserIdByOldUserId(...)` (ricerca per Expando `old_screen_name` = screenName del vecchio utente → utente SPID corrente);
+- (b) considerare fuori scope se i vecchi userId non sono più assegnatari attivi dopo la migrazione (dipende dal processo di migrazione dei task in Camunda).
+
+**⚠️ Decisione richiesta al team** prima di qualsiasi intervento.
+
+---
+
+## Decisioni trasversali da chiudere prima di implementare
+
+1. ~~Semantica del conteggio task (§1): somma count vs. process instance distinti.~~ → **RISOLTO: opzione (a) somma dei count** (accettata la rara sovrastima; coerente con la semantica attuale). ✅ implementato e compilato.
+2. **Claim eligibility sui task del vecchio userId** (§2): confermare che l'azione sia consentita.
+3. **Verso inverso vecchio → nuovo** (§8): estendere il resolver o dichiarare fuori scope.
+4. **Utilità reale dei "non letti" per vecchia identità** (§6): confermare lo scenario.
+5. **Wiring `OldUserResolver`** nei moduli gestione-referente-istanze e communication-utility.
+
+## Ordine consigliato (per valore percepito / rischio)
+
+1. §1 count task + §5 commenti `eq` residuo — **quick win**, coerenza immediata, rischio minimo.
+2. §4 comunicazioni non-lette — alto impatto sul badge dell'operatore migrato.
+3. §2 confronti in-memory assignee — necessario perché la union dei task sia realmente usabile.
+4. §6 commenti non letti + §7 referente istanze — dopo conferma di dominio/wiring.
+5. §3 assignee referente + §8 notifica — dopo le decisioni trasversali.
+
+## Invarianti (validi per ogni intervento)
+
+- `getOldUserId`/`getOldScreenName...` = `null` ⇒ comportamento identico all'attuale (nessuna regressione).
+- Estendere sempre con `Disjunction`/`in`/`notIn` parametrizzati; **mai** concatenare SQL.
+- Aggiungere le clausole legacy **solo** quando il valore `old_*` è non-null.
+- Risolvere `oldUserId`/`oldScreenName` **una volta** per chiamata (non dentro i loop).
+- Nessuna modifica ai file generati da Service Builder (`*PersistenceImpl`, `*Util`, `*Wrapper`): intervenire nei `*FinderImpl` / service.
+
+## Checklist interventi ALFRESCO — Continuità dati operatori migrati SPID
+
+Cambiare la struttura del percorso dei file salvati su alfresco, adesso anche gli operatori hanno il codice fiscale quindi la struttura del path generato deve essere molto simile a quella del cittadino quindi
+
+adesso è:
+
+```text
+    codicefiscale-codice servizio/bando - richiestaId
+```
+
+se l'utente è un operatore deve essere:
+
+```text
+ codicefiscale-codice servizio/bando - richiestaId - allegati opertore
+```

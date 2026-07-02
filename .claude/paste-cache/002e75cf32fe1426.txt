@@ -1,0 +1,71 @@
+$('#div').alpaca({
+    "schema": {
+        "description": "",
+        "type": "object",
+        "required": false,
+        "properties": {
+            "commentiOp": {
+                "type": "object",
+                "properties": {
+                    "note": {
+                        "type": "string",
+                        "required": false,
+                        "properties": {}
+                    }
+                },
+                "required": false
+            }
+        }
+    },
+    "options": {
+        "focus": false,
+        "type": "object",
+        "helpers": [],
+        "helpersPosition": "below",
+        "validate": true,
+        "disabled": false,
+        "showMessages": true,
+        "collapsible": false,
+        "legendStyle": "button",
+        "fields": {
+            "commentiOp": {
+                "type": "commentiOperatoreFormIntegrativi",
+                "label": "",
+                "helpers": [],
+                "validate": true,
+                "disabled": false,
+                "showMessages": true,
+                "collapsible": false,
+                "legendStyle": "button",
+                "view": "commentiOperatoreFormIntegrativi-view",
+                "fields": {
+                    "note": {
+                        "label": "Annotazioni relative alla richiesta integrazione",
+                        "type": "text",
+                        "disabled": false,
+                        "view": "bootstrap-display",
+                        "renderButtons": true,
+                        "helpers": [],
+                        "validate": true,
+                        "showMessages": true,
+                        "data": {},
+                        "attributes": {},
+                        "allowOptionalEmpty": true,
+                        "autocomplete": false,
+                        "disallowEmptySpaces": false,
+                        "disallowOnlyEmptySpaces": false,
+                        "fields": {}
+                    }
+                }
+            }
+        }
+    },
+    "data": {
+        "commentoOperatore": {}
+    },
+    "view": {
+        "id": "view-alpaca7",
+        "parent": "bootstrap-edit",
+        "templates": {}
+    }
+});

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="soggetti_subreport_marketing2027"
+              pageWidth="515" pageHeight="842" columnWidth="515"
+              leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+
+    <style name="font_standard" isDefault="true" fontName="DejaVu Sans" fontSize="9"/>
+    <style name="Label" fontName="DejaVu Sans" fontSize="9" isBold="true"/>
+    <style name="Value" fontName="DejaVu Sans" fontSize="9"/>
+    <style name="SoggettoHeader" fontName="DejaVu Sans" fontSize="9" isBold="true" isItalic="true"/>
+
+    <field name="datiPartner.nomePartner" class="java.lang.String"/>
+    <field name="datiPartner.partitaIva" class="java.lang.String"/>
+    <field name="datiPartner.codiceFiscale" class="java.lang.String"/>
+    <field name="sedeLegale" class="java.lang.String"/>
+    <field name="sedeOperativa" class="java.lang.String"/>
+    <field name="nomeCognome" class="java.lang.String"/>
+    <field name="speseProgetto" class="java.lang.String"/>
+
+    <variable name="ROW_NUMBER" class="java.lang.Integer" calculation="Count">
+        <variableExpression><![CDATA[Boolean.TRUE]]></variableExpression>
+        <initialValueExpression><![CDATA[0]]></initialValueExpression>
+    </variable>
+
+    <detail>
+        <band height="100" splitType="Stretch">
+            <!-- Intestazione progressivo -->
+            <textField>
+                <reportElement style="SoggettoHeader" x="0" y="2" width="515" height="13"/>
+                <textFieldExpression><![CDATA["Soggetto n. " + $V{ROW_NUMBER}]]></textFieldExpression>
+            </textField>
+
+            <!-- Denominazione (full width) -->
+            <staticText>
+                <reportElement style="Label" x="0" y="18" width="100" height="13" positionType="Float"/>
+                <text><![CDATA[Denominazione:]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="Value" x="102" y="18" width="413" height="13" stretchType="RelativeToTallestObject" positionType="Float"/>
+                <textFieldExpression><![CDATA[$F{datiPartner.nomePartner}]]></textFieldExpression>
+            </textField>
+
+            <!-- P. IVA | C.F. -->
+            <staticText>
+                <reportElement style="Label" x="0" y="34" width="50" height="13" positionType="Float"/>
+                <text><![CDATA[P. IVA:]]></text>
+            </staticText>
+            <textField isBlankWhenNull="true">
+                <reportElement style="Value" x="52" y="34" width="200" height="13" positionType="Float"/>
+                <textFieldExpression><![CDATA[$F{datiPartner.partitaIva}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement style="Label" x="260" y="34" width="40" height="13" positionType="Float"/>
+                <text><![CDATA[C.F.:]]></text>
+            </staticText>
+            <textField isBlankWhenNull="true">
+                <reportElement style="Value" x="302" y="34" width="213" height="13" positionType="Float"/>
+                <textFieldExpression><![CDATA[$F{datiPartner.codiceFiscale}]]></textFieldExpression>
+            </textField>
+
+            <!-- Sede Legale (full) -->
+            <staticText>
+                <reportElement style="Label" x="0" y="50" width="80" height="13" positionType="Float"/>
+                <text><![CDATA[Sede legale:]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="Value" x="82" y="50" width="433" height="13" stretchType="RelativeToTallestObject" positionType="Float"/>
+                <textFieldExpression><![CDATA[$F{sedeLegale}]]></textFieldExpression>
+            </textField>
+
+            <!-- Sede Operativa (full) -->
+            <staticText>
+                <reportElement style="Label" x="0" y="66" width="100" height="13" positionType="Float"/>
+                <text><![CDATA[Sede operativa:]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement style="Value" x="102" y="66" width="413" height="13" stretchType="RelativeToTallestObject" positionType="Float"/>
+                <textFieldExpression><![CDATA[$F{sedeOperativa}]]></textFieldExpression>
+            </textField>
+
+            <!-- Legale rappresentante | % partecipazione spese -->
+            <staticText>
+                <reportElement style="Label" x="0" y="82" width="140" height="13" positionType="Float"/>
+                <text><![CDATA[Legale rappresentante:]]></text>
+            </staticText>
+            <textField isBlankWhenNull="true">
+                <reportElement style="Value" x="142" y="82" width="160" height="13" positionType="Float"/>
+                <textFieldExpression><![CDATA[$F{nomeCognome}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement style="Label" x="310" y="82" width="160" height="13" positionType="Float"/>
+                <text><![CDATA[% partecipazione spese:]]></text>
+            </staticText>
+            <textField isBlankWhenNull="true">
+                <reportElement style="Value" x="472" y="82" width="43" height="13" positionType="Float"/>
+                <textFieldExpression><![CDATA[$F{speseProgetto} != null ? $F{speseProgetto} + "%" : ""]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+</jasperReport>

@@ -1,0 +1,110 @@
+var customFormIntegrazioneOperatoreEsecuzioneContainer = ' \
+<script type="text/x-handlebars-template"> \
+    <div data-custom-field="true" data-custom-field-height="250"> \
+        {{#container}}{{/container}} \
+    </div> \
+</script>';
+
+var customFormIntegrazioneOperatoreEsecuzioneContainerObject = ' \
+<script type="text/x-handlebars-template"> \
+    <div data-disable-interaction-custom-field="true"> \
+		<div class="row"> \
+			<div class="col-md-12">{{#with items.[0]}}{{#item}}{{/item}}{{/with}}</div> \
+		</div> \
+    </div> \
+</script>';
+
+(function($) {
+
+	var Alpaca = $.alpaca;
+
+	Alpaca.Fields.CustomFormIntegrazioneOperatoreEsecuzione = Alpaca.Fields.ObjectField
+			.extend(
+			/**
+			 * @lends Alpaca.Fields.CustomFormIntegrazioneOperatoreEsecuzione.prototype
+			 */
+			{
+				/**
+				 * @see Alpaca.Fields.ObjectField#getFieldType
+				 */
+				getFieldType : function() {
+					return "customFormIntegrazioneOperatoreEsecuzione";
+				},
+
+				/**
+				 * @private
+				 * @see Alpaca.Fields.ObjectField#setup
+				 */
+				setup : function() {
+					this.base();
+
+					this.schema = {
+						"type" : "object",
+						"properties" : {
+							"configurazione" : {
+								"type" : "string",
+								"required" : false,
+								"properties" : {}
+							}
+						}
+					};
+
+					Alpaca.merge(this.options, {
+						"label" : "",
+						"fields" : {
+							"configurazione" : {
+								"type" : "text",
+								"hidden": true,
+								"focus" : false,
+								"optionLabels" : [],
+								"typeahead" : {},
+								"allowOptionalEmpty" : true,
+								"data" : {},
+								"autocomplete" : false,
+								"disallowEmptySpaces" : false,
+								"disallowOnlyEmptySpaces" : false,
+								"manualEntry" : false,
+								"disabled" : false,
+								"helpers" : [],
+								"validate" : true,
+								"showMessages" : true,
+								"renderButtons" : true,
+								"attributes" : {},
+								"fields" : {}
+							}
+						},
+						"view" : "customFormIntegrazioneOperatoreEsecuzione-view"
+
+					});
+
+				},
+
+				/**
+				 * @see Alpaca.Fields.ObjectField#getTitle
+				 */
+				getTitle : function() {
+					return "Custom form disciplinare esecuzione";
+				},
+
+				/**
+				 * @see Alpaca.Fields.ObjectField#getDescription
+				 */
+				getDescription : function() {
+					return "Custom marker per i form disciplinare della fase di esecuzione";
+				}
+			});
+
+	Alpaca.registerView({
+		"id" : "customFormIntegrazioneOperatoreEsecuzione-view",
+		"parent" : "bootstrap-create",
+		"messages" : {
+			"notOptional" : "Campo obbligatorio.",
+		},
+		"templates" : {
+			"container" : customFormIntegrazioneOperatoreEsecuzioneContainer,
+			"container-object" : customFormIntegrazioneOperatoreEsecuzioneContainerObject
+		}
+	});
+	Alpaca.registerFieldClass("customFormIntegrazioneOperatoreEsecuzione", Alpaca.Fields.CustomFormIntegrazioneOperatoreEsecuzione);
+
+})(jQuery);

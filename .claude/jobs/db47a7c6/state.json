@@ -1,0 +1,38 @@
+{
+  "state": "blocked",
+  "detail": "agent awaiting choice between two test approaches: (A) mock-server unit test of client request structure, or (B) real integration test with live docs + credentials",
+  "tempo": "blocked",
+  "inFlight": {
+    "tasks": 0,
+    "queued": 0,
+    "kinds": []
+  },
+  "tokens": 68231,
+  "needs": "choose approach A or B, and if B: provide two PDFs (signed today/yesterday) + SOAP username/password + Bearer token",
+  "output": null,
+  "children": null,
+  "linkScanOffset": 790338,
+  "linkScanPath": "C:\\Users\\fabio.dearcangelis\\.claude\\projects\\C--Users-fabio-dearcangelis-git-bandi-join-oros-servizi-digitali-build\\bea1acaa-ca5c-4d81-ab9a-02074b060b8b.jsonl",
+  "template": "bg",
+  "respawnFlags": [
+    "--permission-mode",
+    "acceptEdits",
+    "--model",
+    "claude-opus-4-8[1m]"
+  ],
+  "bgIsolation": "none",
+  "providerEnv": {},
+  "intent": "Ma poi non ho capito perchè carica nella risposta la lista completa e non quella della pagina corrente",
+  "name": "tasto_indietro_messaggi",
+  "nameSource": "user",
+  "sessionId": "db47a7c6-3ec0-4497-9d70-e60a2cd87db3",
+  "resumeSessionId": "bea1acaa-ca5c-4d81-ab9a-02074b060b8b",
+  "daemonShort": "db47a7c6",
+  "cliVersion": "2.1.186",
+  "cwd": "C:\\Users\\fabio.dearcangelis\\git\\bandi-join-oros-servizi-digitali-build",
+  "createdAt": "2026-06-23T09:31:52.448Z",
+  "updatedAt": "2026-06-23T12:27:07.826Z",
+  "firstTerminalAt": "2026-06-23T11:04:58.257Z",
+  "backend": "daemon",
+  "suggestedReply": "Procedi con A"
+}

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="testDisciplinareEsecuzione"
+              pageWidth="595" pageHeight="842"
+              columnWidth="555"
+              leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+
+    <title>
+        <band height="160">
+            <staticText>
+                <reportElement x="0" y="0" width="555" height="50"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="20" isBold="true"/>
+                </textElement>
+                <text><![CDATA[TEST DISCIPLINARE ESECUZIONE]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="60" width="555" height="30"/>
+                <textElement textAlignment="Center">
+                    <font size="12"/>
+                </textElement>
+                <text><![CDATA[PDF generato dal jrxml "Template Modello Disciplinare Esecuzione"]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="100" width="555" height="30"/>
+                <textElement textAlignment="Center">
+                    <font size="10" isItalic="true"/>
+                </textElement>
+                <text><![CDATA[Se vedi questo testo, il routing JASPER per la fase di esecuzione funziona.]]></text>
+            </staticText>
+        </band>
+    </title>
+
+</jasperReport>

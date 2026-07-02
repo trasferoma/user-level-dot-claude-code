@@ -1,0 +1,12 @@
+dependencies {
+    compileOnly group: "com.liferay.portal", name: "release.portal.api"
+
+    compileOnly project(":modules:servizi-digitali-common:servizi-digitali-common-utility")
+
+    testImplementation group: "com.liferay.portal", name: "release.portal.api"
+    testImplementation project(":modules:servizi-digitali-common:servizi-digitali-common-utility")
+    testImplementation group: "junit", name: "junit", version: "4.12"
+    testImplementation group: "org.assertj", name: "assertj-core", version: "3.24.2"
+    testImplementation group: "org.mockito", name: "mockito-core", version: "4.11.0"
+
+}
