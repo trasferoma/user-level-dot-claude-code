@@ -304,13 +304,61 @@ public class FooLocalServiceImpl extends FooLocalServiceBaseImpl {
 }
 ```
 
-## 8. Upgrade e schema evolution
+## 8. Livelli di responsabilità: Finder e LocalServiceImpl restano legati all'entità
+
+### Regola
+- I `*Finder` e i `*LocalServiceImpl` di Service Builder sono legati all'entità che manipolano: contengono solo persistence, query e CRUD di quella singola entità.
+- Non inserire nei `*Finder` logica trasversale o di orchestrazione (risoluzione di utente/contesto, decisioni cross-entità, regole applicative). Un Finder costruisce ed esegue query, niente di più.
+- Non "promuovere" quella logica al `*LocalServiceImpl` credendo di aver risolto: anche il LocalServiceImpl è vincolato alla stessa singola entità. Spostare un resolver dal Finder al LocalServiceImpl non cambia il livello architetturale, sposta il problema di un gradino restando nello stesso layer sbagliato.
+- La logica trasversale (un resolver che decide quale utente applicare, il coordinamento di più entità, le regole di business che attraversano più servizi) va agganciata a un livello superiore: i service applicativi / orchestratori di dominio (per esempio un `*FrontendService` o un orchestrator), che a loro volta invocano i `*LocalService` delle singole entità.
+- Regola pratica: se un componente deve conoscere più di una entità, oppure deve prendere decisioni che non riguardano la persistenza di quella singola entità, non appartiene né al Finder né al LocalServiceImpl. Sale di livello.
+
+### Perché
+Per costruzione di Service Builder, Finder e LocalServiceImpl sono il layer di accesso e gestione di UNA entità. Iniettarci dentro la risoluzione di un contesto trasversale (per esempio un `OldUserResolver`) accoppia la persistenza a decisioni che non le competono, la rende difficile da riusare e testare, e la costringe a essere duplicata appena un'altra entità ha lo stesso bisogno. La logica trasversale ha senso solo dove esiste visibilità sull'intero caso d'uso, cioè negli orchestratori applicativi sopra il layer di persistenza. Spostarla dal Finder al LocalServiceImpl è la trappola tipica: sembra un avanzamento, ma resta nello stesso livello legato all'entità.
+
+### Esempio corretto
+```java
+@Component(service = ScrivaniaOperatoreBandiFrontendService.class)
+public class ScrivaniaOperatoreBandiFrontendService {
+
+    @Reference
+    private OldUserResolver oldUserResolver;
+
+    @Reference
+    private DomandaBandoLocalService domandaBandoLocalService;
+
+    public List<DomandaBando> listDomandeForOperatore(long operatoreUserId, long bandoId) {
+        long effectiveUserId = oldUserResolver.resolve(operatoreUserId);
+
+        return domandaBandoLocalService.getDomandeByBandoAndUser(bandoId, effectiveUserId);
+    }
+}
+```
+
+### Anti-esempio
+```java
+// OldUserResolver agganciato nel layer legato all'entità: prima nel Finder,
+// poi "promosso" al LocalServiceImpl. Entrambe le posizioni sono sbagliate.
+public class DomandaBandoLocalServiceImpl extends DomandaBandoLocalServiceBaseImpl {
+
+    @Reference
+    private OldUserResolver oldUserResolver;
+
+    public List<DomandaBando> getDomandeByBandoAndUser(long bandoId, long userId) {
+        long effectiveUserId = oldUserResolver.resolve(userId);
+
+        return domandaBandoPersistence.findByBandoAndUser(bandoId, effectiveUserId);
+    }
+}
+```
+
+## 9. Upgrade e schema evolution
 - Se il modulo evolve il database, prevedere upgrade processes invece di cambiamenti impliciti non tracciati
 - Trattare l'evoluzione dello schema come parte esplicita del modulo
 - Non fare affidamento su modifiche manuali non ripetibili
 - Mantenere chiara la relazione tra versione del modulo e logica di upgrade
 
-## 9. Configurazione e preferenze
+## 10. Configurazione e preferenze
 
 ### Regola
 - Per configurazioni applicative, preferire il configuration framework di Liferay
@@ -353,7 +401,7 @@ public class DemoConfigurationProvider {
 }
 ```
 
-## 10. Localizzazione
+## 11. Localizzazione
 
 ### Regola
 - Se il portlet ha UI o messaggi utente, prevedere resource bundle e chiavi di lingua
@@ -374,13 +422,13 @@ renderRequest.setAttribute("title", title);
 renderRequest.setAttribute("title", "Demo title");
 ```
 
-## 11. Dipendenze e API
+## 12. Dipendenze e API
 - Preferire API Liferay e API standard compatibili con Java 11 già coerenti con la target platform
 - Non introdurre librerie moderne incompatibili con il runtime target
 - Non assumere supporto a Spring 6 o stack Jakarta nel contesto pre-Jakarta
 - Evitare dipendenze ridondanti quando il portale fornisce già il necessario
 
-## 12. JSP e presentazione
+## 13. JSP e presentazione
 
 ### Regola
 - Usare JSP solo per responsabilità di view
@@ -409,7 +457,7 @@ if ("admin".equals(userType)) {
 %>
 ```
 
-## 13. Compatibilità con le skill di base
+## 14. Compatibilità con le skill di base
 - Usare `clean-code` come base predefinita
 - Usare `java-conventions` per convenzioni Java generali
 - Usare `java-version-11` per i vincoli di versione
@@ -428,6 +476,7 @@ Quando generi codice Liferay 7.4 Java 11:
 - Non usare API o feature Java superiori a Java 11
 - Non generare codice che richieda una release Jakarta-based di Liferay
 - Non modificare direttamente classi generate da Service Builder
+- Non inserire logica trasversale o di orchestrazione (resolver, decisioni cross-entità, regole di business) nei `*Finder` né nei `*LocalServiceImpl`: sono legati alla singola entità; quella logica va nei service applicativi/orchestratori di livello superiore
 - Non mettere logica business sostanziale dentro JSP
 - Non introdurre dipendenze non necessarie che confliggono con la target platform Liferay
 

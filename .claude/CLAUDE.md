@@ -143,9 +143,31 @@ Queste valgono in ogni progetto e prevalgono in caso di conflitto con le skill.
 - Non assecondare scelte deboli: segnala alternative migliori e motivale.
 - Non generare codice se l'utente ha chiesto solo analisi, spiegazione o diagnosi.
 
+## Pipeline di lavoro
+
+La pipeline è: **[opzionale: `spec-specialist` → conferma] → scrivi con `clean-code-implementer` → revisiona quasi sempre il Java con `java-functional-evolver`** (è l'agente a decidere se intervenire). 
+La fase di spec non è sempre presente: se il task nasce da una `spec-*`/`implementation-*` già approvata, l'implementazione segue quel piano; per task abbastanza semplici da non richiederla si entra direttamente da `clean-code-implementer`.
+L'avanzamento di `implementation-<compito>.md` (stato, spunte, registro) lo aggiorna il **processo principale** — mai l'implementer, che si limita a scrivere il codice e riferire. L'aggiornamento va fatto **al termine di OGNI fase, comprese quelle senza codice** (analisi, pianificazione, revisione): spunta le voci completate prima di iniziare la fase successiva, non solo dopo le fasi che producono test verdi. Per le fasi di codice, spunta dopo aver analizzato e verificato il risultato di `clean-code-implementer`; per le fasi di analisi/pianificazione, spunta quando il lavoro descritto è effettivamente svolto. Non passare alla fase successiva lasciando indietro le spunte di quella corrente.
+
+## Sub-agent per la specifica
+
+Per i task non banali che meritano una pianificazione formale prima del codice, la fase di specifica passa per un subagent dedicato.
+Nella definizione della pipeline è definito aquando questo agente deve intervenire.
+
+### spec-specialist — scrittura di SPEC e IMPLEMENTATION
+
+Quando serve definire *cosa* fare e *come* pianificarlo prima di implementare, delega al subagent `spec-specialist` la scrittura dei due documenti `spec-<compito>.md` e `implementation-<compito>.md`.
+
+- **Invocalo quando**: chiedo esplicitamente una spec/pianificazione, oppure prima di implementare una feature non banale (nuovo comportamento, modifica trasversale, cambio di contratto).
+- Usa il **nome del compito** che ti fornisco come suffisso dei file; se non te lo do, proponilo in forma sintetica e chiedimi conferma.
+- Fornisci il contesto di progetto (versione Java, framework, vincoli) come per `clean-code-implementer`; l'agente analizza comunque il codebase in sola lettura per riempire il "Contesto".
+- Produce solo i due file `.md` (stato `NOT_STARTED`): **non scrive codice**, precede `clean-code-implementer` e non lo sostituisce.
+- Al termine, rispetta il "Workflow di collaborazione": presentami la SPEC, risolvi i punti «da decidere» e attendi conferma esplicita prima di passare all'implementazione, che seguirà il piano in `implementation-<compito>.md`.
+- **Non invocarlo** per: modifiche banali o bugfix puntuali, task di sola analisi/spiegazione/diagnosi, task di sola documentazione.
+
 ## Sub-agent per il codice
 
-La scrittura e la revisione del codice passano per due sub-agent dedicati, attivati in autonomia in base al task (così come `docs-explorer` per la documentazione esterna). La pipeline è: **scrivi con `clean-code-implementer` → valuta una revisione del Java con `java-functional-evolver`**.
+La scrittura e la revisione del codice passano per due sub-agent dedicati, attivati in autonomia in base al task (così come `docs-explorer` per la documentazione esterna).
 
 ### clean-code-implementer — scrittura del codice
 
@@ -156,15 +178,20 @@ Ogni volta che il task richiede di **scrivere, estendere, rifattorizzare o ripar
 - Deve rispettare le "Preferenze sempre attive" e il "Workflow di collaborazione" di questo file: niente big-bang non concordati, conferma prima di codice non banale.
 - Non usarlo per task di sola documentazione, analisi o spiegazione, né per riscritture cosmetiche.
 
-### java-functional-evolver — revisione funzionale (solo Java, discrezionale)
+### java-functional-evolver — revisione funzionale (solo Java, quasi sempre)
 
-Dopo aver scritto o modificato **codice Java**, valuta se invocare il subagent `java-functional-evolver` per evolverne il design verso uno stile più funzionale. È uno step **discrezionale e non bloccante**: attivalo solo quando intravedi margini concreti di valore aggiunto.
+Dopo aver scritto o modificato **codice Java**, invoca **quasi sempre** il subagent `java-functional-evolver` per valutarne l'evoluzione verso uno stile più funzionale. La decisione se *intervenire* o meno spetta all'agente, non al giudizio a monte del processo principale: non filtrare tu in anticipo "sembra già idiomatico", perché è proprio il tipo di valutazione che l'agente fa meglio (es. un `for` con collezione mutata che diventa uno `stream().map().collect()`).
 
-- Invocalo quando il codice presenta segnali utili: mutazione di stato evitabile, branching annidato, trasformazioni di collezioni poco chiare, null handling ripetuto/fragile, logica pura mischiata a effetti collaterali.
-- Non invocarlo quando il codice è già lineare e idiomatico: in quel caso annota brevemente che la revisione funzionale non avrebbe portato valore e considera concluso il task.
-- Se invocato, esegui la revisione dopo che il codice compila e i test sono verdi; applica solo i cambiamenti a valore e ri-verifica i test dopo le modifiche.
+- **Invocalo per default** ogni volta che il task ha prodotto o modificato codice Java, produzione o test. È la norma, non l'eccezione.
+- È l'agente a decidere se il codice merita modifiche: se lo trova già ottimale, lo dichiara e non tocca nulla. Va bene così — il costo di una revisione a vuoto è accettabile rispetto al rischio di lasciar passare codice migliorabile.
+- Esegui la revisione dopo che il codice compila e i test sono verdi; applica solo i cambiamenti a valore e **ri-verifica i test dopo le modifiche**.
 - Le sue proposte non devono violare i vincoli di versione Java del progetto né le regole di clean-code/convenzioni già attive: in caso di conflitto prevale lo stile del progetto e la correttezza, non la "funzionalità" fine a sé stessa.
-- Non attivarlo per codice non-Java né per task che non producono codice (analisi, spiegazioni, doc).
+- **Uniche esclusioni**: codice non-Java, task che non producono codice (analisi, spiegazioni, doc) e riscritture puramente cosmetiche già concordate. Fuori da questi casi, invocalo.
+- Annota nel registro di `implementation-<compito>.md` l'esito (invocato/non invocato e cosa ha cambiato), così la decisione resta tracciata.
+
+## Alla fine di ogni risposta
+
+- aggiungi l'informazione della percentuale di contesto coccupata
 
 ## Cosa non fare
 
