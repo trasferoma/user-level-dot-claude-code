@@ -2,6 +2,7 @@
   "env": {
     "EDITOR": "code --wait"
   },
+  "model": "opus[1m]",
   "hooks": {
     "SessionStart": [
       {
@@ -12,10 +13,21 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /c/Users/fabio.dearcangelis/.claude/hooks/autorizza-subagent.sh"
+          }
+        ]
+      }
     ]
   },
   "enabledPlugins": {
-    "context7@context7-marketplace": true
+    "context7@context7-marketplace": true,
+    "playwright@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "context7-marketplace": {
@@ -25,8 +37,14 @@
       }
     }
   },
+  "effortLevel": "high",
   "autoUpdatesChannel": "latest",
   "tui": "fullscreen",
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
   "theme": "dark",
-  "switchModelsOnFlag": true
+  "switchModelsOnFlag": true,
+  "voiceEnabled": true
 }

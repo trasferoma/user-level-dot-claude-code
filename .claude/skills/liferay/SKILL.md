@@ -153,53 +153,8 @@ public class DemoPortlet extends MVCPortlet {
 ### Perché
 Separare i flussi evita portlet monolitici e rende chiara la responsabilità di ogni entry point. È il confine tra un modulo Liferay gestibile e una creatura mutante che nessuno vuole più toccare.
 
-### Esempio corretto
-```java
-@Component(
-    property = {
-        "javax.portlet.name=com_acme_demo_web_DemoPortlet",
-        "mvc.command.name=/demo/save"
-    },
-    service = MVCActionCommand.class
-)
-public class SaveDemoMVCActionCommand extends BaseMVCActionCommand {
-
-    @Override
-    protected void doProcessAction(
-            ActionRequest actionRequest,
-            ActionResponse actionResponse)
-        throws Exception {
-
-        String name = ParamUtil.getString(actionRequest, "name");
-        actionRequest.setAttribute("savedName", name);
-    }
-}
-```
-
-### Anti-esempio
-```java
-public class DemoPortlet extends MVCPortlet {
-
-    @Override
-    public void processAction(
-            ActionRequest actionRequest,
-            ActionResponse actionResponse)
-        throws IOException, PortletException {
-
-        String mvcCommandName = ParamUtil.getString(actionRequest, "mvcCommandName");
-
-        if ("/demo/save".equals(mvcCommandName)) {
-            // save logic
-        }
-        else if ("/demo/delete".equals(mvcCommandName)) {
-            // delete logic
-        }
-        else if ("/demo/export".equals(mvcCommandName)) {
-            // export logic
-        }
-    }
-}
-```
+### Esempi
+Esempio corretto e anti-esempio a confronto: vedi [reference/examples.md](reference/examples.md).
 
 ## 6. OSGi services
 
@@ -213,49 +168,8 @@ public class DemoPortlet extends MVCPortlet {
 ### Perché
 Un servizio OSGi chiaro e referenziato correttamente è più facile da riusare e testare. Lookup manuali e singleton statici sono spesso solo un modo creativo per sabotare modularità e manutenibilità.
 
-### Esempio corretto
-```java
-public interface GreetingService {
-
-    String getGreeting(long userId);
-}
-```
-
-```java
-@Component(service = GreetingService.class)
-public class GreetingServiceImpl implements GreetingService {
-
-    @Override
-    public String getGreeting(long userId) {
-        return "Hello user " + userId;
-    }
-}
-```
-
-```java
-@Component(
-    property = {
-        "javax.portlet.name=com_acme_demo_web_DemoPortlet",
-        "mvc.command.name=/demo/view"
-    },
-    service = MVCRenderCommand.class
-)
-public class ViewDemoMVCRenderCommand implements MVCRenderCommand {
-
-    @Reference
-    private GreetingService greetingService;
-
-    @Override
-    public String render(
-            RenderRequest renderRequest,
-            RenderResponse renderResponse)
-        throws PortletException {
-
-        renderRequest.setAttribute("message", greetingService.getGreeting(12345L));
-        return "/view.jsp";
-    }
-}
-```
+### Esempi
+Esempio corretto e anti-esempio a confronto: vedi [reference/examples.md](reference/examples.md).
 
 ## 7. Service Builder
 
@@ -369,37 +283,8 @@ public class DomandaBandoLocalServiceImpl extends DomandaBandoLocalServiceBaseIm
 ### Perché
 Confondere configurazione globale e preferenze di istanza crea moduli difficili da governare. Una scelta sbagliata qui si paga dopo, quando qualcuno scopre che un valore doveva valere per tutto il portale e invece cambia per singola portlet, o viceversa.
 
-### Esempio corretto
-```java
-@ObjectClassDefinition(
-    id = "com.acme.demo.configuration.DemoConfiguration",
-    name = "demo-configuration-name"
-)
-public @interface DemoConfiguration {
-
-    @AttributeDefinition(name = "default-message")
-    String defaultMessage() default "Hello";
-}
-```
-
-```java
-@Component(configurationPid = "com.acme.demo.configuration.DemoConfiguration")
-public class DemoConfigurationProvider {
-
-    private volatile DemoConfiguration demoConfiguration;
-
-    @Activate
-    @Modified
-    protected void activate(Map<String, Object> properties) {
-        this.demoConfiguration = ConfigurableUtil.createConfigurable(
-            DemoConfiguration.class, properties);
-    }
-
-    public String getDefaultMessage() {
-        return this.demoConfiguration.defaultMessage();
-    }
-}
-```
+### Esempi
+Esempio corretto e anti-esempio a confronto: vedi [reference/examples.md](reference/examples.md).
 
 ## 11. Localizzazione
 

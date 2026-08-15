@@ -131,32 +131,8 @@ import jakarta.validation.Valid;
 ### 2. Perché
 L'ordine dei membri deve raccontare la classe. Se campi, costruttori e metodi sono sparsi in ordine cronologico di modifica, il file diventa un archivio di incidenti più che una struttura leggibile.
 
-### 3. Esempio corretto
-```java
-@Service
-public class InvoiceService {
-
-	private static final String DEFAULT_CURRENCY = "EUR";
-
-	private final InvoiceRepository invoiceRepository;
-	private final Clock clock;
-
-	public InvoiceService(InvoiceRepository invoiceRepository, Clock clock) {
-		this.invoiceRepository = invoiceRepository;
-		this.clock = clock;
-	}
-
-	public Invoice create(CreateInvoiceCommand command) {
-		Invoice invoice = buildInvoice(command);
-		return this.invoiceRepository.save(invoice);
-	}
-
-	private Invoice buildInvoice(CreateInvoiceCommand command) {
-		return new Invoice(command.customerId(), this.clock.instant(),
-				DEFAULT_CURRENCY);
-	}
-}
-```
+### 3. Esempi
+Versione corretta e anti-esempio a confronto: vedi [reference/examples.md](reference/examples.md).
 
 ## 5. Blank lines e leggibilità strutturale
 - Aggiungere due righe vuote prima di:
@@ -188,40 +164,8 @@ public class InvoiceService {
 ### 2. Perché
 L'uso coerente di `this` sui campi aiuta a distinguere subito stato e variabili locali. Applicarlo anche ai metodi aggiunge rumore senza chiarire nulla. Le utility class vanno rese non istanziabili in modo esplicito.
 
-### 3. Esempio corretto
-```java
-public abstract class HeaderUtils {
-
-	private HeaderUtils() {
-	}
-
-	public static String normalize(String headerName) {
-		return trimToNull(headerName);
-	}
-
-	private static String trimToNull(String value) {
-		if (value == null) {
-			return null;
-		}
-		return value.trim().isEmpty() ? null : value.trim();
-	}
-}
-
-@Service
-public class TokenService {
-
-	private final TokenRepository tokenRepository;
-
-	public TokenService(TokenRepository tokenRepository) {
-		this.tokenRepository = tokenRepository;
-	}
-
-	public Token load(String tokenId) {
-		return this.tokenRepository.findById(tokenId)
-				.orElseThrow(() -> new IllegalArgumentException("tokenId must not be null"));
-	}
-}
-```
+### 3. Esempi
+Versione corretta e anti-esempio a confronto: vedi [reference/examples.md](reference/examples.md).
 
 ## 8. Null checks e contratti
 
@@ -243,6 +187,26 @@ public class SessionService {
 		Assert.notNull(userId, "userId must not be null");
 		Assert.state(isGatewayAvailable(), "Gateway must be available");
 
+		return new Session(userId);
+	}
+
+	private boolean isGatewayAvailable() {
+		return true;
+	}
+}
+```
+
+### 4. Anti-esempio
+```java
+public class SessionService {
+
+	public Session start(String userId) {
+		if (userId == null) {
+			throw new IllegalArgumentException("bad input");
+		}
+		if (!isGatewayAvailable()) {
+			throw new IllegalStateException("bad state");
+		}
 		return new Session(userId);
 	}
 
@@ -275,6 +239,14 @@ public String resolveDisplayName(User user) {
 }
 ```
 
+### 4. Anti-esempio
+```java
+public String resolveDisplayName(User user) {
+	return user == null ? "anonymous" : user.isDeleted() ? "deleted" :
+			user.getDisplayName();
+}
+```
+
 ## 11. Uso di `var`
 
 ### 1. Regola
@@ -294,6 +266,18 @@ void shouldCreateInvoice() {
 	Invoice invoice = this.invoiceService.create(command);
 
 	assertThat(invoice.customerId()).isEqualTo("customer-1");
+}
+```
+
+### 4. Anti-esempio
+```java
+@Service
+public class InvoiceService {
+
+	public var create(var command) {
+		var invoice = new Invoice(command.customerId());
+		return this.invoiceRepository.save(invoice);
+	}
 }
 ```
 
@@ -322,6 +306,19 @@ La Javadoc in stile Spring deve essere uniforme e leggibile. Il primo periodo de
  * <p>Use this mapper only for REST output models.
  * @param order the source order
  * @return the mapped response
+ */
+public OrderResponse toResponse(Order order) {
+	return new OrderResponse(order.id(), order.status());
+}
+```
+
+### 4. Anti-esempio
+```java
+/**
+ * This method is used to map the order.
+ *
+ * @return response
+ * @param order input order
  */
 public OrderResponse toResponse(Order order) {
 	return new OrderResponse(order.id(), order.status());

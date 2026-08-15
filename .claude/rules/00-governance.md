@@ -173,23 +173,25 @@ Ogni skill non deve:
 - assumere di essere sempre attiva
 - imporre comportamenti fuori dal proprio contesto
 
-# Convenzione di naming dei file
-Per favorire ordine e selezione, i file dovrebbero seguire questa convenzione:
+# Convenzione di naming
 
-`NN-skill-<area>-<focus>.md`
+Le skill vivono come directory in `~/.claude/skills/<nome>/SKILL.md`. Il **nome della directory** è l'identificatore: diventa il comando `/nome` con cui la skill si invoca a mano, e deve rispettare i vincoli dello standard Agent Skills.
+
+`~/.claude/skills/<nome>/SKILL.md`
 
 Esempi:
-- `00-governance.md`
-- `10-skill-code-generation-clean-code.md`
-- `15-skill-code-generation-java-conventions.md`
-- `16-skill-code-generation-java-version-11.md`
-- `30-skill-code-generation-springboot.md`
+- `~/.claude/skills/clean-code/SKILL.md`
+- `~/.claude/skills/java-conventions/SKILL.md`
+- `~/.claude/skills/springboot/SKILL.md`
+
+I file `NN-<area>-<focus>.md` in `rules/` restano riservati alle **regole di governance** caricate in ogni sessione, non alle skill. Una regola di dominio che vale solo per certi task è una skill, non un file di `rules/`: come skill costa contesto solo quando serve.
 
 ## Regole di naming
-- usare lettere minuscole
-- usare trattini come separatori
-- evitare nomi vaghi come `best-practices.md` o `notes.md`
-- il prefisso numerico ordina logicamente la collezione ma non sostituisce la priorità dichiarata nei metadata
+- usare lettere minuscole, cifre e trattini; massimo 64 caratteri
+- nessuna parola riservata: `anthropic`, `claude`
+- forma preferita: gerundio o frase nominale coerente col resto della collezione
+- evitare nomi vaghi come `helper`, `utils`, `tools`, `notes`
+- il campo `name` del frontmatter deve coincidere col nome della directory
 
 # Policy di interpretazione
 Il modello deve interpretare le skill come:
@@ -227,11 +229,31 @@ Non deve comportarsi come un frullatore di istruzioni.
 # Skill registry
 Le seguenti skill sono attualmente disponibili.
 
-- `skill-code-generation-clean-code` → `10-skill-code-generation-clean-code.md`
-- `skill-code-generation-java-conventions` → `15-skill-code-generation-java-conventions.md`
-- `skill-code-generation-java-version-11` → `16-skill-code-generation-java-version-11.md`
-- `skill-code-generation-java-version-17` → `17-skill-code-generation-java-version-17.md`
-- `skill-code-generation-java-version-21` → `18-skill-code-generation-java-version-21.md`
-- `skill-code-generation-springboot` → `30-skill-code-generation-springboot.md`
-- `skill-code-generation-liferay` → `35-skill-code-generation-liferay.md`
-- `skill-scripting-groovy` → `skills/groovy/SKILL.md`
+Ogni voce è invocabile come `/<nome>` e viene caricata automaticamente quando la sua `description` combacia col task.
+
+**Generazione di codice**
+- `clean-code` → `skills/clean-code/SKILL.md` — base predefinita per ogni task di codice
+- `package-placement` → `skills/package-placement/SKILL.md` — dove collocare i file nuovi (package, moduli, cartelle); trasversale al linguaggio, da comporre con `clean-code`
+- `java-conventions` → `skills/java-conventions/SKILL.md`
+- `java-version-11` → `skills/java-version-11/SKILL.md`
+- `java-version-17` → `skills/java-version-17/SKILL.md`
+- `java-version-21` → `skills/java-version-21/SKILL.md`
+- `java-functional-style` → `skills/java-functional-style/SKILL.md`
+- `springboot` → `skills/springboot/SKILL.md`
+- `liferay` → `skills/liferay/SKILL.md`
+- `groovy` → `skills/groovy/SKILL.md` — script per la Script console di Liferay
+- `alpaca-forms` → `skills/alpaca-forms/SKILL.md` — form Alpaca.js (Alpaca Forms); reference API in `skills/alpaca-forms/reference/api-verificata.md`
+
+**Meta-skill: costruire la configurazione**
+- `build-agent-rules` → `skills/build-agent-rules/SKILL.md` — creare e revisionare subagent
+- `build-skill-rules` → `skills/build-skill-rules/SKILL.md` — creare e revisionare skill
+
+**Git**
+- `git-commit-messages` → `skills/git-commit-messages/SKILL.md` — formato del messaggio di commit (sommario in italiano senza prefisso di tipo, moduli impattati, riga `tkn:`); reference moduli OSGi in `skills/git-commit-messages/reference/moduli-osgi-liferay.md`
+- `git-branch-token` → `skills/git-branch-token/SKILL.md` — token identificativo del branch nella riga `tkn:`
+- `git-inspection` → `skills/git-inspection/SKILL.md` — ricette di verifica, diagnosi e controlli pre-push (sola lettura)
+
+**Strumenti di processo**
+- `release-plan-produzione` → `skills/release-plan-produzione/SKILL.md`
+- `handoff` → `skills/handoff/SKILL.md`
+- `book-to-skill` → `skills/book-to-skill/SKILL.md`

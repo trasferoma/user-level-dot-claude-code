@@ -10,6 +10,15 @@
         "lastUpdated": "2026-06-26T14:31:02.544Z",
         "gitCommitSha": "0647bb345173bee4eb48055b92f8439f48a06ebc"
       }
+    ],
+    "playwright@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\fabio.dearcangelis\\.claude\\plugins\\cache\\claude-plugins-official\\playwright\\unknown",
+        "version": "unknown",
+        "installedAt": "2026-07-05T06:28:00.785Z",
+        "lastUpdated": "2026-08-15T08:22:29.356Z"
+      }
     ]
   }
 }

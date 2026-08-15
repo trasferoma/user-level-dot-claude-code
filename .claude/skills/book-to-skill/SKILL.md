@@ -1,9 +1,8 @@
 ---
 name: book-to-skill
 description: "Converts books and documents (PDF, EPUB, DOCX, HTML, Markdown, plain text, RTF, MOBI/AZW with Calibre) into structured agent skills, extracting frameworks, mental models, principles, techniques, and anti-patterns. Use when the user wants to study a document through Amp or Claude Code, apply an author's frameworks while working, or build a reusable knowledge base from a file."
-compatibility: "Amp skill directories (.agents/skills, ~/.config/agents/skills, ~/.config/amp/skills) and Claude Code skill directories (~/.claude/skills)."
 allowed-tools:
-  - shell_command
+  - Bash
   - Read
   - Write
   - Glob
@@ -14,6 +13,8 @@ argument-hint: <path-to-document> [skill-name-slug]
 # Book-to-Skill Converter
 
 Transform written knowledge into actionable agent skills by extracting structure — not producing summaries.
+
+Portable across Amp skill directories (`.agents/skills`, `~/.config/agents/skills`, `~/.config/amp/skills`) and Claude Code skill directories (`~/.claude/skills`, `.claude/skills`). Requires Python 3 on PATH for text extraction.
 
 ## Philosophy
 
@@ -119,20 +120,23 @@ Store the answer as `BOOK_TYPE`:
 Run the extraction script, passing the book type:
 
 ```bash
-SCRIPT_PATH=""
-for candidate in \
-  ".agents/skills/book-to-skill/scripts/extract.py" \
-  "$HOME/.config/agents/skills/book-to-skill/scripts/extract.py" \
-  "$HOME/.config/amp/skills/book-to-skill/scripts/extract.py" \
-  "$HOME/.claude/skills/book-to-skill/scripts/extract.py"
-do
-  if [ -f "$candidate" ]; then
-    SCRIPT_PATH="$candidate"
-    break
-  fi
-done
+SCRIPT_PATH="${CLAUDE_SKILL_DIR}/scripts/extract.py"
 
-if [ -z "$SCRIPT_PATH" ]; then
+if [ ! -f "$SCRIPT_PATH" ]; then
+  # Fallback for agents that don't expose CLAUDE_SKILL_DIR (e.g. Amp).
+  for candidate in \
+    ".agents/skills/book-to-skill/scripts/extract.py" \
+    "$HOME/.config/agents/skills/book-to-skill/scripts/extract.py" \
+    "$HOME/.config/amp/skills/book-to-skill/scripts/extract.py"
+  do
+    if [ -f "$candidate" ]; then
+      SCRIPT_PATH="$candidate"
+      break
+    fi
+  done
+fi
+
+if [ ! -f "$SCRIPT_PATH" ]; then
   echo "Could not find scripts/extract.py for book-to-skill" >&2
   exit 1
 fi
@@ -140,6 +144,12 @@ fi
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 if ! command -v "$PYTHON_BIN" >/dev/null 2>&1; then
   PYTHON_BIN="python"
+fi
+
+if ! command -v "$PYTHON_BIN" >/dev/null 2>&1; then
+  echo "Python 3 is required but neither python3 nor python is on PATH." >&2
+  echo "Install Python 3, or set PYTHON_BIN to its full path." >&2
+  exit 1
 fi
 
 "$PYTHON_BIN" "$SCRIPT_PATH" "$BOOK_PATH" --mode <BOOK_TYPE> --install-missing ask
@@ -318,75 +328,21 @@ For EACH chapter/major section identified in Step 3:
 
 Read the corresponding section of the extracted `full_text.txt` (use character offsets or grep for chapter headings).
 
-Create `$SKILLS_HOME/<skill_name>/chapters/ch<NN>-<slug>.md` using the structure below.
+Create `$SKILLS_HOME/<skill_name>/chapters/ch<NN>-<slug>.md`.
 
-**Adapt emphasis based on `BOOK_TYPE`:**
-- `technical` → prioritize "Code Examples", "Reference Tables", and "Commands & APIs" sections; preserve exact syntax
-- `text` → prioritize "Frameworks Introduced", "Mental Models", and "Key Takeaways"; skip empty technical sections
-
-```markdown
-# Chapter N: <Full Title>
-
-## Core Idea
-<1–2 sentences: the single most important thing this chapter teaches>
-
-## Frameworks Introduced
-- **<Framework Name>**: <exact formulation — preserve the author's naming>
-  - When to use: <specific situation>
-  - How: <steps or criteria>
-
-## Key Concepts
-- **<Term>**: <precise definition in 1 sentence>
-(5–10 most important terms from this chapter)
-
-## Mental Models
-<2–4 frameworks or thinking tools. Write as "Use X when Y" or "Think of X as Y">
-
-## Anti-patterns
-- **<What to avoid>**: <why it fails>
-
-## Code Examples *(technical books only — omit if BOOK_TYPE=text)*
-<!-- Copy the most instructive snippet from the chapter. Preserve indentation exactly. -->
-```<language>
-<key code example from this chapter>
-```
-- **What it demonstrates**: <one line>
-
-## Reference Tables *(technical books only — omit if BOOK_TYPE=text)*
-<!-- Reproduce any comparison matrix, parameter table, or decision table from the chapter in markdown. -->
-
-## Key Takeaways
-1. <Actionable insight>
-2. <Actionable insight>
-3. <Actionable insight>
-(3–7 takeaways a practitioner must remember)
-
-## Connects To
-- **Ch N**: <why this chapter relates>
-- **<Concept>**: <external concept or standard it connects with>
-```
+**Use the chapter summary template in [reference/templates.md](reference/templates.md).** It carries the full section structure and the per-`BOOK_TYPE` emphasis rules.
 
 ---
 
 ## Step 8 — Generate supporting files
 
-### glossary.md
-Create `$SKILLS_HOME/<skill_name>/glossary.md`:
-- Every significant term from the book, alphabetically sorted
-- Format: `**Term** — definition (Ch N)`
-- Max 1,500 tokens
+Create three files alongside the chapters. **Templates and formats: [reference/templates.md](reference/templates.md).**
 
-### patterns.md
-Create `$SKILLS_HOME/<skill_name>/patterns.md`:
-- All concrete techniques, design patterns, algorithms from the book
-- Format: `## Pattern Name\n**When to use**: ...\n**How**: ...\n**Trade-offs**: ...`
-- Max 2,000 tokens
-
-### cheatsheet.md
-Create `$SKILLS_HOME/<skill_name>/cheatsheet.md`:
-- Decision tables, comparison matrices, quick-reference rules
-- The content you'd want on a single printed page
-- Max 1,000 tokens
+| File | Content | Budget |
+|------|---------|--------|
+| `glossary.md` | every significant term, alphabetical | 1,500 tokens |
+| `patterns.md` | techniques, design patterns, algorithms | 2,000 tokens |
+| `cheatsheet.md` | decision tables and quick-reference rules | 1,000 tokens |
 
 ---
 
@@ -395,70 +351,13 @@ Create `$SKILLS_HOME/<skill_name>/cheatsheet.md`:
 **CRITICAL TOKEN BUDGET: Keep SKILL.md body under 4,000 tokens.**
 Compaction truncates from the END — put the most important content FIRST.
 
-Create `$SKILLS_HOME/<skill_name>/SKILL.md`:
+Create `$SKILLS_HOME/<skill_name>/SKILL.md` from the **master template in [reference/templates.md](reference/templates.md)**.
 
-```markdown
----
-name: <skill_name>
-description: "Knowledge base from \"<Full Title>\" by <Author(s)>. Use when applying <author>'s frameworks for <key topics, 3–6 terms>, studying the book, or referencing its concepts."
-allowed-tools:
-  - Read
-  - Grep
-argument-hint: [topic, framework name, or chapter number]
----
-
-# <Full Title>
-**Author**: <Author(s)> | **Pages**: ~<N> | **Chapters**: <N> | **Generated**: <YYYY-MM-DD>
-
-## How to Use This Skill
-
-- **Without arguments** — load core frameworks for reference
-- **With a topic** — ask about `replication`, `pricing`, or another indexed topic; I find and read the relevant chapter
-- **With chapter** — ask for `ch05`; I load that specific chapter
-- **Browse** — ask "what chapters do you have?" to see the full index
-
-When you ask about a topic not covered in Core Frameworks below, I will read
-the relevant chapter file before answering.
-
----
-
-## Core Frameworks & Mental Models
-<!-- ~2,000 tokens: the author's most important named frameworks and principles.
-     Preserve exact names. Write as "Use X when Y", "Prefer X over Y because Z".
-     This is a toolkit, not a summary. -->
-
-<generate 2,000 tokens of the most critical frameworks and insights here>
-
----
-
-## Chapter Index
-
-| # | Title | Key Frameworks |
-|---|-------|----------------|
-| [ch01](chapters/ch01-<slug>.md) | <Title> | <framework1>, <framework2> |
-| [ch02](chapters/ch02-<slug>.md) | <Title> | <framework1>, <framework2> |
-...
-
-## Topic Index
-
-<!-- Alphabetical. Major terms/frameworks → chapter(s) that cover them. -->
-- **<Term>** → ch<N>[, ch<N>]
-- **<Term>** → ch<N>
-
-## Supporting Files
-
-- [glossary.md](glossary.md) — all key terms with definitions
-- [patterns.md](patterns.md) — all techniques and design patterns
-- [cheatsheet.md](cheatsheet.md) — quick reference tables and decision guides
-
----
-
-## Scope & Limits
-
-This skill covers the book content only. For hands-on implementation in your codebase,
-combine with project-specific tools. For topics beyond this book, check related skills
-or ask the agent directly.
-```
+Non-negotiable properties of the generated skill:
+- `description` names the book, the author, and the topics that should trigger it — plus an explicit "Use when…" clause
+- Core Frameworks section first, chapter and topic indexes after: compaction truncates from the end
+- Chapter files linked one level deep from the generated SKILL.md, never chained through each other
+- No generation date: it is time-sensitive information that ages the skill for no benefit
 
 ---
 

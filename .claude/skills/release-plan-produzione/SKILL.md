@@ -1,7 +1,7 @@
 ---
 name: release-plan-produzione
-description: Genera un report semplice del passaggio in produzione confrontando due branch git. Per ogni attività elenca i moduli applicativi impattati (nome breve) e gli script SQL rilasciati. Skill SOLO a invocazione manuale (`/passaggio-in-produzione` o richiesta esplicita del documento/report di passaggio in produzione): non attivarla mai in autonomia, nemmeno per un semplice confronto/diff tra branch.
-disable-model-invocation: false
+description: Genera un report semplice del passaggio in produzione confrontando due branch git. Per ogni attività elenca i moduli applicativi impattati (nome breve) e gli script SQL rilasciati. Skill a sola invocazione manuale con `/release-plan-produzione` o su richiesta esplicita del documento di passaggio in produzione.
+disable-model-invocation: true
 ---
 
 # Scopo
@@ -15,13 +15,23 @@ branch di un repository git. Il report deve rendere chiari tre elementi, e solo 
 
 Tutto il resto (letture di merito dei singoli diff, spiegazioni) si fa solo se richiesto dopo.
 
-# Attivazione (VINCOLO DURO)
+# Quando usare questa skill
 
-- Skill **solo a invocazione manuale**. Non attivarla mai da sola, nemmeno se il task in corso
-  somiglia allo scopo (confronto branch, release, elenco moduli, changelog, script DB).
-- Eseguirla **solo** su richiesta esplicita: `/-produzione`, oppure "genera/aggiorna
-  il report (o documento) di passaggio in produzione".
-- In assenza di richiesta esplicita, ignorarla.
+Usa questa skill **solo** se:
+- l'utente digita `/release-plan-produzione`
+- l'utente chiede esplicitamente di generare o aggiornare il report (o documento) di passaggio
+  in produzione
+
+# Quando NON usare questa skill
+
+Non usare questa skill se:
+- il task somiglia allo scopo ma la richiesta non è esplicita: confronto tra branch, release,
+  elenco moduli, changelog, elenco script DB
+- serve solo un diff o una lettura di merito dei commit
+- manca una richiesta esplicita del documento di passaggio in produzione
+
+L'attivazione automatica è disabilitata dal frontmatter (`disable-model-invocation: true`),
+quindi la skill si carica solo su richiesta.
 
 # Repository e branch di default
 

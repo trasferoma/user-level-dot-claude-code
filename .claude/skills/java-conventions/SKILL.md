@@ -1,6 +1,6 @@
 ---
 name: java-conventions
-description: Applica convenzioni generali del linguaggio Java quando generi o modifichi codice Java. Copre struttura del file, import (niente wildcard, ordinati, static prima), indentazione a 2 spazi, stile delle parentesi graffe, ordinamento dei membri, naming (UpperCamelCase per classi, lowerCamelCase per metodi e variabili, UPPER_SNAKE_CASE per costanti), Javadoc, espressività idiomatica, scelte di tipi e API. Usa per qualsiasi task di scrittura o rifattorizzazione di codice Java. Da comporre con clean-code e una skill java-version-* (11, 17 o 21). NON usare per linguaggi diversi da Java.
+description: Applica le convenzioni generali del linguaggio Java. Usa per qualsiasi task di scrittura o rifattorizzazione di codice Java. Copre struttura del file, import (niente wildcard, ordinati, static prima), naming (UpperCamelCase, lowerCamelCase, UPPER_SNAKE_CASE), ordinamento dei membri, Javadoc, espressività idiomatica, scelta di tipi e API, e la formattazione fine: spaziatura orizzontale, graffe K&R, line wrapping, una dichiarazione per riga, ordine dei modificatori, switch e annotazioni. Da comporre con clean-code e una skill java-version-* (11, 17 o 21). NON usare per linguaggi diversi da Java.
 ---
 
 # Scopo
@@ -213,32 +213,32 @@ Le convenzioni di naming Java sono un contratto implicito con chi legge. Romperl
 ## 8. Commenti e Javadoc
 
 ### Regola
-- Scrivere commenti solo quando aggiungono contesto utile
-- Preferire codice chiaro a commenti compensativi
-- Usare Javadoc per API pubbliche quando chiarisce contratto, comportamento o vincoli
-- Evitare commenti ovvi, ridondanti o rumorosi
-- Aggiornare o rimuovere i commenti che non corrispondono più al codice
+- **Se scrivere il commento** lo decide `clean-code` §4, che vale anche qui: il default è **nessun commento e nessuna Javadoc**, nemmeno sui metodi e sui tipi pubblici. Questa sezione governa solo la **forma** del commento che ha già superato quel test.
+- Non aggiungere Javadoc a un metodo pubblico solo perché è pubblico, e non aggiungerla mai agli helper privati.
+- Quando la Javadoc è ammessa, documenta la sola parte di contratto non deducibile dalla firma; ometti i tag che non aggiungono niente: `@param order l'ordine` e `@return il risultato` si cancellano, non si compilano.
+- Non lasciare tag vuoti (`@throws` senza condizione, `@param` senza descrizione) né tag su parametri che non esistono più.
+- Non usare `/** ... */` per commenti interni al corpo di un metodo: la Javadoc documenta dichiarazioni.
 
 ### Perché
-Commenti e Javadoc servono a spiegare intenzioni, vincoli e contratti. Se descrivono solo ciò che il codice già dice, diventano rumore destinato a marcire.
+La Javadoc è una seconda descrizione del contratto, non verificata dal compilatore, che diverge alla prima modifica della firma. Ha senso solo dove dice qualcosa che la firma non può dire.
 
 ### Esempio corretto
 ```java
 /**
- * Restituisce la data di scadenza calcolata nel fuso orario applicativo.
- * Non usa il fuso del server per mantenere comportamento deterministico.
+ * @throws OptimisticLockException se l'ordine è stato modificato da un'altra transazione.
  */
-public LocalDate calculateDueDate(LocalDate issueDate) {
-  return issueDate.plusDays(30);
-}
+public void confirm(Order order) {
 ```
 
 ### Anti-esempio
 ```java
-// Add 30 days to issueDate
+/**
+ * Calcola la data di scadenza.
+ *
+ * @param issueDate la data di emissione
+ * @return la data di scadenza
+ */
 public LocalDate calculateDueDate(LocalDate issueDate) {
-  return issueDate.plusDays(30);
-}
 ```
 
 ## 9. Espressività del codice
@@ -301,6 +301,160 @@ ArrayList<String> customerNames = new ArrayList<>();
 
 ### Perché
 Questa skill definisce convenzioni Java, non sostituisce i principi generali di progettazione e leggibilità. Il linguaggio è il contenitore, il design resta il contenuto.
+
+## 12. Spaziatura orizzontale
+
+### Regola
+Uno spazio singolo appare in questi punti, e NON altrove:
+- dopo le keyword di controllo di flusso prima della `(`: `if`, `for`, `while`, `switch`, `try`, `catch`, `synchronized`
+- prima della graffa aperta `{`
+- attorno a ogni operatore binario e ternario, incluso `&` nei type bound (`<T extends Foo & Bar>`), `|` nel multi-catch (`catch (FooException | BarException e)`), i due punti del for-each (`for (String s : list)`), la freccia lambda (`str -> str.length()`)
+- dopo `,` `;` `:` e dopo la `)` di un cast (`(String) value`)
+- tra tipo e identificatore (`List<String> list`)
+- attorno a `//` e tra `//` e il testo del commento
+
+NON mettere spazio:
+- tra nome di metodo/costruttore e la `(` degli argomenti: `save(order)`, non `save (order)`
+- subito dopo `(` o prima di `)`: `foo(a, b)`, non `foo( a, b )`
+- prima di `,` `;` `:`
+- attorno a `.` e a method reference `::`
+- prima delle quadre di indicizzazione: `array[i]`, non `array [i]`
+
+### Perché
+Le regole di spaziatura sono il livello di formattazione più visibile e più facilmente incoerente. Fissarle esplicitamente elimina un'intera classe di divergenze silenziose tra un file e l'altro.
+
+### Esempio corretto
+```java
+if (customer.isActive()) {
+  for (Order order : customer.getOrders()) {
+    total = total + order.getAmount();
+  }
+}
+```
+
+### Anti-esempio
+```java
+if(customer.isActive()){
+  for(Order order:customer.getOrders()){
+    total = total+order.getAmount();
+  }
+}
+```
+
+## 13. Graffe in stile K&R
+
+### Regola
+- Nessun a-capo prima della graffa aperta; a-capo dopo `{`; a-capo prima di `}`
+- A-capo dopo `}` solo se chiude un'istruzione, un metodo o una classe: `else`, `catch`, `finally` restano sulla stessa riga della graffa chiusa precedente
+- Blocco vuoto ammesso come `{}` sulla stessa riga, ma non compattare i blocchi vuoti nei costrutti multi-blocco (`if/else`, `try/catch`) in modo da rompere la leggibilità della catena
+
+### Perché
+Uno stile di graffe coerente rende la struttura dei blocchi immediatamente leggibile e riduce i diff spuri quando il codice evolve.
+
+### Esempio corretto
+```java
+if (condition) {
+  doSomething();
+} else {
+  doOtherThing();
+}
+```
+
+### Anti-esempio
+```java
+if (condition)
+{
+  doSomething();
+}
+else { doOtherThing(); }
+```
+
+## 14. Line wrapping
+
+### Regola
+- Preferire la rottura al livello sintattico più alto disponibile
+- Spezzare **prima** di un operatore non di assegnazione (`+`, `&&`, `.`): il simbolo apre la riga successiva
+- Spezzare **dopo** un operatore di assegnazione (`=`)
+- Il nome di metodo/costruttore resta attaccato alla `(` che segue
+- La virgola resta attaccata al token che la precede: si va a capo dopo la virgola, mai prima
+- Le continuation lines sono indentate più delle righe di un normale blocco annidato, così "riga spezzata" e "nuovo blocco" restano visivamente distinti
+
+⚠️ **Override delegato**: il **carattere e l'ampiezza dell'indentazione** (spazi vs tab, 2 vs 4) e il **limite di colonna** (80 / 100 / 120) dipendono dal progetto e sono governati dalle skill `springboot`, `liferay` o `java-version-*`. Questa sezione fissa il *principio* di wrapping, non i valori numerici. Restano fuori dal limite di colonna, a prescindere dal valore scelto: righe `package`/`import`, URL in Javadoc, text block.
+
+### Perché
+Il punto di rottura comunica la struttura dell'espressione. Regole di rottura coerenti rendono prevedibile dove cercare la continuazione di uno statement lungo.
+
+### Esempio corretto
+```java
+List<String> activeCustomerNames = customers.stream()
+    .filter(Customer::isActive)
+    .map(Customer::getName)
+    .collect(Collectors.toList());
+```
+
+## 15. Dichiarazioni, modificatori, array e literal
+
+### Regola
+- Una sola variabile per dichiarazione: `int a = 1;` su una riga, `int b = 2;` sulla successiva; mai `int a = 1, b = 2;` (eccezione ammessa: header del `for`)
+- Ordine dei modificatori secondo la JLS: `public protected private abstract default static final transient volatile synchronized native strictfp`
+- Le quadre appartengono al tipo: `String[] args`, non `String args[]`
+- Suffisso dei literal `long` sempre `L` maiuscola: `3_000_000_000L`, mai `l`
+
+### Perché
+Sono convenzioni prive di ambiguità e senza costo di leggibilità: uniformarle elimina rumore gratuito nelle review.
+
+### Esempio corretto
+```java
+public static final long MAX_SIZE = 2_000_000_000L;
+String[] names = new String[0];
+```
+
+### Anti-esempio
+```java
+static public final long MAX_SIZE = 2000000000l;
+String names[] = new String[0];
+```
+
+## 16. Switch
+
+### Regola
+- Le label `case`/`default` sono indentate di un livello dentro il blocco `switch`
+- In uno `switch` statement old-style, ogni gruppo termina in modo brusco (`break`, `return`, `throw`, `continue`) oppure è marcato con un commento di fall-through esplicito (es. `// fall through`)
+- Prevedere sempre un `default`, anche solo per lanciare un'eccezione su un caso non gestito
+
+### Perché
+Il `default` esplicito e i fall-through commentati rendono lo switch autodocumentante e proteggono da casi dimenticati quando l'enum o il dominio cresce.
+
+### Esempio corretto
+```java
+switch (status) {
+  case CREATED:
+    return "Created";
+  case SENT:
+    return "Sent";
+  default:
+    throw new IllegalArgumentException("Unsupported status: " + status);
+}
+```
+
+## 17. Posizione delle annotazioni
+
+### Regola
+- Le annotazioni su classe, metodo o costruttore vanno subito dopo l'eventuale Javadoc, ciascuna su una riga propria
+- Eccezione: una singola annotazione senza parametri può stare sulla stessa riga della firma (es. `@Override public int hashCode() {`)
+- Su un field, più annotazioni possono stare sulla stessa riga
+- Le annotazioni type-use precedono immediatamente il tipo annotato (`final @Nullable String name`)
+
+### Perché
+Una annotazione per riga sulle dichiarazioni rende leggibile l'elenco quando cresce; l'eccezione per la singola annotazione senza parametri evita verbosità inutile sui casi banali come `@Override`.
+
+### Esempio corretto
+```java
+@Override
+public boolean equals(Object other) {
+  return super.equals(other);
+}
+```
 
 # Preferenze di output
 Quando generi codice Java:

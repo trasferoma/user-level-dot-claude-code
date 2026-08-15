@@ -1,6 +1,6 @@
 ---
 name: clean-code
-description: Usa per generare codice nuovo, rifattorizzare, migliorare leggibilità o manutenibilità, qualsiasi task il cui output finale contiene codice. Applica regole di clean code quando generi o modifichi codice sorgente. Realizza metodi piccoli e focalizzati, naming chiaro, basso annidamento, dependency injection, gestione delle eccezioni, testabilità, anti-densità (early return, variabili esplicative, condizioni complesse spezzate in flag boolean). Da comporre con skill di linguaggio o framework (java-conventions, springboot, liferay).
+description: Usa per generare codice nuovo, rifattorizzare, migliorare leggibilità o manutenibilità, qualsiasi task il cui output finale contiene codice. Applica regole di clean code quando generi o modifichi codice sorgente. Realizza metodi piccoli e focalizzati, singola responsabilità per classe e per metodo (SRP, una sola ragione per cambiare), naming chiaro, basso annidamento, singolo livello di astrazione per metodo (SLAP), commenti e Javadoc quasi a zero (il default è non commentare, il commento è un'eccezione da giustificare), Optional solo come valore di ritorno e mai come parametro o campo, dependency injection, gestione delle eccezioni, testabilità, anti-densità (early return, variabili esplicative, condizioni complesse spezzate in flag boolean). Da comporre con skill di linguaggio o framework (java-conventions, springboot, liferay).
 ---
 
 # Scopo
@@ -81,7 +81,43 @@ public void process(Order order) {
 }
 ```
 
-## 2. Naming
+## 2. Optional — solo come valore di ritorno (priorità molto alta)
+
+### Regola
+- `Optional` è ammesso **esclusivamente come tipo di ritorno** di un metodo, quando l'assenza del valore fa parte del contratto.
+- **Vietato** `Optional` come **parametro** di metodo o costruttore, pubblico o privato che sia.
+- **Vietato** `Optional` come **campo** di classe e come tipo di elemento in collezioni (`List<Optional<T>>`, `Map<K, Optional<V>>`).
+- Chi chiama scioglie l'`Optional` **prima** di invocare: passa il valore, oppure niente. Se un parametro è davvero facoltativo, le alternative corrette sono due metodi con nomi di business distinti (spesso la scelta migliore: il nome dichiara il caso), un parametro nullable gestito subito nel corpo, un value object che modella esplicitamente il caso "assente", oppure spostare la decisione nel chiamante eliminando del tutto il ramo condizionale dal metodo.
+- La regola vale in ogni linguaggio con un tipo opzionale analogo (`Optional`, `Option`, `Maybe`): il tipo opzionale descrive un *risultato*, non un *ingresso*.
+- È un vincolo non negoziabile: quando incontri una firma che lo viola in codice che stai già modificando, segnalalo e proponi la correzione.
+
+### Perché
+Un parametro `Optional` moltiplica gli stati di ingresso invece di ridurli: il chiamante può passare `null`, `Optional.empty()` o un valore presente, quindi il metodo deve difendersi da tre casi anziché due, e il `null` resta possibile perché `Optional` non è mai vincolato a essere non-nullo. In più maschera che il metodo fa due cose diverse a seconda della presenza del valore: quel ramo condizionale appartiene al chiamante o a due metodi distinti, non a una firma ambigua. Come tipo di ritorno, invece, `Optional` comunica esattamente una cosa utile: "questo valore può non esserci".
+
+### Esempio corretto
+Due metodi con nomi distinti; il chiamante scioglie l'`Optional` una volta sola, dove la decisione ha senso.
+```java
+private String describeVerdict(CombatResult result) { ... }
+
+private String describeVerdictWithFavorite(CombatResult result, Fighter favorite) { ... }
+
+String verdict = findFavorite(result)
+        .map(favorite -> describeVerdictWithFavorite(result, favorite))
+        .orElseGet(() -> describeVerdict(result));
+```
+
+### Anti-esempio
+Tre stati di ingresso possibili (`null`, `empty`, presente) e un ramo condizionale che appartiene al chiamante.
+```java
+private String describeVerdict(CombatResult result, Optional<Fighter> favorite) {
+    if (favorite != null && favorite.isPresent()) {
+        return withFavorite(result, favorite.get());
+    }
+    return noFavorite(result);
+}
+```
+
+## 3. Naming
 
 ### Regola
 - Usare nomi espliciti e coerenti
@@ -91,41 +127,41 @@ public void process(Order order) {
 ### Perché
 Un buon naming riduce la necessità di commenti e rende il codice comprensibile anche fuori dal contesto immediato.
 
-## 3. Commenti
+## 4. Commenti — il default è nessun commento (priorità molto alta)
 
 ### Regola
-- Commentare il perché, non il cosa
-- Non usare commenti per compensare nomi o logica scadenti
-- Evitare commenti ridondanti e non narrare il metodo passo per passo
-- Se un commento serve solo a spiegare *cosa* fa un blocco, estrarre quel blocco in un metodo con nome parlante invece di commentarlo
-- Mantenere accurati i pochi commenti scritti e rimuovere quelli obsoleti
-- Non inserire codice o tag HTML nei blocchi di commento
+- **Il codice non si commenta.** Il commento è un'eccezione da giustificare, non una buona abitudine: se non supera il test di ammissione, non si scrive. Vale in ogni linguaggio.
+- **Test di ammissione**: il commento spiega un *perché* che il lettore non può dedurre da nomi, tipi e struttura, e che **nessuna riscrittura del codice renderebbe evidente**. Se alla domanda «si capirebbe da solo con un nome migliore o un metodo estratto?» la risposta è sì, si estrae o si rinomina, non si commenta.
+- **Casi ammessi, elenco chiuso**: vincolo esterno non evidente (bug noto di una libreria, limite di un'API, requisito normativo o contrattuale); workaround deliberato, con la ragione per cui la via ovvia non funziona; scelta contro-intuitiva che un manutentore «correggerebbe» rompendo qualcosa; riferimento tracciabile (ticket, issue, RFC, pagina di documentazione); invariante o precondizione non esprimibile nel tipo; formula o algoritmo la cui derivazione non sta nel codice; `TODO`/`FIXME` con riferimento tracciabile.
+- **Vietati sempre**: etichette di blocco (`// Validazione`, `// Calcolo del totale`) — sono metodi da estrarre; narrazione passo per passo; riformulazione della firma o del nome; commenti che compensano nomi o logica scadenti; commenti su codice ovvio; codice commentato; separatori decorativi; codice o tag HTML dentro i blocchi di commento.
+- **I commenti già presenti non si toccano**: niente passate di pulizia sui file che il task non deve cambiare. Unica eccezione: se la modifica rende **falso** un commento esistente, si aggiorna o si elimina — un commento che mente è peggio di nessun commento.
+- **Nel dubbio non si commenta.** Un commento mancante costa due righe di codice lette; un commento inutile lo paga ogni lettura futura, e il prezzo cresce quando invecchia.
+
+### Javadoc
+- **Nessuna Javadoc di default**, nemmeno sui metodi e sui tipi pubblici. Una Javadoc che riformula la firma (`@param order l'ordine`, `@return il risultato`) è rumore con una sintassi più costosa.
+- Ammessa solo per la parte di contratto **non deducibile dalla firma**: eccezioni lanciate e in quali condizioni, nullabilità, unità di misura o formato atteso, range ammessi, effetti collaterali, garanzie di thread-safety o transazionali, ordinamento e mutabilità del valore di ritorno. Si documenta quella parte, non il resto.
+- Mai come decorazione sugli helper privati.
+- Se il progetto ha già una policy Javadoc uniforme, prevale la coerenza col progetto: seguirla senza richiederla di nuovo.
 
 ### Perché
-I commenti utili spiegano decisioni, vincoli o trade-off. I commenti che descrivono il codice riga per riga invecchiano in fretta e spesso peggiorano la leggibilità.
-
-### Esempio corretto
-```java
-// Usiamo il clock applicativo per rendere il comportamento deterministico nei test.
-LocalDate today = clock.today();
-```
+Il codice è l'unica descrizione del comportamento che non può mentire, perché è quella eseguita. Ogni commento è una seconda descrizione, non verificata da niente, che diverge alla prima modifica. Un nome giusto e un metodo estratto ottengono lo stesso risultato senza aprire quel debito.
 
 ### Anti-esempio
 ```java
-// Increment user count
+// Incrementa il contatore degli utenti.
 userCount++;
+
+// Validazione
+if (order == null || order.isArchived()) {
 ```
 
-### Javadoc
+### Esempio corretto
+```java
+// L'API remota rifiuta i batch oltre 500 elementi con un 400 privo di messaggio (ticket PSD-1174).
+List<List<Item>> batches = partition(items, MAX_BATCH_SIZE);
+```
 
-- La Javadoc va solo sui metodi e sui tipi pubblici, mai come decorazione sugli helper privati.
-- L'adozione della Javadoc sui metodi pubblici è una **decisione di progetto**, non da prendere metodo per metodo:
-  - prima di aggiungere Javadoc, verificare la policy esistente (convenzioni di progetto, `CLAUDE.md`, metodi pubblici già documentati o deliberatamente lasciati senza);
-  - se una policy esiste, seguirla in modo coerente senza richiederla di nuovo;
-  - se non esiste ancora, non indovinare e non aggiungere Javadoc di nascosto: esplicitare la domanda al chiamante e applicare la decisione in modo uniforme.
-- Quando la Javadoc è prevista, documentare contratto e comportamento (parametri, valore di ritorno, eccezioni, vincoli rilevanti), non l'ovvio.
-
-## 4. Controllo di flusso
+## 5. Controllo di flusso
 
 ### Regola
 - Ridurre i livelli di annidamento
@@ -135,38 +171,10 @@ userCount++;
 ### Perché
 Un flusso poco annidato si legge più velocemente, si testa meglio e riduce gli errori introdotti da condizioni opache.
 
-### Esempio corretto
-```java
-public void sendReminder(User user) {
-    if (!canReceiveReminder(user)) {
-        return;
-    }
+### Esempi completi
+Annidamento eliminato con early return e predicato estratto con nome di business: vedi [reference/examples.md](reference/examples.md), casi 1, 3 e 4.
 
-    notificationGateway.sendReminder(user);
-}
-
-private boolean canReceiveReminder(User user) {
-    return user != null
-            && user.isActive()
-            && user.getEmail() != null
-            && !user.isReminderDisabled();
-}
-```
-
-### Anti-esempio
-```java
-public void sendReminder(User user) {
-    if (user != null) {
-        if (user.isActive()) {
-            if (user.getEmail() != null && !user.isReminderDisabled()) {
-                notificationGateway.sendReminder(user);
-            }
-        }
-    }
-}
-```
-
-## 5. Error handling
+## 6. Error handling
 
 ### Regola
 - Preferire eccezioni significative a codici di ritorno opachi
@@ -200,17 +208,37 @@ public Customer loadCustomer(long customerId) {
 }
 ```
 
-## 6. Classi
+## 7. Classi e singola responsabilità
 
 ### Regola
-- Una responsabilità principale
-- Nome coerente con il ruolo
-- Evitare classi contenitore con troppi compiti
+- Un'unità ha **una sola ragione per cambiare**. Il criterio non è quante cose fa, ma quanti committenti diversi possono chiederne la modifica: se per dire quando cambia servono due frasi unite da «e», sono due unità.
+- Prima di aggiungere un metodo o un campo a una classe esistente, verifica che appartenga alla sua ragione di cambiare. Se non ci appartiene, la collocazione giusta è un'altra classe, anche quando quella esistente è già iniettata e comoda.
+- Il criterio di separazione è la ragione di cambiare, non il numero di righe né di metodi: due responsabilità che cambiano sempre insieme sono una responsabilità sola.
+- Vale per i metodi quanto per le classi: un metodo che valida, trasforma e persiste ha tre ragioni per cambiare (regole di business, formato dei dati, schema di persistenza).
+- Nome coerente col ruolo effettivo. Un nome che non riesci a dare senza `And` o senza un termine generico è la prima diagnosi di responsabilità multipla.
+
+### Segnali di violazione
+- La classe cresce a **ogni** feature nuova, qualunque sia la feature.
+- Nome cumulativo o vuoto: `Manager`, `Helper`, `Utils`, `Handler`, o un nome con `And`.
+- Un metodo mescola attività di natura diversa: validazione, mapping, accesso a dati, notifica.
+- Un sottoinsieme di campi è usato solo da un sottoinsieme disgiunto di metodi (bassa coesione).
+- Testare un comportamento obbliga a mockare collaboratori che con quel comportamento non c'entrano.
+- Commenti che etichettano blocchi (`// invio mail`, `// calcolo importi`) separano ciò che potrebbero essere unità distinte.
+- Import di package eterogenei nello stesso file: persistence, web e formattazione insieme.
 
 ### Perché
-Una classe focalizzata è più semplice da comprendere, testare e modificare senza impatti collaterali.
+La ragione di cambiare è ciò che determina chi rompe cosa. Una classe con tre committenti diversi obbliga chi ne serve uno a leggere e rischiare gli altri due, e rende ogni test una cerimonia di mock. Contare le righe invece delle ragioni produce l'errore opposto: file microscopici che cambiano sempre insieme.
 
-## 7. Dipendenze
+### Quando NON separare
+- Le due parti cambiano sempre insieme: è una responsabilità sola distribuita male.
+- L'estrazione produce una classe di passaggio che inoltra la chiamata senza aggiungere decisione né nome utile.
+- La seconda responsabilità è ipotetica e non ancora visibile nel codice presente (§ 11 Open/Closed, § 13).
+- Il task corrente non tocca quella parte: la collocazione sbagliata preesistente va segnalata, non risolta dentro un diff che doveva fare altro (§ 13, refactoring vietato).
+
+### Esempi completi
+Quattro casi svolti con anti-esempio e versione corretta — classe che cresce a ogni feature, metodo che valida/trasforma/persiste, bassa coesione dei campi, frammentazione eccessiva: vedi [reference/srp.md](reference/srp.md).
+
+## 8. Dipendenze
 
 ### Regola
 - Preferire dependency injection
@@ -220,38 +248,10 @@ Una classe focalizzata è più semplice da comprendere, testare e modificare sen
 ### Perché
 Le dipendenze esplicite migliorano testabilità, sostituibilità e controllo del comportamento.
 
-### Esempio corretto
-```java
-public class InvoiceService {
+### Esempi completi
+Constructor injection contro istanziazione diretta dentro la logica, con anti-esempio e versione corretta: vedi [reference/dependencies.md](reference/dependencies.md).
 
-    private final InvoiceRepository invoiceRepository;
-    private final Clock clock;
-
-    public InvoiceService(InvoiceRepository invoiceRepository, Clock clock) {
-        this.invoiceRepository = invoiceRepository;
-        this.clock = clock;
-    }
-
-    public Invoice create(Invoice invoice) {
-        invoice.setCreatedAt(clock.now());
-        return invoiceRepository.save(invoice);
-    }
-}
-```
-
-### Anti-esempio
-```java
-public class InvoiceService {
-
-    public Invoice create(Invoice invoice) {
-        InvoiceRepository invoiceRepository = new JdbcInvoiceRepository();
-        invoice.setCreatedAt(LocalDateTime.now());
-        return invoiceRepository.save(invoice);
-    }
-}
-```
-
-## 8. Duplicazione
+## 9. Duplicazione
 
 ### Regola
 - Evitare copia-incolla
@@ -287,7 +287,7 @@ public BigDecimal calculateInvoiceNetAmount(BigDecimal grossAmount) {
 }
 ```
 
-## 9. Testabilità
+## 10. Testabilità
 
 ### Regola
 - Generare codice semplice da testare
@@ -302,12 +302,12 @@ public BigDecimal calculateInvoiceNetAmount(BigDecimal grossAmount) {
 ### Perché
 Un codice testabile tende a essere anche più pulito, più modulare e meno dipendente dal contesto esterno.
 
-## 10. Principi SOLID
+## 11. Principi SOLID
 
 ### Regola
 Applicare i principi SOLID con pragmatismo, non come dogma.
 
-- **Single Responsibility**: ogni unità dovrebbe avere una sola ragione per cambiare. Separare responsabilità realmente diverse, senza frammentare in pezzi microscopici per adorare l'acronimo.
+- **Single Responsibility**: regole operative, segnali di violazione e limiti alla separazione stanno nella § 7, che è la sede unica del principio. Non riapplicarlo qui in forma ridotta.
 - **Open/Closed**: prevedere punti di estensione quando la variabilità è reale o probabile, non per futuri ipotetici.
 - **Liskov Substitution**: i sottotipi devono preservare il comportamento atteso; non usare l'ereditarietà per riuso quando la composizione è più chiara.
 - **Interface Segregation**: preferire interfacce focalizzate; attenzione alle "interfacce implicite" nascoste in data class con troppi campi nullable o dipendenti dal contesto.
@@ -316,7 +316,7 @@ Applicare i principi SOLID con pragmatismo, non come dogma.
 ### Perché
 SOLID migliora manutenibilità e testabilità solo se applicato dove c'è una pressione di design reale. Applicato per abitudine produce solo cerimonia e file in più.
 
-## 11. Design pattern
+## 12. Design pattern
 
 ### Regola
 - Usare un design pattern solo quando risolve una pressione di design reale: variazione esplicita, riduzione di duplicazione o di complessità condizionale, migliore testabilità.
@@ -337,7 +337,7 @@ I pattern comunicano intento quando calzano sul problema. Usati come etichetta, 
 - **Command**: azioni da accodare, loggare, ritentare o passare in giro.
 - **Specification**: predicati di business riusabili e componibili.
 
-## 12. Refactoring
+## 13. Refactoring
 
 ### Regola
 Rifattorizzare solo quando supporta la modifica richiesta o previene un danno evidente.
@@ -361,7 +361,7 @@ Refactoring vietato:
 ### Perché
 Il refactoring opportunistico e non richiesto aumenta il rischio e sporca i diff, nascondendo la modifica reale dentro rumore non correlato.
 
-## 13. Performance e complessità
+## 14. Performance e complessità
 
 ### Regola
 - Non peggiorare le performance senza motivo, ma non ottimizzare prematuramente.
@@ -370,7 +370,7 @@ Il refactoring opportunistico e non richiesto aumenta il rischio e sporca i diff
 ### Perché
 Sia l'ottimizzazione prematura sia l'inefficienza evidente sono errori costosi. La leggibilità viene prima, ma un'inefficienza ovvia non va ignorata.
 
-## 14. Sicurezza
+## 15. Sicurezza
 
 ### Regola
 - Non introdurre comportamenti insicuri.
@@ -380,6 +380,70 @@ Sia l'ottimizzazione prematura sia l'inefficienza evidente sono errori costosi. 
 ### Perché
 Le vulnerabilità sono difetti di qualità del codice a tutti gli effetti, spesso più costosi di un bug funzionale.
 
+## 16. Anti-densità
+
+### Regola
+- Tenere il numero degli annidamenti il più basso possibile. Quando il flusso diventa complesso, usare early return, early continue oppure estrarre metodi privati con nomi chiari.
+- **Ogni valore prodotto da una chiamata che calcola, costruisce, recupera o interroga ha un nome.** Lo assegni a una variabile esplicativa, poi passi la variabile. Vale **anche quando la chiamata è una sola e non annidata**: la densità non si conta in livelli di annidamento, si misura chiedendosi se ogni valore intermedio ha un nome. `list.add(compute(a, b, c))`, `new Foo(build(x))` e `service.call(map(dto))` sono già troppo densi.
+- **Un'istruzione che non entra in una riga chiede una variabile, non un ritorno a capo.** Se il wrap nasce da una chiamata dentro gli argomenti, estrai quel valore; se nasce solo dal numero di argomenti già nominati, il wrap va bene.
+- Ammesso passare direttamente, elenco chiuso: accessor e getter semplici (`request.getId()`), costanti e letterali, argomenti di log e di messaggi d'eccezione, passaggi intermedi di una catena Stream, `return` di una sola chiamata.
+- Il nome della variabile può essere il concetto stesso in lowerCamelCase (`characteristicContribution`): non deve essere originale per guadagnarsi il posto.
+- Evitare condizioni `if` complesse. Calcolare prima i blocchi logici significativi in variabili boolean con nomi di business, poi usare quei flag nel controllo di flusso.
+
+### Perché
+L'obiettivo non è codice più "furbo", ma codice meno denso e più facile da verificare. Una variabile locale che dà nome a un valore vale più delle righe che risparmia: il nome dice cosa è quel valore senza rileggere la firma del metodo che l'ha prodotto, e resta un punto dove fermarsi a leggere, a ispezionare e a mettere un breakpoint.
+
+### Esempi completi
+Cinque casi svolti con anti-esempio e versione corretta a confronto — annidamenti, densità delle chiamate, valore senza nome passato a un `add`, condizioni composte, early return più variabili esplicative: vedi [reference/examples.md](reference/examples.md).
+
+## 17. SLAP — Single Level of Abstraction Principle
+
+### Regola
+- Ogni metodo opera a un solo livello di astrazione: le operazioni al suo interno stanno allo stesso grado di dettaglio.
+- Non mescolare la sequenza dei passi di alto livello con i dettagli che li realizzano: estrarre il dettaglio in metodi privati il cui nome dichiari l'intento.
+- Un metodo di orchestrazione deve leggersi come l'elenco dei suoi passi.
+- Segnali di violazione: commenti che spezzano il metodo in fasi (`// Validazione`, `// Calcolo del totale`), un loop o un calcolo inline dentro un metodo che per il resto delega, literal di dominio (aliquote, formati, chiavi) accanto a chiamate di servizio.
+
+### Perché
+Mescolare i livelli obbliga chi legge a cambiare continuamente scala mentale e nasconde la sequenza del processo dentro i suoi dettagli. Estratto, il livello basso diventa riutilizzabile e testabile in isolamento, e il livello alto si legge come la descrizione del processo.
+
+### Esempio corretto
+```java
+public void processOrder(Order order) {
+    validateOrder(order);
+
+    double total = calculateTotal(order);
+    double tax = calculateTax(total);
+    double finalAmount = total + tax;
+
+    chargeCreditCard(order.getCustomer(), finalAmount);
+}
+```
+
+### Anti-esempio
+```java
+public void processOrder(Order order) {
+    // Validazione
+    if (!order.isValid()) {
+        throw new IllegalArgumentException("Invalid order");
+    }
+
+    // Calcolo del totale
+    double total = 0.0;
+    for (Item item : order.getItems()) {
+        total += item.getPrice();
+    }
+
+    // Calcolo delle tasse
+    double tax = total * 0.1;
+
+    // Addebito sulla carta
+    CreditCard creditCard = order.getCustomer().getCreditCard();
+    creditCard.charge(total + tax);
+}
+```
+
+
 # Preferenze di output
 Quando generi codice:
 - privilegia leggibilità e semplicità
@@ -388,6 +452,7 @@ Quando generi codice:
 - non introdurre pattern complessi senza motivo
 
 # Vincoli
+- **Mai `Optional` come parametro di metodo o costruttore, né come campo di classe**: solo come tipo di ritorno (regola 2, priorità molto alta)
 - Non sacrificare correttezza per eleganza
 - Non applicare refactoring che cambi il comportamento richiesto
 - Non frammentare il codice in troppi micro-metodi se peggiora la comprensione
@@ -406,267 +471,3 @@ Quando generi codice:
 # Nota finale
 Questa skill guida lo stile e la struttura del codice generato.
 Non sostituisce skill più specifiche per Java, Spring, Hibernate, testing o performance.
-
----
-
-# Esempi operativi (regole anti-densità)
-
-Questi esempi guidano la generazione e modifica del codice quando il task richiede codice.
-L'obiettivo non è codice più "furbo", ma codice più leggibile, meno denso e più facile da verificare.
-
-## Linee guida operative
-- Tenere il numero degli annidamenti il più basso possibile. Quando il flusso diventa complesso, usare early return, early continue oppure estrarre metodi privati con nomi chiari.
-- Tenere bassa la densità del codice. Evitare di passare direttamente chiamate a metodo complesse come parametri di altri metodi. Recuperare prima i valori in variabili esplicative e poi passarli.
-- Evitare condizioni `if` complesse. Calcolare prima i blocchi logici significativi usando variabili boolean con nomi di business, poi usare quei flag nel controllo di flusso.
-
----
-
-## 1. Ridurre gli annidamenti
-
-Preferire un flusso lineare con uscite anticipate rispetto a blocchi `if` annidati.
-Se per capire il metodo bisogna seguire una scala di `if` dentro altri `if`, il metodo sta già chiedendo pietà.
-
-### Anti-esempio
-
-```java
-public void processRequest(Request request) {
-    if (request != null) {
-        if (request.isEnabled()) {
-            if (!request.isExpired()) {
-                if (request.hasValidOwner()) {
-                    validate(request);
-                    execute(request);
-                    notifyOwner(request);
-                }
-            }
-        }
-    }
-}
-```
-
-### Esempio corretto
-
-```java
-public void processRequest(Request request) {
-    if (!isProcessable(request)) {
-        return;
-    }
-
-    validate(request);
-    execute(request);
-    notifyOwner(request);
-}
-
-private boolean isProcessable(Request request) {
-    return request != null
-            && request.isEnabled()
-            && !request.isExpired()
-            && request.hasValidOwner();
-}
-```
-
-### Criterio pratico
-Quando un metodo supera un livello di annidamento, valutare:
-- invertire la condizione e uscire prima;
-- estrarre un predicato privato;
-- estrarre una fase del processo in un metodo dedicato;
-- estrarre una nuova classe se emerge una responsabilità autonoma.
-
----
-
-## 2. Abbassare la densità del codice
-
-Non comprimere troppe operazioni in una singola riga o chiamata.
-Le chiamate annidate nei parametri rendono il codice più difficile da leggere, debuggare e modificare.
-
-### Anti-esempio
-
-```java
-protocolService.register(
-        protocolRequestBuilder.build(
-                practiceService.getPractice(request.getPracticeId()),
-                userService.getUser(themeDisplay.getUserId()),
-                documentService.getDocument(request.getDocumentId()),
-                configurationProvider.getGroupConfiguration(groupId)));
-```
-
-### Esempio corretto
-
-```java
-Practice practice = practiceService.getPractice(request.getPracticeId());
-User user = userService.getUser(themeDisplay.getUserId());
-Document document = documentService.getDocument(request.getDocumentId());
-GroupConfiguration configuration = configurationProvider.getGroupConfiguration(groupId);
-
-ProtocolRequest protocolRequest = protocolRequestBuilder.build(
-        practice,
-        user,
-        document,
-        configuration);
-
-protocolService.register(protocolRequest);
-```
-
-### Criterio pratico
-Una chiamata può ricevere direttamente un metodo come parametro solo se il valore è immediato e ovvio.
-Se il metodo chiamato recupera dati, costruisce oggetti, interroga servizi o applica logica, assegnare prima il risultato a una variabile esplicativa.
-
-Un'eccezione tollerabile per casi banali:
-```java
-logger.info("Processing request {}", request.getId());
-```
-
----
-
-## 3. Evitare condizioni `if` complesse
-
-Quando una condizione contiene più blocchi logici, calcolare prima ogni blocco con una variabile boolean dal nome chiaro.
-Il nome della variabile deve spiegare il significato di business della condizione, non ripetere meccanicamente i campi usati.
-
-### Anti-esempio
-
-```java
-if (request != null
-        && request.getStatus() == RequestStatus.SUBMITTED
-        && request.getOwnerId() == user.getUserId()
-        && !request.isArchived()
-        && permissionChecker.hasPermission(groupId, resourceName, request.getId(), ActionKeys.UPDATE)) {
-    approve(request);
-}
-```
-
-### Esempio corretto
-
-```java
-boolean isSubmittedRequest = request != null
-        && request.getStatus() == RequestStatus.SUBMITTED;
-
-boolean isOwnedByCurrentUser = request != null
-        && request.getOwnerId() == user.getUserId();
-
-boolean isEditableRequest = request != null
-        && !request.isArchived();
-
-boolean canUpdateRequest = permissionChecker.hasPermission(
-        groupId,
-        resourceName,
-        request.getId(),
-        ActionKeys.UPDATE);
-
-if (isSubmittedRequest && isOwnedByCurrentUser && isEditableRequest && canUpdateRequest) {
-    approve(request);
-}
-```
-
-### Variante migliore quando la logica cresce
-
-```java
-public void approve(Request request, User user) {
-    if (!canApprove(request, user)) {
-        return;
-    }
-
-    approve(request);
-}
-
-private boolean canApprove(Request request, User user) {
-    boolean isSubmittedRequest = request != null
-            && request.getStatus() == RequestStatus.SUBMITTED;
-
-    boolean isOwnedByCurrentUser = request != null
-            && request.getOwnerId() == user.getUserId();
-
-    boolean isEditableRequest = request != null
-            && !request.isArchived();
-
-    boolean canUpdateRequest = hasUpdatePermission(request);
-
-    return isSubmittedRequest
-            && isOwnedByCurrentUser
-            && isEditableRequest
-            && canUpdateRequest;
-}
-```
-
-### Nota: niente boolean inutili per condizioni banali
-
-```java
-// NO - aggiunge burocrazia senza chiarire
-boolean isActive = user.isActive();
-if (isActive) {
-    sendNotification(user);
-}
-
-// SI - già chiaro
-if (user.isActive()) {
-    sendNotification(user);
-}
-```
-
----
-
-## 4. Combinare early return e variabili esplicative
-
-### Anti-esempio
-
-```java
-public void download(Document document, User user) {
-    if (document != null && user != null && document.isAvailable() && !document.isDeleted()) {
-        if (user.isActive() && user.hasAcceptedTerms()) {
-            if (permissionService.canDownload(user, document)) {
-                streamDocument(document);
-            }
-        }
-    }
-}
-```
-
-### Esempio corretto
-
-```java
-public void download(Document document, User user) {
-    if (!canDownload(document, user)) {
-        return;
-    }
-
-    streamDocument(document);
-}
-
-private boolean canDownload(Document document, User user) {
-    boolean isAvailableDocument = document != null
-            && document.isAvailable()
-            && !document.isDeleted();
-
-    boolean isValidUser = user != null
-            && user.isActive()
-            && user.hasAcceptedTerms();
-
-    if (!isAvailableDocument || !isValidUser) {
-        return false;
-    }
-
-    return permissionService.canDownload(user, document);
-}
-```
-
-Vantaggi:
-- Il metodo pubblico resta leggibile.
-- La logica di accesso ha un nome preciso: `canDownload`.
-- Le condizioni sono divise in blocchi concettuali.
-- L'annidamento viene eliminato.
-- La chiamata costosa o esterna a `permissionService` avviene solo dopo i controlli locali.
-
----
-
-## 5. Regola sintetica
-
-Quando generi o modifichi codice:
-
-1. Prima riduci l'annidamento.
-2. Poi riduci la densità delle chiamate.
-3. Poi assegna nomi chiari ai blocchi logici.
-4. Poi valuta se estrarre metodi o classi.
-5. Non rendere il codice più lungo se non diventa anche più leggibile.
-
-Il codice corretto non deve sembrare compresso per risparmiare righe.
-Deve sembrare facile da leggere, facile da testare e difficile da fraintendere.
