@@ -11,7 +11,7 @@ Sei autorizzato — e in molti casi tenuto, secondo la "Pipeline di lavoro" più
 - `docs-explorer`
 - `spec-specialist`
 - `alpaca-forms-developer`
-- `git-specialist`
+- `spec-adversarial-reviewer`
 
 Vincoli dell'autorizzazione:
 
@@ -58,12 +58,6 @@ Devi sceglierle tu in autonomia leggendo la `description` e confrontandola col t
 - `groovy` — script Groovy per la Script console di Liferay (import espliciti obbligatori, niente eccezioni mascherate, diagnosi dell'errore reale, idempotenza, scoping/audit, consapevolezza datasource e finder cache)
 - `alpaca-forms` — form Alpaca.js / Alpaca Forms (confine schema/options/view/data, field type custom, validator con callback su ogni ramo, eventi e API runtime, view e template Handlebars, i18n, caricamento remoto e Connector verso backend Java/Spring/Liferay); porta un reference con la superficie API verificata sul sorgente. NON riguarda Alpaca Markets né il modello LLM Alpaca
 
-Skill git, usate dall'agente `git-specialist` ma valide anche quando lavoro io direttamente su git:
-
-- `git-commit-messages` — formato del messaggio di commit: sommario in italiano alla terza persona **senza prefisso di tipo** (niente `feat:`/`fix:`/`chore:`), corpo che spiega il perché solo sui commit non auto-evidenti, sezione «Moduli impattati» sui soli progetti Liferay/OSGi, riga finale obbligatoria `tkn: <token>`; porta un reference sulla derivazione dei moduli OSGi dal diff
-- `git-branch-token` — token del branch: recupero dai commit già presenti, proposte da far scegliere al primo commit, divieto di inventarlo
-- `git-inspection` — operazioni git di sola lettura: stato, cosa entra nel commit, divergenza dal remoto, ispezione della storia, diagnosi di regressioni, recupero di lavoro perso, controlli pre-push
-
 Meta-skill per costruire questa configurazione, da usare quando il task riguarda la configurazione stessa e non il codice applicativo:
 
 - `build-agent-rules` — creare e revisionare i subagent in `.claude/agents/` o `~/.claude/agents/` (frontmatter, description che guida la delega, tool minimi, system prompt)
@@ -76,7 +70,6 @@ Meta-skill per costruire questa configurazione, da usare quando il task riguarda
 - **Liferay 7.4** → `liferay` + `clean-code` + `java-conventions` + `java-version-11`
 - **Script Groovy (console Liferay)** → `groovy` + `clean-code` (NON le skill `java-version-*`: Groovy non è Java)
 - **Form Alpaca.js** → `alpaca-forms` + `clean-code` (NON le skill `java-version-*`: è JavaScript); aggiungi `liferay` o `springboot` solo per la parte Java che serve schema, options o dati
-- **Operazioni git** → `git-commit-messages` + `git-branch-token` per i commit, `git-inspection` per verifiche e diagnosi (NON le skill di codice: git non è un linguaggio). Normalmente non le compongo io: delego a `git-specialist`, che le ha già a bordo
 - **Qualunque task che crea file nuovi** → aggiungi `package-placement` a qualsiasi composizione sopra, in qualunque linguaggio. Non sostituisce la skill primaria: decide dove nasce il file, non come è scritto
 
 ### Criteri di attivazione
@@ -117,32 +110,16 @@ Queste valgono in ogni progetto e prevalgono in caso di conflitto con le skill.
 - Evita nomi pubblici basati solo sui campi della query (`findByXxxAndYyyAndZzz`) che nascondono l'intento applicativo.
 - Niente stringhe magiche sparse: centralizza costanti, chiavi e messaggi.
 - Riusa label i18n esistenti prima di crearne di nuove.
-- **Il codice non si commenta.** Il default è zero commenti e zero Javadoc: il commento è un'eccezione da giustificare, non una buona abitudine. Ne scrivi uno solo se spiega un *perché* che non si deduce da nomi, tipi e struttura e che nessuna riscrittura del codice renderebbe evidente: vincolo esterno o bug noto di una libreria, workaround deliberato, scelta contro-intuitiva che un manutentore "correggerebbe" rompendo qualcosa, riferimento tracciabile (ticket, RFC, documentazione), invariante non esprimibile nel tipo. Tutto il resto — etichette di blocco (`// Validazione`), narrazione dei passi, riformulazione della firma, `@param order l'ordine` — si elimina estraendo un metodo o scegliendo un nome migliore, non commentando. Nel dubbio non commenti. La regola vale in ogni linguaggio e prevale sulle skill.
-- I commenti **già presenti** non si toccano: niente passate di pulizia fuori dal perimetro del task. Unica eccezione: se la tua modifica rende falso un commento esistente, lo aggiorni o lo elimini.
+- **Rendi esplicita l'intenzione estraendo metodi che la nominano**, anche senza riuso e anche per una riga sola o una condizione composta. La condizione è il test di nominabilità: il frammento deve avere un nome nel linguaggio del dominio, altrimenti resta inline. Dettaglio in `clean-code` § 17.
+- **Il codice non si commenta.** Il default è zero commenti e zero Javadoc: il commento è un'eccezione da giustificare, non una buona abitudine. Il test di ammissibilità e l'elenco dei casi ammessi sono in `clean-code` § 4. Nel dubbio non commenti.
 - Niente nuove dipendenze esterne se non strettamente necessarie.
 - Mantieni coerenza con i pattern già adottati nel codebase, anche quando non sono ideali.
-- **Abbassa sempre la densità del codice**: preferisci variabili locali intermedie con nomi parlanti rispetto ad annidare costruttori, factory method e chiamate dentro un'unica espressione. Una variabile locale che dà nome a un valore vale più dell'economia di righe risparmiata.
-  - Esempio corretto:
-
-    ```java
-    TipoProvvedimentoDomandaBando tipoProvvedimentoDomandaBando = mapStatoDomandaInTipoProvvedimento(statoDomandaBando);
-    RollbackContext rollbackCtx = RollbackContext.perChiusuraDomanda(domandaBando, commentoDomandaBandoId, tipoProvvedimentoDomandaBando, "Errore protocollazione chiusura domanda");
-    rollbackProtocollazioneService.rollbackChiusuraDomanda(rollbackCtx);
-    ```
-
-  - Anti-esempio:
-
-    ```java
-    rollbackProtocollazioneService.rollbackChiusuraDomanda(
-        RollbackContext.perChiusuraDomanda(domandaBando, commentoDomandaBandoId,
-            mapStatoDomandaInTipoProvvedimento(statoDomandaBando),
-            "Errore protocollazione chiusura domanda"));
-    ```
+- **Pochi parametri nei metodi**: la tendenza è zero, ottenuta iniettando dipendenze e configurazione nel costruttore, mai trasformando in campi i dati della singola chiamata. Da 7 in su la firma non si scrive in silenzio. Dettaglio in `clean-code` § 18.
+- **Abbassa sempre la densità**: ogni valore prodotto da una chiamata riceve una variabile con un nome prima di essere passato, e niente costruttori, factory o chiamate annidate dentro gli argomenti. Regola completa, elenco chiuso delle eccezioni ed esempi svolti in `clean-code` § 16.
 
 ### Validazione ed error handling
 
-- Valida gli input nei metodi pubblici e nei boundary applicativi.
-- Niente validazioni difensive nei metodi privati se i chiamanti sono già controllati.
+- Valida gli input dove il valore entra sotto il tuo controllo: punti d'ingresso di un modulo o di un'API, e costruttori dei tipi che portano un invariante. **Non** su ogni metodo pubblico di ogni classe interna, e **non** di nuovo sui salti interni di delega. Dove si valida e forma della guardia: `clean-code` § 6.
 - Eccezioni significative e messaggi diagnostici chiari. Non silenziare eccezioni.
 - Non mascherare errori tecnici con `null` opachi.
 - Nei service Spring Boot non usare eccezioni di binding web (`BindException`, `MethodArgumentNotValidException`) per validazioni di business.
@@ -184,8 +161,9 @@ Queste valgono in ogni progetto e prevalgono in caso di conflitto con le skill.
 
 ## Pipeline di lavoro
 
-La pipeline è: **[opzionale: `spec-specialist` → conferma] → scrivi con `clean-code-implementer` → verifica con `clean-code-implementer` (seconda invocazione, in modalità verifica) → [terza forza, solo se serve e mai su Liferay: `solid-srp-reviewer`]**.
+La pipeline è: **[opzionale: `spec-specialist` → verifica della SPEC con `spec-specialist` (seconda invocazione, contesto minimo) → conferma] → scrivi con `clean-code-implementer` → verifica con `clean-code-implementer` (seconda invocazione, in modalità verifica) → [revisione funzionale condizionale con `spec-adversarial-reviewer`] → [ultima forza, solo se serve e mai su Liferay: `solid-srp-reviewer`]**.
 
+- La **fase di spec**, quando c'è, non si chiude con la scrittura dei documenti ma con la loro **verifica**: una *seconda invocazione distinta* di `spec-specialist`, a contesto minimo e con mandato di controllo severo, che precede la conferma che devo darti. Vedi «spec-specialist in modalità verifica».
 - La **fase di scrittura** produce il codice.
 - La **fase di verifica** è la norma quando il task ha prodotto codice: è una *seconda invocazione distinta* di `clean-code-implementer`, con contesto pulito e mandato di controllo, non di implementazione. Serve a verificare che il codice scritto sia corretto in generale e soprattutto **attinente all'obiettivo da realizzare** (la richiesta, o la `spec-*`/`implementation-*` approvata). Vedi «clean-code-implementer in modalità verifica». **Si salta sulle implementazioni banali**, secondo la «Soglia di banalità» qui sotto.
 - La **terza forza** è `solid-srp-reviewer`: non è più un passaggio di default. Si invoca solo quando emergono segnali concreti di responsabilità mal collocate, ed è **vietata sui progetti Liferay**. Vedi la sua sezione.
@@ -217,6 +195,17 @@ Casi tipici: correzione di un typo, chiave i18n o label, messaggio di log, valor
 - **La verifica non si salta mai** quando il task ha creato classi o file nuovi, ha toccato più file, discende da una spec approvata, o riguarda logica di business, persistenza, sicurezza o transazioni — nemmeno se il diff sembra piccolo.
 - **Né si salta quando la specifica è cambiata in corsa** — un parametro tolto, una chiave ridotta, una cardinalità cambiata: è il caso in cui il codice conserva la forma della scelta precedente proprio mentre il diff appare minimo. Vedi «Residui della specifica precedente».
 
+### Annuncio di inizio fase
+
+**Checkpoint obbligatorio.** Prima di ogni invocazione di `Agent`, `Edit`, `Write` o `Bash` che apre una fase di `implementation-<compito>.md`, la prima riga di testo del turno è l'annuncio della fase. Se stai per delegare o per scrivere codice e quella riga non è stata emessa, fermati ed emettila.
+
+- Formato: `Fase <N> delegata: <obiettivo sintetico>` quando la fase passa a un subagent; `Fase <N> in corso: <obiettivo sintetico>` quando la fai direttamente (Soglia di banalità) o quando la fase non produce codice (analisi, pianificazione, verifica, revisione).
+- **L'obiettivo non è opzionale e non può essere generico.** `Fase 7 in corso: verifica dell'implementazione` è un annuncio; `faccio partire la fase 7`, `procedo con la fase 7`, `Fase 7 in corso` non lo sono. Un annuncio senza obiettivo è una regola violata, non una forma abbreviata.
+- L'obiettivo si ricava dalla riga `**Annuncio:**` della fase nel file `implementation-*`, se presente. Se la fase ha solo un'etichetta nuda (`Analisi`, `Test`, `Revisione`), l'obiettivo si ricava dal contenuto delle sue voci e si dice nel linguaggio del dominio: poche parole, non il titolo copiato per intero se è lungo.
+- Esempi: `Fase 10 delegata: calcolo del carattere di controllo` · `Fase 3 delegata: test dei criteri di accettazione sul filtro per stato` · `Fase 7 in corso: verifica dell'implementazione`.
+- È un annuncio, non un piano: niente elenco di file, niente ripetizione della spec, niente motivazioni. Una riga e si procede.
+- Vale per **ogni** fase del file, nessuna esclusa. L'annuncio apre la fase; la spunta nel registro la chiude, secondo il paragrafo seguente.
+
 L'avanzamento di `implementation-<compito>.md` (stato, spunte, registro) lo aggiorna il **processo principale** — mai l'implementer, che si limita a scrivere il codice e riferire. L'aggiornamento va fatto **al termine di OGNI fase, comprese quelle senza codice** (analisi, pianificazione, revisione): spunta le voci completate prima di iniziare la fase successiva, non solo dopo le fasi che producono test verdi. Per le fasi di codice, spunta dopo aver analizzato e verificato il risultato di `clean-code-implementer`; per le fasi di analisi/pianificazione, spunta quando il lavoro descritto è effettivamente svolto. Non passare alla fase successiva lasciando indietro le spunte di quella corrente.
 
 ## Sub-agent per la specifica
@@ -226,15 +215,59 @@ Nella definizione della pipeline è definito aquando questo agente deve interven
 
 ### spec-specialist — scrittura di SPEC e IMPLEMENTATION
 
-Quando serve definire *cosa* fare e *come* pianificarlo prima di implementare, delega al subagent `spec-specialist` la scrittura dei due documenti `spec-<compito>.md` e `implementation-<compito>.md`.
+Quando serve definire *cosa* fare e *come* pianificarlo prima di implementare, delega al subagent `spec-specialist` la scrittura dei due documenti `spec-<compito>.md` e `implementation-<compito>.md`. I due file nascono nella sottocartella `spec/` della **cartella di lavoro**, che mi chiedi prima di delegare.
 
 - **Invocalo quando**: chiedo esplicitamente una spec/pianificazione, oppure prima di implementare una feature non banale (nuovo comportamento, modifica trasversale, cambio di contratto).
 - Usa il **nome del compito** che ti fornisco come suffisso dei file; se non te lo do, proponilo in forma sintetica e chiedimi conferma.
+- **Chiedimi la cartella di lavoro prima di delegare**, con `AskUserQuestion`: l'agente non ha canale interattivo, quindi è l'unico momento in cui la si può sapere. Passagli il **percorso assoluto**; i due file vanno in `<cartella di lavoro>/spec/`, sottocartella che l'agente crea se non esiste. Non scegliere tu una cartella di default, non ripiegare sulla directory corrente e non scrivere i file dentro il repo.
 - Fornisci il contesto di progetto (versione Java, framework, vincoli) come per `clean-code-implementer`; l'agente analizza comunque il codebase in sola lettura per riempire il "Contesto".
 - Produce solo i due file `.md` (stato `NOT_STARTED`): **non scrive codice**, precede `clean-code-implementer` e non lo sostituisce.
 - Nell'elenco dei **file da creare** deve indicare il package o percorso di destinazione di ciascuno, con una riga di motivazione secondo `package-placement`, segnalando i package che non esistono ancora. Così la collocazione è una decisione che approvo insieme alla spec, non una scelta implicita fatta dall'implementer mentre scrive.
-- Al termine, rispetta il "Workflow di collaborazione": presentami la SPEC, risolvi i punti «da decidere» e attendi conferma esplicita prima di passare all'implementazione, che seguirà il piano in `implementation-<compito>.md`.
+- Al termine, **non presentarmi la SPEC appena scritta**: prima falla verificare, secondo «spec-specialist in modalità verifica». Poi rispetta il "Workflow di collaborazione": presentami SPEC e referto di verifica insieme, risolvi i punti «da decidere», e attendi conferma esplicita prima di passare all'implementazione, che seguirà il piano in `implementation-<compito>.md`.
 - **Non invocarlo** per: modifiche banali o bugfix puntuali, task di sola analisi/spiegazione/diagnosi, task di sola documentazione.
+
+### spec-specialist in modalità verifica — controllo severo della SPEC
+
+Appena i due documenti sono scritti, **invoca di nuovo `spec-specialist` in una invocazione separata**, dichiarandogli che lavora **in modalità verifica e non di scrittura**. È il passaggio di controllo predefinito della fase di spec, e precede la mia conferma: non presentarmi una SPEC non ancora verificata. La ragione è di costo: una specifica sbagliata non costa un refactor, costa l'intera implementazione fatta sul piano sbagliato.
+
+**Contesto minimo — è la regola che rende utile il passaggio.** Il verificatore deve arrivare ai documenti senza sapere come ci si è arrivati: se gli racconti il ragionamento, ritrova le tue stesse conclusioni invece di attaccarle. Passagli **solo**:
+
+- i **percorsi assoluti** dei due file da verificare;
+- la **richiesta originale nelle parole con cui te l'ho data**, verbatim, senza parafrasi che la riallineino alla spec;
+- il **percorso del repository** da ispezionare e i vincoli tecnici oggettivi (versione del linguaggio, framework, piattaforma).
+
+Nient'altro. In particolare **non** passargli: chi ha scritto i documenti, le motivazioni delle scelte, le alternative scartate, le discussioni avute con me, i punti su cui eravamo incerti, i rilievi di una verifica precedente, né alcuna forma di «questo l'ho già controllato». Se ti accorgi di stare spiegando o difendendo la spec dentro il prompt, stai contaminando la verifica: taglia.
+
+**Mandato: severo e meticoloso.** Dichiaraglielo esplicitamente e in questi termini: il suo compito non è approvare, è **trovare ciò che non va**; «va bene» è una conclusione che si guadagna voce per voce, non un esito di cortesia; ogni rilievo cita la sezione del documento e la prova (file e riga di codice, oppure il punto della richiesta originale); ciò che non riesce a verificare lo dichiara non verificato invece di darlo per buono. Deve rileggere da sé i MODELLI e il codice: nulla di ciò che la SPEC afferma sul codebase va creduto sulla parola.
+
+**Cosa deve controllare**, a enumerazione forzata — una voce per volta, ciascuna con il suo esito:
+
+- **copertura**: ogni cosa chiesta nella richiesta originale ha un comportamento atteso e un criterio di accettazione; e nulla che non fosse chiesto è entrato nello scope;
+- **verificabilità**: i criteri della *Definition of done* sono osservabili e falsificabili, non dichiarazioni di intenzione;
+- **fondatezza del Contesto**: classi, metodi, endpoint, moduli e pattern citati esistono davvero dove la SPEC dice; niente API inventate né percorsi plausibili ma inesistenti;
+- **coerenza fra i due file**: ogni criterio della *Definition of done* ha un test previsto nell'IMPLEMENTATION, e il riferimento «la SPEC» punta al file appena creato;
+- **collocazione**: ogni file da creare dichiara package o percorso di destinazione con motivazione secondo `package-placement`, e i package che non esistono ancora sono segnalati come tali;
+- **eseguibilità del piano**: fasi ordinate e senza dipendenze nascoste, titoli nel linguaggio del dominio, riga `**Annuncio:**` compilata e leggibile così com'è, stato `NOT_STARTED`, caselle tutte vuote;
+- **casi limite e fuori scope**: dichiarati esplicitamente, non lasciati impliciti;
+- **residui**: nessun segnaposto `<...>`, e nessun punto «da decidere» mascherato da decisione già presa.
+
+**Esito: un referto, non una correzione.** In modalità verifica non tocca i file — niente `Write`, nemmeno per un segnaposto. Restituisce i rilievi classificati:
+
+- `BLOCCANTE` — impedisce di implementare, o porta a implementare la cosa sbagliata;
+- `DA_CHIARIRE` — serve una mia decisione prima di procedere;
+- `MIGLIORABILE` — si può procedere così, ma il documento peggiora il lavoro a valle.
+
+Ciascun rilievo con sezione interessata, prova e correzione proposta; in fondo un verdetto di una riga. Un referto senza rilievi è ammesso solo se elenca comunque le voci controllate e il loro esito.
+
+**Cosa ne fai**:
+
+- i `BLOCCANTE` e i `MIGLIORABILE` che accetti tornano a `spec-specialist` in una terza invocazione, questa volta di scrittura, con i rilievi integrali e l'istruzione di correggere i due file;
+- i `DA_CHIARIRE` me li porti insieme ai punti «da decidere» già presenti nella SPEC, con `AskUserQuestion` quando sono scelte chiuse: il verificatore non decide al posto mio, e nemmeno tu;
+- poi mi presenti SPEC e referto insieme e attendi la conferma esplicita.
+
+**Un solo giro.** Se dopo la correzione una seconda verifica produce ancora `BLOCCANTE`, fermati e riportameli invece di iterare: a quel punto il problema sta nella richiesta, non nel documento.
+
+**Non serve quando**: non c'è stata fase di spec (task entrato direttamente da `clean-code-implementer`, o spec già approvata in una sessione precedente), oppure quando ti chiedo esplicitamente di saltarla. In quel caso dichiaralo, non saltarla in silenzio.
 
 ## Sub-agent per il codice
 
@@ -249,46 +282,32 @@ Ogni volta che il task richiede di **scrivere, estendere, rifattorizzare o ripar
 - Deve rispettare le "Preferenze sempre attive" e il "Workflow di collaborazione" di questo file: niente big-bang non concordati, conferma prima di codice non banale.
 - Non usarlo per task di sola documentazione, analisi o spiegazione, né per riscritture cosmetiche.
 
-**Escalation da gestire nel processo principale.** Come `git-specialist`, l'implementer non ha `AskUserQuestion`: quando la collocazione dei file nuovi eccede la sua autonomia si ferma **prima di scrivere** e restituisce un blocco etichettato.
+**Escalation da gestire nel processo principale.** L'implementer non ha `AskUserQuestion`: quando la collocazione dei file nuovi eccede la sua autonomia si ferma **prima di scrivere** e restituisce un blocco etichettato.
 
 - `PACKAGE_DA_CONFERMARE` — la collocazione richiede un package top-level nuovo, un modulo nuovo, lo spostamento di classi esistenti, oppure due genitori ugualmente difendibili. Il blocco contiene i file nuovi, il concetto condiviso, l'asse di organizzazione del codebase e due o tre alternative con costo e raccomandazione. Riportamele con `AskUserQuestion`, poi ridelega con la scelta. Non decidere tu al suo posto ripiegando su un package esistente: è esattamente il difetto che la regola esiste per impedire.
 - Un **sottopackage nuovo sotto il genitore ovvio** (per esempio `result` → `result/telemetry`) non è un'escalation: l'implementer lo crea da sé e lo dichiara nell'output. Non chiedermi conferma per quelli.
 
 ### clean-code-implementer in modalità verifica — controllo del codice appena scritto
 
-Chiusa la fase di scrittura, **invoca di nuovo `clean-code-implementer`** in una invocazione separata, dichiarandogli esplicitamente che lavora **in modalità verifica e non di implementazione**. È il passaggio di controllo predefinito della pipeline e vale per qualsiasi linguaggio, non solo Java.
+Chiusa la fase di scrittura, **invoca di nuovo `clean-code-implementer`** in una invocazione separata, dichiarandogli esplicitamente che lavora **in modalità verifica e non di implementazione**. È il passaggio di controllo predefinito della pipeline e vale per qualsiasi linguaggio, non solo Java. La procedura — la checklist a sette voci a enumerazione forzata, il confine fra misura e correzione, il formato dell'output — sta nel suo system prompt: non ripetergliela nell'invocazione.
 
-- **Obiettivo primario: l'attinenza.** Deve stabilire se ciò che è stato scritto realizza davvero l'obiettivo richiesto — la richiesta originale, o le fasi della `spec-*`/`implementation-*` approvata — senza aver fatto meno del dovuto (requisiti mancanti, casi non coperti, TODO lasciati) né più del dovuto (scope creep, refactoring non concordati, file toccati fuori perimetro).
-- **Controllo cardine: i residui della specifica precedente.** Quando il contratto è cambiato in corsa — un parametro tolto, una chiave ridotta, una cardinalità che da molti diventa uno — il codice tende a conservare la forma della scelta vecchia pur continuando a funzionare. È il difetto che questa fase esiste soprattutto per intercettare, e **il fatto che funzioni non è una difesa**: il metro è il disegno attuale, non il comportamento osservabile. Vedi «Residui della specifica precedente» qui sotto.
-- **Controllo sulla collocazione dei file nuovi.** Per ogni file creato dal task, rifà il ragionamento di `package-placement` invece di ratificare quello dell'implementer: il package scelto descrive davvero il concetto delle classi nuove, o è solo il più somigliante fra quelli disponibili? Sono scattati i segnali che chiedevano un sottopackage — tre o più classi con lo stesso termine di dominio nel nome, ragione di cambiare distinta da quella delle classi già presenti, nessuna dipendenza con esse? Se il file è finito in un contenitore generico (`util`, `common`, `misc`, `helper`), è un rilievo. Creare il sottopackage mancante e spostarci i file nuovi del task rientra in ciò che può correggere da sé; spostare classi preesistenti o creare package top-level resta una proposta.
-- **Controllo sulla complessità ciclomatica.** Misura il CCN dei soli metodi creati o modificati dal task applicando la skill `cyclomatic-complexity`, e **riporta l'esito anche quando non ci sono rilievi**: altrimenti il controllo si fa solo quando qualcosa salta all'occhio, che equivale a non farlo. Il numero è un segnale, non una sentenza — si interviene quando segnala un problema reale (un metodo che fa più cose, una selezione in memoria che appartiene alla query, un annidamento che nasconde il flusso), mai per abbassare una cifra. La misura è di sola lettura e precede la decisione: prima il report, poi l'eventuale correzione secondo le regole di questa fase. Non misurare e correggere nello stesso gesto.
-- **Obiettivo secondario: la correttezza generale.** Bug evidenti, casi limite scoperti, errori di logica, validazioni mancanti ai boundary, eccezioni silenziate, incoerenze con i pattern del codebase, violazioni delle "Preferenze sempre attive" di questo file.
-- **Passagli il contesto necessario**: qual era l'obiettivo, quali file sono stati creati o modificati, quali vincoli valgono (versione Java, framework, spec di riferimento). Deve **leggere il codice reale** prima di giudicare, non fidarsi del riassunto dell'implementer.
-- **Cosa può correggere da sé**: difetti contenuti dentro i file già toccati dal task — un caso limite scoperto, una validazione mancante, un nome fuorviante, una piccola incoerenza. Tutto ciò che allarga il perimetro (nuovi file, cambi di firma pubblica, modifiche ai chiamanti, riprogettazioni) è **una proposta**, non un intervento: riportamela con impatto e costo.
-- **Non è un revisore di stile e non riapre scelte già concordate.** Se il codice fa quello che deve, lo dichiara e non tocca nulla: è un esito valido e frequente.
-- **Ri-verifica compilazione e test** dopo ogni sua correzione.
+- **Passagli il contesto che solo tu hai**: qual era l'obiettivo, quali file sono stati creati o modificati, quali vincoli valgono (versione del linguaggio, framework, `spec-*`/`implementation-*` di riferimento). Il resto lo sa già.
 - **Per il codice Alpaca.js** la verifica la fa `alpaca-forms-developer`, con lo stesso mandato.
 - **Non serve** quando il task non ha prodotto codice (analisi, spiegazione, diagnosi, sola documentazione), per modifiche puramente cosmetiche già concordate, o quando l'implementazione rientra nella «Soglia di banalità».
+- **Ciò che eccede il perimetro dei file toccati te lo riporta come proposta**, con impatto e costo: la decisione è tua, non sua.
 - Annota l'esito nel registro di `implementation-<compito>.md`: cosa ha confermato, cosa ha corretto, cosa ha solo proposto.
 
-#### Residui della specifica precedente
+### spec-adversarial-reviewer — revisione funzionale condizionale
 
-Quando la specifica cambia mentre l'implementazione è in corso, la modifica si ferma quasi sempre sulla superficie — la firma, il punto di chiamata, il parametro rimosso — mentre il corpo dei metodi resta modellato sul contratto vecchio. Il risultato passa i test e produce l'output giusto, ma **non rispetta il disegno**: chi lo leggerà domani dedurrà dalla forma del codice un contratto che non esiste più, e ci costruirà sopra.
+`spec-adversarial-reviewer` cerca controesempi al comportamento richiesto dalla SPEC. Lavora in sola lettura e non sostituisce la verifica di `clean-code-implementer`, che resta il controllo ordinario dopo la scrittura.
 
-**La domanda da porsi su ogni metodo toccato è una sola: se questo codice fosse scritto oggi da zero, con il contratto attuale, avrebbe questa forma?** Se la risposta è no, è un residuo: va segnalato e — se sta dentro i file toccati dal task — corretto.
+- **Dopo una fase principale** di `implementation-<compito>.md`, invocalo se la fase consegna un comportamento verificabile e un difetto scoperto nelle fasi successive comporterebbe rielaborazioni significative. Non invocarlo dopo sottofasi tecniche che, da sole, non producono un comportamento verificabile.
+- **Alla chiusura di un task con SPEC articolata in più fasi**, invocalo per controllare interazioni fra fasi, requisiti trasversali e regressioni. Evita di fargli ripetere rilievi già chiusi.
+- Per task banali, modifiche senza SPEC e fasi di sola documentazione, non invocarlo automaticamente. Resta disponibile su richiesta esplicita.
+- Invocalo **dopo** la verifica di `clean-code-implementer`, in una chiamata distinta. Passagli la SPEC approvata, `implementation-*`, la fase o il perimetro finale, i riferimenti Git necessari a delimitare il diff e i rilievi già risolti. Se non disponi di riferimenti Git affidabili, passagli l'elenco dei file modificati; non inventare una base di confronto.
+- Valuta ogni rilievo rispetto alle prove riportate. Passa quelli fondati a `clean-code-implementer` per la correzione e verifica nuovamente il comportamento interessato. Registra esito e decisioni in `implementation-*`; il revisore non modifica né codice né piano.
 
-Segnali tipici:
-
-- **Cardinalità sopravvissuta.** Il contratto nuovo ammette al più un elemento, ma il codice continua a ciclare, filtrare, ordinare e «prendere il primo» come quando gli elementi potevano essere molti. Vale anche al contrario: strutture dati dimensionate sulla molteplicità vecchia (`List`, `Map`, array) dove ora basta un singolo valore o un `Optional`.
-- **Selezione in memoria orfana del suo criterio.** La query carica più record del necessario e li restringe in memoria, ma il criterio che giustificava quel restringimento era proprio il parametro rimosso: ora la selezione appartiene alla query.
-- **Rami difensivi impossibili.** Controlli, `else` e gestioni di casi che il contratto nuovo rende irraggiungibili, tenuti «per sicurezza».
-- **Nomi e lessico del concetto rimosso.** Variabili, metodi privati, costanti, messaggi di log, commenti e chiavi che parlano ancora del parametro o della dimensione che non esiste più.
-- **Parametri e campi diventati inerti.** Argomenti passati e mai usati, campi valorizzati e mai letti, oggetti di contesto che trasportano dati morti.
-- **Test rimasti sulla forma vecchia.** Casi che costruiscono scenari ormai impossibili, o che verificano la disambiguazione fra elementi che oggi non possono coesistere.
-
-**Confine.** Il residuo va cercato rispetto alla modifica fatta dal task e alla specifica che implementa, dentro i file toccati. Codice modellato su contratti vecchi che il task non ha toccato si segnala, non si riscrive dentro questo diff. E se rimuovere il residuo comporta cambiare firme pubbliche, query o chiamanti fuori scope, resta una proposta con impatto e costo, non un intervento.
-
-### solid-srp-reviewer — terza forza eventuale (solo Java, mai su Liferay)
+### solid-srp-reviewer — ultima forza eventuale (solo Java, mai su Liferay)
 
 `solid-srp-reviewer` **non è più un passaggio di default**. È una terza forza da mettere in campo solo quando serve davvero, dopo che la fase di verifica è già passata. La sua lente non è come è scritto un metodo — quello lo governa già `clean-code-implementer` — ma se un'unità ha più di una ragione per cambiare: service che cresce a ogni feature, metodo che valida e mappa e persiste, classe i cui campi servono due gruppi disgiunti di metodi, logica messa nella classe esistente solo perché era già iniettata.
 
@@ -314,26 +333,6 @@ Quando il task richiede di **scrivere, estendere, correggere o manutenere codice
 - `solid-srp-reviewer` **non** si applica al suo output: è JavaScript. E se il contorno Java è Liferay, non si applica neanche lì.
 - Non usarlo per Alpaca Markets (API di trading) né per il modello LLM Stanford Alpaca: sono prodotti diversi.
 
-## Sub-agent per git
-
-### git-specialist — commit, push e verifiche
-
-Tutte le operazioni git passano da `git-specialist`: commit con messaggio conforme, preparazione ed esecuzione del push, verifiche di stato e divergenza, diagnosi (chi ha introdotto una modifica o una regressione), recupero di lavoro perso e — solo su mia richiesta esplicita — riscrittura di commit non ancora pushati.
-
-- Ha precaricate `git-commit-messages` e `git-branch-token`; legge su richiesta `git-inspection` e il reference sui moduli OSGi.
-- Il messaggio è in italiano, con il sommario che comincia dal verbo e **senza prefisso di tipo**, i **moduli impattati** sui soli progetti Liferay e l'ultima riga sempre `tkn: <token>`.
-- Non usarlo per scrivere codice applicativo, né per il documento di passaggio in produzione (`release-plan-produzione`).
-
-**Escalation da gestire nel processo principale.** Il subagent non ha `AskUserQuestion`: quando serve una mia decisione si ferma e restituisce un blocco etichettato. Tocca a te chiedermelo e poi ridelegare con la risposta:
-
-- `TOKEN_RICHIESTO` — primo commit su questo branch: chiedimi il token usando le proposte che ha generato (la prima è la raccomandata), poi ridelega. Sui commit successivi il token lo ricava da sé dai commit precedenti e non ti disturba.
-- `PUSH_DA_CONFERMARE` — il push richiede **sempre** la mia conferma esplicita, su qualunque branch. Mostrami cosa andrebbe sul remoto e attendi; poi ridelega dichiarando la conferma.
-- `BRANCH_PROTETTO`, `COMMIT_DA_SPEZZARE`, `SEGRETI_RILEVATI`, `STORIA_GIA_PUSHATA`, `OPERAZIONE_IN_CORSO` — riportameli come sono, con la sua proposta di soluzione. Non aggirarli committando o pushando tu al suo posto.
-
-## Alla fine di ogni risposta
-
-- aggiungi l'informazione della percentuale di contesto coccupata
-
 ## IntelliJ MCP
 
 Quando il server MCP `idea` è disponibile e connesso, usalo come strumento semantico principale per il codice Java.
@@ -345,6 +344,11 @@ Quando il server MCP `idea` è disponibile e connesso, usalo come strumento sema
 - Usa sempre `rename_refactoring` per rinominare classi, metodi e campi. Non effettuare rinominazioni mediante sostituzione testuale.
 - Dopo aver modificato un file Java, usa `get_file_problems` per controllare errori e warning introdotti.
 - Dopo un gruppo coerente di modifiche, usa `build_project` per verificare la compilazione tramite IntelliJ, se il progetto è liferay non buildare mai ma chiedi di farlo;
+- Sui progetti Liferay, quando una fase di scrittura ha modificato codice, oltre a dirmi quali moduli vanno ricompilati e/o distribuiti popola i campi della tab "Compila e deploy" del tool LinksMT con `fill_compile_deploy_modules`.
+  - **Non chiedermi di premere "Pulisci", e non aspettare nessuna conferma prima di popolare.** Il tool sostituisce i valori già presenti nelle caselle, quindi passare l'elenco completo *è* la pulizia: il tasto non serve. Chiama `fill_compile_deploy_modules` direttamente, nello stesso turno in cui mi dici quali moduli vanno ricompilati. Vale per il solo "Pulisci": il tasto "Esegui" resta mio.
+  - Il nome del modulo si ricava dal percorso di ogni file toccato: è il nome della directory più vicina che contiene `bnd.bnd` o `build.gradle` (es. `scrivania-operatore-frontend`), non il Bundle-SymbolicName.
+  - Il tool sostituisce i valori, non li accoda: passa ogni volta l'elenco completo dei moduli toccati nella sessione e non ancora compilati, senza duplicati.
+  - Il tool riempie i campi e non avvia nulla: **il tasto "Esegui" lo premo io**, la build non la lanci mai tu. Non chiamarlo per task senza codice né quando nessun modulo è cambiato.
 - Quando esiste una configurazione IntelliJ pertinente, usa `get_run_configurations` ed `execute_run_configuration` per eseguire applicazioni o test.
 - `build_project` non sostituisce i test e le verifiche Maven previste dal progetto.
 - Evita chiamate MCP duplicate quando le informazioni sono già disponibili nel contesto.
@@ -361,4 +365,4 @@ Quando il server MCP `idea` è disponibile e connesso, usalo come strumento sema
 - Non usare `byte[]` per file grandi se puoi fare streaming.
 - Non cambiare lo stile di formattazione del progetto per vanità tecnica.
 
-Il file init per progetto bandi è questo, c:/Users/fabio.dearcangelis/Desktop/desktop/lavoro/attivita/Emi/paservdig/introProgettoPerClaude.md quando viene chiesto initBandi leggi questo file e dai conferma della lettura avvenuta
+Nel progetto bandi (progetto `bandi-join-oros-servizi-digitali-build`) l'hook SessionStart `hooks/intro-progetto.sh` inietta in automatico `introProgettoPerClaude.md` e l'indice `schede_conoscenza/INDEX.md`, entrambi in `c:/Users/fabio.dearcangelis/Desktop/desktop/lavoro/attivita/Emi/paservdig/`. Le schede elencate nell'indice non si leggono a priori: si apre solo quella pertinente al task, quando serve.

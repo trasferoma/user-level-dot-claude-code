@@ -1,6 +1,6 @@
 ---
 name: clean-code
-description: Usa per generare codice nuovo, rifattorizzare, migliorare leggibilità o manutenibilità, qualsiasi task il cui output finale contiene codice. Applica regole di clean code quando generi o modifichi codice sorgente. Realizza metodi piccoli e focalizzati, singola responsabilità per classe e per metodo (SRP, una sola ragione per cambiare), naming chiaro, basso annidamento, singolo livello di astrazione per metodo (SLAP), commenti e Javadoc quasi a zero (il default è non commentare, il commento è un'eccezione da giustificare), Optional solo come valore di ritorno e mai come parametro o campo, dependency injection, gestione delle eccezioni, testabilità, anti-densità (early return, variabili esplicative, condizioni complesse spezzate in flag boolean). Da comporre con skill di linguaggio o framework (java-conventions, springboot, liferay).
+description: Usa per generare codice nuovo, rifattorizzare, migliorare leggibilità o manutenibilità, qualsiasi task il cui output finale contiene codice. Applica regole di clean code quando generi o modifichi codice sorgente. Realizza metodi piccoli e focalizzati, singola responsabilità per classe e per metodo (SRP, una sola ragione per cambiare), naming chiaro, basso annidamento, singolo livello di astrazione per metodo (SLAP), estrazione di metodi per dare un nome all'intenzione anche senza riuso, commenti e Javadoc quasi a zero (il default è non commentare, il commento è un'eccezione da giustificare), Optional solo come valore di ritorno e mai come parametro o campo, dependency injection, gestione delle eccezioni, pochi parametri di ingresso con classi aggregatrici al posto delle liste lunghe, testabilità, anti-densità (early return, variabili esplicative, condizioni complesse spezzate in flag boolean). Da comporre con skill di linguaggio o framework (java-conventions, springboot, liferay).
 ---
 
 # Scopo
@@ -185,6 +185,22 @@ Annidamento eliminato con early return e predicato estratto con nome di business
 - Non restituire `null` per casi eccezionali, salvo convenzione esplicita del progetto
 - Loggare ai boundary applicativi, non ovunque; non loggare e rilanciare la stessa eccezione senza valore aggiunto
 
+### Dove si valida
+La guardia sta **dove il valore entra sotto il tuo controllo**, non a ogni metodo che lo attraversa.
+
+- **Sì**: metodi pubblici che sono punto d'ingresso di un modulo o di un'API — controller, endpoint, resource command, facciata di un modulo, metodo pubblico invocato da un altro package.
+- **Sì**: costruttori dei tipi che portano un invariante — value object, `record` con vincoli di dominio, tipi che rappresentano un valore che non può essere qualunque cosa.
+- **No**: metodi privati, quando i chiamanti sono già controllati.
+- **No**: salti interni di delega. Se `A.esegui(x)` ha già validato `x` e chiama `B.calcola(x)` nello stesso perimetro, `B` non rivalida. Tre guardie sullo stesso valore non sono tre volte più sicure: insegnano a non leggere le guardie.
+- **No**: tipi che sono dettagli implementativi interni — record annidati privati, classi package-private con un solo chiamante già controllato.
+- **Meglio della guardia ripetuta**: far portare l'invariante al tipo. Se un valore non può essere nullo o fuori intervallo, il posto della verifica è il costruttore del tipo che lo rappresenta, una volta sola.
+
+### Forma della guardia
+- Null → `Objects.requireNonNull(x, "x must not be null")`, oppure `Assert.notNull` sui progetti Spring. **Non** `IllegalArgumentException` per un null.
+- Valore presente ma non valido nel dominio → `IllegalArgumentException`, con il vincolo violato nel messaggio.
+- Stato dell'oggetto incompatibile con l'operazione richiesta → `IllegalStateException`.
+- Il messaggio dichiara il **vincolo**, non il nome della classe: lo stack trace la dice già, e al primo rinominamento il prefisso mente.
+
 ### Perché
 Gli errori devono essere leggibili e diagnosticabili. Un'eccezione generica o silenziata rende il debugging più lento e fragile.
 
@@ -216,6 +232,8 @@ public Customer loadCustomer(long customerId) {
 - Il criterio di separazione è la ragione di cambiare, non il numero di righe né di metodi: due responsabilità che cambiano sempre insieme sono una responsabilità sola.
 - Vale per i metodi quanto per le classi: un metodo che valida, trasforma e persiste ha tre ragioni per cambiare (regole di business, formato dei dati, schema di persistenza).
 - Nome coerente col ruolo effettivo. Un nome che non riesci a dare senza `And` o senza un termine generico è la prima diagnosi di responsabilità multipla.
+- **I dati di configurazione di un dominio sono una ragione di cambiare a sé.** Listini, tariffe, aliquote, soglie, cataloghi e tabelle di corrispondenza non stanno nella classe che li interroga: chi rivede i prezzi e chi cambia il modo di leggerli sono due committenti diversi. La classe che legge **riceve** i dati dal costruttore; a produrli è un collaboratore separato. Il segnale è meccanico e si conta a occhio: i metodi che costruiscono i dati pesano più di quelli che li usano.
+- **Una classe che si costruisce da sola i propri dati non ha cuciture.** `this.listino = costruisciListino()` dentro il costruttore impedisce di fornirne uno diverso — per un secondo mercato, per una prova, per la sorgente esterna che prima o poi arriverà. Vale anche quando oggi i dati sono costanti: il giorno in cui verranno da un file o da una tabella si dovrà modificare la classe che sa **leggere** per cambiare quella che **contiene**.
 
 ### Segnali di violazione
 - La classe cresce a **ogni** feature nuova, qualunque sia la feature.
@@ -236,7 +254,7 @@ La ragione di cambiare è ciò che determina chi rompe cosa. Una classe con tre 
 - Il task corrente non tocca quella parte: la collocazione sbagliata preesistente va segnalata, non risolta dentro un diff che doveva fare altro (§ 13, refactoring vietato).
 
 ### Esempi completi
-Quattro casi svolti con anti-esempio e versione corretta — classe che cresce a ogni feature, metodo che valida/trasforma/persiste, bassa coesione dei campi, frammentazione eccessiva: vedi [reference/srp.md](reference/srp.md).
+Cinque casi svolti con anti-esempio e versione corretta — classe che cresce a ogni feature, metodo che valida/trasforma/persiste, bassa coesione dei campi, frammentazione eccessiva, catalogo di dati dentro la classe che lo interroga: vedi [reference/srp.md](reference/srp.md).
 
 ## 8. Dipendenze
 
@@ -244,12 +262,15 @@ Quattro casi svolti con anti-esempio e versione corretta — classe che cresce a
 - Preferire dependency injection
 - Evitare creazione diretta di dipendenze dentro la logica
 - Isolare framework e servizi esterni dietro boundary chiari
+- **Un collaboratore è un oggetto, non una classe di metodi statici.** Le classi che svolgono un compito — parser, validatori, calcolatori, aggregatori, formattatori, orchestratori, policy — si istanziano **anche quando non hanno stato**, e ricevono le proprie dipendenze dal costruttore. Una classe `final` con costruttore privato e soli metodi `static` non è una semplificazione: è un collaboratore a cui sono state tolte le cuciture.
+- **Restano legittimamente `static`, elenco chiuso**: le costanti; i factory method sul tipo che costruiscono (`Costi.nessuno()`); i metodi di un `enum`; i metodi privati di supporto interni a una classe. Tutto il resto è un oggetto.
+- **Non mescolare i due stili nello stesso codebase.** Metà statico e metà iniettato non ha né le cuciture dell'uno né la semplicità dell'altro. Se il progetto esistente adotta già una convenzione diversa, quella vince: vale la precedenza del comportamento esistente.
 
 ### Perché
 Le dipendenze esplicite migliorano testabilità, sostituibilità e controllo del comportamento.
 
 ### Esempi completi
-Constructor injection contro istanziazione diretta dentro la logica, con anti-esempio e versione corretta: vedi [reference/dependencies.md](reference/dependencies.md).
+Constructor injection contro istanziazione diretta dentro la logica, e collaboratore statico contro collaboratore oggetto, con anti-esempio e versione corretta: vedi [reference/dependencies.md](reference/dependencies.md).
 
 ## 9. Duplicazione
 
@@ -386,7 +407,9 @@ Le vulnerabilità sono difetti di qualità del codice a tutti gli effetti, spess
 - Tenere il numero degli annidamenti il più basso possibile. Quando il flusso diventa complesso, usare early return, early continue oppure estrarre metodi privati con nomi chiari.
 - **Ogni valore prodotto da una chiamata che calcola, costruisce, recupera o interroga ha un nome.** Lo assegni a una variabile esplicativa, poi passi la variabile. Vale **anche quando la chiamata è una sola e non annidata**: la densità non si conta in livelli di annidamento, si misura chiedendosi se ogni valore intermedio ha un nome. `list.add(compute(a, b, c))`, `new Foo(build(x))` e `service.call(map(dto))` sono già troppo densi.
 - **Un'istruzione che non entra in una riga chiede una variabile, non un ritorno a capo.** Se il wrap nasce da una chiamata dentro gli argomenti, estrai quel valore; se nasce solo dal numero di argomenti già nominati, il wrap va bene.
-- Ammesso passare direttamente, elenco chiuso: accessor e getter semplici (`request.getId()`), costanti e letterali, argomenti di log e di messaggi d'eccezione, passaggi intermedi di una catena Stream, `return` di una sola chiamata.
+- Ammesso passare direttamente, elenco chiuso: accessor e getter semplici (`request.getId()`), costanti e letterali, argomenti di **chiamate di log** (`log.info`, `logger.debug`) e di **messaggi d'eccezione**, passaggi intermedi di una catena Stream, `return` di una sola chiamata.
+- **L'eccezione sui messaggi non copre la costruzione di stringhe di output.** `String.format`, `printf`, `println`, `StringBuilder.append` e i formattatori applicativi sono chiamate ordinarie: i valori calcolati che ricevono hanno un nome come tutti gli altri.
+- **Il cablaggio manuale di un grafo di oggetti non è esente.** Ogni collaboratore costruito riceve una variabile con un nome. Se la delega `this(...)` impedisce di dichiarare variabili prima della chiamata — in Java non sono ammesse istruzioni prima di `this(...)` — il cablaggio va in un metodo factory nominato, non annidato negli argomenti.
 - Il nome della variabile può essere il concetto stesso in lowerCamelCase (`characteristicContribution`): non deve essere originale per guadagnarsi il posto.
 - Evitare condizioni `if` complesse. Calcolare prima i blocchi logici significativi in variabili boolean con nomi di business, poi usare quei flag nel controllo di flusso.
 
@@ -396,52 +419,51 @@ L'obiettivo non è codice più "furbo", ma codice meno denso e più facile da ve
 ### Esempi completi
 Cinque casi svolti con anti-esempio e versione corretta a confronto — annidamenti, densità delle chiamate, valore senza nome passato a un `add`, condizioni composte, early return più variabili esplicative: vedi [reference/examples.md](reference/examples.md).
 
-## 17. SLAP — Single Level of Abstraction Principle
+## 17. SLAP e intenzionalità del codice
 
 ### Regola
-- Ogni metodo opera a un solo livello di astrazione: le operazioni al suo interno stanno allo stesso grado di dettaglio.
-- Non mescolare la sequenza dei passi di alto livello con i dettagli che li realizzano: estrarre il dettaglio in metodi privati il cui nome dichiari l'intento.
-- Un metodo di orchestrazione deve leggersi come l'elenco dei suoi passi.
+- **Estrarre un metodo per dare un nome a un passo è una ragione sufficiente.** Il riuso non è richiesto: un metodo chiamato da un solo punto è legittimo quando il suo nome dice ciò che il corpo si capisce solo leggendolo. Vale **anche per una riga sola** o per una singola condizione (`if (isEligibleForPitStop(unit))`): il criterio è il nome, non la lunghezza del frammento.
+- **Test di nominabilità — è la condizione dell'estrazione, non un dettaglio.** Si estrae se e solo se il frammento ha un nome nel linguaggio del dominio. Se il miglior nome disponibile è `processStep2()`, `handleData()`, `doCalculation()` o `applyPart1()`, il frammento **non è un concetto**: hai spezzato una frase a metà e obblighi il lettore a ricomporla saltando nel file. Il nome non è la ricompensa dell'estrazione, è il suo permesso.
+- **Variabile o metodo**: a un *valore* si dà un nome con una variabile esplicativa (regola 16); a un *comportamento* o a un passo del flusso si dà un nome con un metodo estratto.
+- Ogni metodo opera a **un solo livello di astrazione**: le operazioni al suo interno stanno allo stesso grado di dettaglio. Non mescolare la sequenza dei passi di alto livello con i dettagli che li realizzano.
+- **Un metodo di orchestrazione si legge come l'elenco dei suoi passi**, e il file si legge dall'alto verso il basso: ogni metodo è seguito da quelli al livello di astrazione immediatamente inferiore. Tre proprietà lo rendono tale, e si verificano una per una guardando il corpo del metodo.
+- **Una sola forma per riga.** Ogni passo è `Tipo nome = verbo(...)`. Rompono la forma, e vanno spostati *dentro* il passo: la creazione di un accumulatore mutabile, `x(...).ifPresent(lista::add)`, `lista.addAll(y(...))`, `List.copyOf(...)`, e l'**aritmetica nuda** (`a.add(b)`, `a + b`) quando le altre righe sono chiamate nominate. Il criterio è meccanico: se sei righe su otto hanno la forma `Tipo nome = verbo(...)`, le altre due la devono avere.
+- **I nomi dei passi sono verbi, non sostantivi.** `mountEngine(chassis)`, non `engineMount(chassis)`; `calculateSurcharges(shipment)`, non `surcharges(shipment)`. Un sostantivo che si legge come una chiamata nomina il valore restituito invece dell'azione, e obbliga chi legge a ricostruire il verbo.
+- **Uniformità: o tutti i passi sono chiamate incapsulate, o nessuno.** Il criterio non è vietare il collaboratore in assoluto, è la coerenza dentro il metodo. Se gli altri passi sono chiamate a metodi privati che nominano l'intenzione, anche `attackRollResolver.resolve(turn)` deve diventare `resolveAttackRoll(turn)`; se il metodo è fatto di istruzioni dirette, la chiamata diretta al collaboratore va bene. **Si conta, non si giudica**: quante righe sono chiamate incapsulate e quante espongono un campo iniettato, un tipo tecnico o un'API di collezioni o di `Optional`. Mescolate, è un rilievo. È questa la ragione per cui un metodo privato che sembra una delega pura — `mountEngine(chassis)` il cui corpo è `engine.mountEngine(chassis)` — **è legittimo e non ridondante**: il suo lavoro è tenere il corpo su un solo livello nascondendo l'identità del collaboratore. Vale anche quando il corpo è una riga sola.
+- **Le guardie in testa al metodo non sono passi.** Una precondizione (`requireDefenderAlive(...)`, `Objects.requireNonNull(...)`) in cima si legge come preambolo e non entra nel conteggio dell'uniformità. Una guardia **in mezzo** ai passi sì: lì smette di essere un preambolo e diventa una riga di forma diversa dalle altre.
+- **L'estrazione non deve creare stato condiviso.** Se per estrarre devi trasformare una variabile locale in un campo, l'estrazione è sbagliata: passa il valore o restituiscilo. Metodi privati che comunicano attraverso i campi impongono un ordine di chiamata che nessuna firma dichiara (regola 18).
+- **Quando i metodi privati diventano molti, manca una classe, non un metodo.** Il segnale è che si raggruppano attorno a sottoinsiemi disgiunti dei campi: la risposta è un collaboratore nuovo, non un altro `private` (regola 7).
 - Segnali di violazione: commenti che spezzano il metodo in fasi (`// Validazione`, `// Calcolo del totale`), un loop o un calcolo inline dentro un metodo che per il resto delega, literal di dominio (aliquote, formati, chiavi) accanto a chiamate di servizio.
 
 ### Perché
-Mescolare i livelli obbliga chi legge a cambiare continuamente scala mentale e nasconde la sequenza del processo dentro i suoi dettagli. Estratto, il livello basso diventa riutilizzabile e testabile in isolamento, e il livello alto si legge come la descrizione del processo.
+Mescolare i livelli obbliga chi legge a cambiare continuamente scala mentale e nasconde la sequenza del processo dentro i suoi dettagli. Estratto, il livello basso diventa testabile in isolamento e il livello alto si legge come la descrizione del processo. Questa regola è anche ciò che rende sostenibile il divieto di commenti della regola 4: l'etichetta di blocco vietata (`// Calcolo del totale`) va sostituita dal nome di un metodo, altrimenti il commento sparisce e non lo rimpiazza niente.
 
-### Esempio corretto
-```java
-public void processOrder(Order order) {
-    validateOrder(order);
+I nomi ufficiali dei pattern applicati: *Composed Method* (Beck, «dividi il programma in metodi che eseguono un compito identificabile, mantenendo tutte le operazioni allo stesso livello di astrazione»), *Extract Function* di Fowler, la cui motivazione dichiarata è separare l'intenzione dall'implementazione, la *stepdown rule* e «One Level of Abstraction per Function» di *Clean Code* cap. 3, e le *Intention-Revealing Interfaces* di Evans per la superficie pubblica.
 
-    double total = calculateTotal(order);
-    double tax = calculateTax(total);
-    double finalAmount = total + tax;
+### Esempi completi
+Livelli mescolati contro sequenza di passi, estrazione di una condizione di una riga, il test di nominabilità applicato a un frammento che non lo supera, l'anti-esempio dei metodi privati che comunicano attraverso i campi, e le tre proprietà di un metodo che orchestra a confronto: vedi [reference/intenzionalita.md](reference/intenzionalita.md).
 
-    chargeCreditCard(order.getCustomer(), finalAmount);
-}
-```
+## 18. Numero di parametri
 
-### Anti-esempio
-```java
-public void processOrder(Order order) {
-    // Validazione
-    if (!order.isValid()) {
-        throw new IllegalArgumentException("Invalid order");
-    }
+### Regola
+- **La tendenza è zero.** Il conteggio ideale di parametri è nessuno, e ci si arriva iniettando dipendenze e configurazione nel **costruttore**, non accumulando nei campi i dati della singola chiamata. Un campo che trasporta lo stato di una chiamata è un parametro nascosto: crea accoppiamento temporale (`setCella()` prima di `percorri()`), sottrae un input alla firma e rende l'oggetto non riusabile fra chiamanti diversi. **Vietato.**
+- **Da 1 a 6 parametri: normale.** Nessun rilievo, nessuna azione richiesta.
+- **Da 7 in su: la firma va segnalata.** Non si scrive in silenzio. Vedi «Oltre il limite».
+- **Oltre il limite non si tagliano parametri: si aggregano quelli che formano un concetto.** Il criterio per riconoscerli è il **data clump**: un gruppo di parametri che viaggia sempre insieme, tipicamente ripetuto in più di una firma, è un tipo che chiede di nascere.
+- **Prima di creare un tipo nuovo**, verifica le vie più economiche: passare l'oggetto intero invece di due suoi campi (`cell` invece di `cell` + `cellLengthKm`); ricavare nel corpo un parametro derivabile dagli altri; **spostare il metodo nella classe che possiede già quei dati** — un conteggio alto dice spesso che il metodo è nel posto sbagliato, non che serve una classe in più.
+- **Esenti dal limite**: costruttori canonici di `record`, value object e DTO; builder; firme imposte dall'esterno (implementazione di un'interfaccia di libreria, callback di framework, entry point).
+- **Conteggio**: tutti i parametri dichiarati, un varargs conta 1. Indipendentemente dal numero, i flag booleani come parametro restano vietati e `Optional` come parametro resta vietato (regola 2).
 
-    // Calcolo del totale
-    double total = 0.0;
-    for (Item item : order.getItems()) {
-        total += item.getPrice();
-    }
+### Oltre il limite
+Quando la firma che stai scrivendo arriva a 7 parametri o più:
+1. Individua i gruppi che viaggiano insieme e dai un nome di dominio a ciascuno.
+2. Se il tipo aggregatore sta **dentro i file del task**, crealo, scrivi la firma corretta e **dichiara nell'output** cosa hai aggregato e perché.
+3. Se la correzione richiede di toccare firme pubbliche o chiamanti **fuori dal perimetro del task**, non la applichi: scrivi la firma e riporta la proposta con impatto e costo.
 
-    // Calcolo delle tasse
-    double tax = total * 0.1;
+Due firme reali con 11 e 7 parametri, il data clump che condividono e la versione aggregata: vedi [reference/parametri.md](reference/parametri.md).
 
-    // Addebito sulla carta
-    CreditCard creditCard = order.getCustomer().getCreditCard();
-    creditCard.charge(total + tax);
-}
-```
+### Perché
+Il conteggio è il sintomo, il data clump è la malattia: una regola che vincola solo il numero insegna a impacchettare parametri estranei in un contenitore per scendere sotto la soglia, che è l'anti-pattern e non la cura. La scala di riferimento è quella di *Clean Code* cap. 3, «Function Arguments» (zero ideale, poi uno, poi due, tre da evitare); il tetto a 6 è la soglia di casa, fra il 3 di Martin e il 7 di `ParameterNumber` (Checkstyle) e `java:S107` (Sonar); il gruppo ripetuto in più firme è il test di Fowler per i «Data Clumps».
 
 
 # Preferenze di output
@@ -455,7 +477,9 @@ Quando generi codice:
 - **Mai `Optional` come parametro di metodo o costruttore, né come campo di classe**: solo come tipo di ritorno (regola 2, priorità molto alta)
 - Non sacrificare correttezza per eleganza
 - Non applicare refactoring che cambi il comportamento richiesto
-- Non frammentare il codice in troppi micro-metodi se peggiora la comprensione
+- Non estrarre metodi che non hanno un nome nel linguaggio del dominio: il criterio è il test di nominabilità (regola 17), non la lunghezza del frammento né il numero di metodi privati
+- **Mai scrivere in silenzio una firma con 7 o più parametri**: si aggregano i parametri che formano un concetto e si dichiara l'aggregazione, oppure si riporta la proposta se la correzione esce dal perimetro del task (regola 18)
+- Non trasformare i dati di una chiamata in campi della classe per abbassare il conteggio dei parametri (regola 18)
 
 # Esempi di attivazione
 - "Scrivimi un service Spring Boot"

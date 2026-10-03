@@ -204,7 +204,25 @@ List<Customer> eligible = customers.stream()
         .collect(Collectors.toList());
 ```
 
-## 7. Niente astrazioni funzionali premature
+## 7. Lambda al posto delle classi anonime
+
+### Regola
+- **Quando l'interfaccia ha un solo metodo astratto, il comportamento si passa come lambda o method reference, non come classe anonima.** Una classe anonima è una classe senza nome: paghi un tipo nuovo, un file `.class`, uno scope e un `this` proprio per trasportare una cosa sola.
+- **Il guadagno è massimo sul constant-specific class body di un `enum`**, che crea una sottoclasse anonima **per ogni costante** e allontana la dichiarazione del contratto dalle sue realizzazioni. Il comportamento che varia per costante si passa nel **costruttore dell'enum**: descrizione e regola restano una accanto all'altra e l'enum si legge come la tabella che è.
+- **Scegli l'interfaccia funzionale specializzata.** `Predicate<T>` e non `Function<T, Boolean>`, che a ogni valutazione incapsula il primitivo e rende rappresentabile un `null` che esplode all'unboxing lontano dalla causa; `Supplier<T>` e non `Function<Void, T>`; le varianti primitive (`IntPredicate`, `ToIntFunction`, `IntUnaryOperator`) quando i tipi in gioco sono `int`, `long` o `double`. Il nome del tipo dichiara l'intenzione e la specializzazione evita il boxing.
+- **Il function object non si espone mai.** Campo `private final`, e la superficie pubblica è un metodo che lo applica: si scrive `invariant.isSatisfiedBy(outcome)`, mai `invariant.getRule().test(outcome)`. Esporlo scambia una classe anonima con un meccanismo in vista e rende il refactoring una perdita netta (`clean-code` § 17: nella superficie visibile stanno verbi di dominio, non meccanismi).
+- **Il cancello.** La sostituzione vale finché il corpo è un'espressione o poche righe **e** varia un solo comportamento. Se il corpo cresce, o se per costante variano due o più metodi, la risposta non è né la lambda né la classe anonima: è un **collaboratore con un nome**. Una lambda lunga dentro la lista delle costanti non si può spezzare in metodi privati e riporta fra le parentesi la densità che `clean-code` § 16 vieta.
+- **Resta legittima la classe anonima** quando l'interfaccia ha due o più metodi astratti, o quando servono stato proprio, un `this` riferito a sé stessa o la ricorsione: lì la lambda non è applicabile.
+
+### Perché
+L'apparato di una classe anonima non trasporta informazione: chi legge deve riconoscere un tipo nuovo per scoprire che porta un solo comportamento. Sul constant-specific body il costo si moltiplica per il numero delle costanti, e il contratto finisce decine di righe sotto le sue realizzazioni.
+
+Questa regola **non contraddice la § 8 «Niente astrazioni funzionali premature»**, e le due vanno lette insieme: là si vieta di *inventare* un punto di variazione che non esiste ancora; qui il punto di variazione è già dichiarato dal codice — un enum le cui costanti portano ciascuna la propria regola **è** una variazione stabile e reale. Togliere cerimonia a un'astrazione che esiste già non è crearne una nuova.
+
+### Esempi completi
+Un `enum` di invarianti con constant-specific class body, la sua versione a lambda, e i due modi di sbagliare la conversione — `Function<T, Boolean>` al posto di `Predicate<T>` e il function object esposto: vedi [reference/lambda-e-classi-anonime.md](reference/lambda-e-classi-anonime.md).
+
+## 8. Niente astrazioni funzionali premature
 
 ### Regola
 Non introdurre strategie a lambda solo per eliminare uno `switch` o una piccola duplicazione. Non creare `Function`/`BiFunction` di supporto prima che esista una variazione stabile e reale.
@@ -213,7 +231,7 @@ Non introdurre dipendenze funzionali esterne (Vavr, Reactor, jOOλ) se non sono 
 ### Perché
 Un'astrazione creata prima che il punto di variazione sia stabile costa più di quanto renda: va mantenuta, capita e spesso disfatta. La duplicazione visibile è più economica di un'astrazione sbagliata.
 
-## 8. Rispetto di versione Java, framework e persistence
+## 9. Rispetto di versione Java, framework e persistence
 
 ### Regola
 La scelta tra Stream/loop e la modellazione funzionale **non** deve violare i vincoli della versione target: per record, switch expression, text block, pattern matching e `Stream.toList()` rispetta la skill `java-version-*` attiva.

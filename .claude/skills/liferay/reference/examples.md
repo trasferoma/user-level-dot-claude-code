@@ -4,6 +4,7 @@
 - MVC commands: render, action, resource separati (§5)
 - OSGi services: API, implementazione e consumo via @Reference (§6)
 - Configuration framework e portlet preferences (§10)
+- Validazioni: Validator, eccezione custom, SessionErrors e liferay-ui:error (§15)
 
 Le regole e il «perché» stanno in `SKILL.md`. Qui ci sono solo gli esempi completi.
 
@@ -145,3 +146,86 @@ public class DemoConfigurationProvider {
 }
 ```
 
+
+---
+
+## Validazioni (§15)
+
+### Esempio corretto
+```java
+@Component(
+    property = {
+        "javax.portlet.name=com_acme_demo_web_DemoPortlet",
+        "mvc.command.name=/demo/save"
+    },
+    service = MVCActionCommand.class
+)
+public class SaveDemoMVCActionCommand extends BaseMVCActionCommand {
+
+    @Override
+    protected void doProcessAction(
+            ActionRequest actionRequest,
+            ActionResponse actionResponse)
+        throws Exception {
+
+        String emailAddress = ParamUtil.getString(actionRequest, "emailAddress");
+
+        try {
+            validateEmailAddress(emailAddress);
+        }
+        catch (InvalidEmailAddressException invalidEmailAddressException) {
+            SessionErrors.add(
+                actionRequest, invalidEmailAddressException.getClass());
+
+            return;
+        }
+
+        this.demoService.save(emailAddress);
+    }
+
+    private void validateEmailAddress(String emailAddress)
+        throws InvalidEmailAddressException {
+
+        boolean missing = Validator.isBlank(emailAddress);
+        boolean malformed = !Validator.isEmailAddress(emailAddress);
+
+        if (missing || malformed) {
+            throw new InvalidEmailAddressException(emailAddress);
+        }
+    }
+
+    @Reference
+    private DemoService demoService;
+}
+```
+
+```java
+package com.acme.demo.web.internal.exception;
+
+import com.liferay.portal.kernel.exception.PortalException;
+
+public class InvalidEmailAddressException extends PortalException {
+
+    public InvalidEmailAddressException(String emailAddress) {
+        super("Invalid email address: " + emailAddress);
+    }
+}
+```
+
+```jsp
+<liferay-ui:error
+    exception="<%= InvalidEmailAddressException.class %>"
+    message="please-enter-a-valid-email-address"
+/>
+```
+
+### Anti-esempio
+```java
+String emailAddress = actionRequest.getParameter("emailAddress");
+
+if (emailAddress == null || emailAddress.trim().isEmpty() ||
+    !emailAddress.matches("^[\w.]+@[\w.]+$")) {
+
+    throw new IllegalArgumentException("Invalid email");
+}
+```

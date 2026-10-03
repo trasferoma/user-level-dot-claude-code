@@ -127,9 +127,9 @@ import static java.util.stream.Collectors.*;
 ## 4. Indentazione e formattazione
 
 ### Regola
-- Usare indentazione di 2 spazi
+- Usare indentazione di **4 spazi** (valore di ripiego: vedi «Override delegato» sotto)
 - Usare una istruzione per riga
-- Mantenere il limite di 100 caratteri per riga quando ragionevolmente possibile
+- Mantenere il limite di **120 caratteri** per riga quando ragionevolmente possibile (valore di ripiego: vedi «Override delegato» sotto)
 - Quando una riga va spezzata, preferire rotture su livelli sintattici alti
 - Indentare le continuation lines in modo chiaro e coerente
 - Non comprimere il codice per ridurre il numero di righe a scapito della leggibilità
@@ -379,7 +379,7 @@ else { doOtherThing(); }
 - La virgola resta attaccata al token che la precede: si va a capo dopo la virgola, mai prima
 - Le continuation lines sono indentate più delle righe di un normale blocco annidato, così "riga spezzata" e "nuovo blocco" restano visivamente distinti
 
-⚠️ **Override delegato**: il **carattere e l'ampiezza dell'indentazione** (spazi vs tab, 2 vs 4) e il **limite di colonna** (80 / 100 / 120) dipendono dal progetto e sono governati dalle skill `springboot`, `liferay` o `java-version-*`. Questa sezione fissa il *principio* di wrapping, non i valori numerici. Restano fuori dal limite di colonna, a prescindere dal valore scelto: righe `package`/`import`, URL in Javadoc, text block.
+⚠️ **Override delegato, con valore di ripiego**: il **carattere e l'ampiezza dell'indentazione** (spazi vs tab, 2 vs 4) e il **limite di colonna** (80 / 100 / 120) sono governati, quando esistono, dalla skill di progetto — `springboot` (tab) o `liferay` — oppure da una convenzione già evidente nel codebase, che vince sempre. **Quando nessuna delle due si applica** — progetto Java puro, campo verde — valgono i valori di ripiego di questa skill: **4 spazi e 120 colonne**. Non lasciare i due valori indeterminati: senza un ripiego dichiarato la scelta cambia da un'implementazione all'altra dello stesso progetto. Le 120 colonne tengono conto del fatto che l'anti-densità di `clean-code` § 16 allunga le righe per dare un nome a ogni valore: un limite più stretto combatte con quella regola. Restano fuori dal limite di colonna, a prescindere dal valore scelto: righe `package`/`import`, URL in Javadoc, text block.
 
 ### Perché
 Il punto di rottura comunica la struttura dell'espressione. Regole di rottura coerenti rendono prevedibile dove cercare la continuazione di uno statement lungo.

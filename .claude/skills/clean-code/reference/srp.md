@@ -6,6 +6,7 @@
 - 2. Metodo che valida, trasforma e persiste
 - 3. Bassa coesione: campi usati solo da metà dei metodi
 - 4. Separazioni da NON fare
+- 5. Dati di configurazione dentro la classe che li interroga
 
 ---
 
@@ -185,3 +186,86 @@ public class OrderAmountFormatter { ... }
 
 Arrotondamento e formattazione dell'importo cambiano insieme al calcolo: è un'unica responsabilità
 distribuita su tre file, tre iniezioni e tre test per un comportamento solo.
+
+---
+
+## 5. Dati di configurazione dentro la classe che li interroga
+
+Il difetto è invisibile alle metriche: la classe è piccola, coesa nei nomi, senza campi disgiunti.
+Ma metà del file è un catalogo di valori, e un catalogo ha un committente suo.
+
+### Anti-esempio
+
+```java
+public class TariffBook {
+
+    private final Map<Zone, Map<WeightBand, BigDecimal>> tariffsByZoneAndBand;
+
+    public TariffBook() {
+        this.tariffsByZoneAndBand = buildTariffMatrix();
+    }
+
+    public BigDecimal readTariff(Zone zone, WeightBand band) {
+        return tariffsByZoneAndBand.get(zone).get(band);
+    }
+
+    private static Map<Zone, Map<WeightBand, BigDecimal>> buildTariffMatrix() {
+        Map<Zone, Map<WeightBand, BigDecimal>> matrix = new EnumMap<>(Zone.class);
+        matrix.put(Zone.NAZIONALE, nazionaleTariffs());
+        matrix.put(Zone.EUROPA, europaTariffs());
+        return Collections.unmodifiableMap(matrix);
+    }
+
+    private static Map<WeightBand, BigDecimal> nazionaleTariffs() {
+        Map<WeightBand, BigDecimal> tariffs = new EnumMap<>(WeightBand.class);
+        tariffs.put(WeightBand.UP_TO_2, new BigDecimal("7.50"));
+        tariffs.put(WeightBand.UP_TO_5, new BigDecimal("10.00"));
+        // … e così per ogni zona
+        return Collections.unmodifiableMap(tariffs);
+    }
+}
+```
+
+Venti righe sanno **leggere** un listino, quaranta dicono **quanto costa**. L'ufficio commerciale che
+rivede i prezzi a gennaio e lo sviluppatore che cambia il modo di risolvere la fascia aprono lo stesso
+file per ragioni che non hanno niente in comune. E `new TariffBook()` non ammette un listino diverso:
+non c'è nessun punto in cui fornirlo.
+
+### Esempio corretto
+
+```java
+public class TariffBook {
+
+    private final Map<Zone, Map<WeightBand, BigDecimal>> tariffsByZoneAndBand;
+
+    public TariffBook(Map<Zone, Map<WeightBand, BigDecimal>> tariffsByZoneAndBand) {
+        this.tariffsByZoneAndBand = Map.copyOf(tariffsByZoneAndBand);
+    }
+
+    public BigDecimal readTariff(Zone zone, WeightBand band) {
+        return tariffsByZoneAndBand.get(zone).get(band);
+    }
+}
+
+public class StandardTariffCatalog {
+
+    public Map<Zone, Map<WeightBand, BigDecimal>> tariffs() {
+        Map<Zone, Map<WeightBand, BigDecimal>> matrix = new EnumMap<>(Zone.class);
+        matrix.put(Zone.NAZIONALE, nazionaleTariffs());
+        matrix.put(Zone.EUROPA, europaTariffs());
+        return Collections.unmodifiableMap(matrix);
+    }
+
+    // … le tabelle per zona, che qui sono l'unica cosa che c'è
+}
+```
+
+`readTariff` non cambia di una riga. Il giorno in cui il listino arriverà da un file o da una tabella,
+nasce un secondo produttore accanto a `StandardTariffCatalog` e chi legge non se ne accorge.
+
+### Quando NON applicarla
+
+Una manciata di costanti usate solo lì dentro — un'aliquota, una tolleranza, due soglie — restano
+`private static final` nella classe che le usa. La regola scatta quando i valori sono un **catalogo**:
+una tabella di corrispondenza, un listino, un insieme che qualcuno rivede periodicamente senza toccare
+il codice che lo legge.

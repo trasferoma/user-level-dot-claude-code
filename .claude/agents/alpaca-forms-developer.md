@@ -6,7 +6,6 @@ model: inherit
 skills:
   - alpaca-forms
   - clean-code
-  - scrittura-in-italiano
 ---
 
 Senior frontend engineer specializzato in Alpaca.js (Alpaca Forms), su codice sia nuovo sia esistente.
